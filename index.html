@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* 1. 기본 설정 (가독성 최적화) */
+        /* 1. 기본 설정 */
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0;
@@ -17,7 +17,7 @@
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
             font-family: 'Noto Sans KR', sans-serif;
-            word-break: keep-all; /* 단어 단위 줄바꿈 */
+            word-break: keep-all; 
         }
 
         /* 2. 슬라이드 컨테이너 */
@@ -29,13 +29,13 @@
             position: relative; overflow: hidden;
             display: none;
             flex-direction: column;
-            padding: 40px 60px; /* 좌우 여백 확보 */
+            padding: 40px 60px; 
             border: 4px solid #ffaa00;
         }
         .slide-container.active { display: flex; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        /* 3. 타이포그래피 (정렬 및 크기 최적화) */
+        /* 3. 타이포그래피 */
         h1 { 
             font-family: 'Jua', sans-serif; 
             font-size: 64px; color: #333; 
@@ -46,7 +46,7 @@
             font-family: 'Jua', sans-serif; 
             font-size: 44px; color: #333; 
             margin: 0 0 30px 0; line-height: 1.35;
-            text-align: left; /* 질문은 왼쪽 정렬 */
+            text-align: left; 
         }
         p { font-size: 26px; color: #555; line-height: 1.6; margin-bottom: 20px; }
         .highlight { color: #d35400; font-weight: bold; }
@@ -57,22 +57,25 @@
             justify-content: center; align-items: center; height: 100%; 
         }
         .split-box { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 60px; /* 간격 넓힘 */
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px; 
             height: 100%; align-items: center; 
         }
-        /* 이미지/영상 래퍼 스타일 수정 */
+        
+        /* 5. 미디어 래퍼 (영상 직접 재생) */
+        .media-group {
+            display: flex; flex-direction: column; gap: 10px; width: 100%;
+        }
         .media-wrapper { 
-            width: 100%; height: 480px; border-radius: 24px; 
+            width: 100%; height: 380px; border-radius: 20px; 
             overflow: hidden; background: #000; border: 2px solid #ddd; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             position: relative;
         }
         .media-wrapper iframe { 
             width: 100%; height: 100%; border: none; 
-            position: absolute; top: 0; left: 0;
         }
 
-        /* 5. 버튼 스타일 (터치 영역 최적화) */
+        /* 6. 버튼 스타일 */
         .btn-start {
             background: #ff6b6b; color: white; border: none;
             padding: 20px 80px; font-size: 40px; font-family: 'Jua', sans-serif;
@@ -104,7 +107,7 @@
         }
         .admin-reset-btn:active { background-color: #bdc3c7; color: white; }
 
-        /* 6. 결과 리포트 스타일 */
+        /* 7. 결과 리포트 스타일 */
         .tab-menu { display: flex; gap: 15px; justify-content: center; margin-bottom: 25px; }
         .tab-btn {
             padding: 15px 50px; font-size: 26px; font-family: 'Jua', sans-serif;
@@ -116,7 +119,6 @@
         .report-content { 
             flex: 1; border: 3px solid #ffaa00; border-radius: 24px; padding: 40px; 
             background: white; display: none; overflow-y: auto; 
-            /* 스크롤바 디자인 */
             scrollbar-width: thin; scrollbar-color: #ffaa00 #eee;
         }
         .report-content::-webkit-scrollbar { width: 8px; }
@@ -130,7 +132,7 @@
         }
         .score-num { font-size: 64px; font-family: 'Jua', sans-serif; color: #d35400; line-height: 1; }
 
-        /* 안전/인지 보고서 그림 카드 스타일 (격자 정렬) */
+        /* 안전/인지 보고서 그림 카드 스타일 */
         .safety-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;
             margin-top: 15px; margin-bottom: 30px;
@@ -143,7 +145,6 @@
             position: relative; overflow: hidden; height: 100%;
         }
         
-        /* 카드 뱃지 */
         .card-badge {
             position: absolute; top: 12px; left: 12px;
             font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 30px;
@@ -171,7 +172,7 @@
         .progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: #eee; }
         .progress-fill { height: 100%; background: #27ae60; width: 0%; transition: width 0.3s; }
 
-        /* 숫자 패드 스타일 (Q6) - 중앙 정렬 최적화 */
+        /* 숫자 패드 */
         .date-display {
             background: #fff; border: 3px solid #ccc; border-radius: 15px;
             padding: 10px; width: 100%; max-width: 360px;
@@ -206,7 +207,7 @@
         </div>
     </div>
 
-    <!-- 2. Q1: 신호등 (집행기능) - 영상 삽입 -->
+    <!-- 2. Q1: 신호등 (집행기능) - 네이버 영상 직접 삽입 -->
     <div class="slide-container" id="page-q1">
         <div class="split-box">
             <div>
@@ -215,22 +216,23 @@
                 <button class="btn-option btn-action" onclick="answer(1, 10)"><i class="fa-solid fa-hand"></i>② 멈추고 다음 신호를 기다린다</button>
                 <button class="btn-option btn-action" onclick="answer(1, 3)"><i class="fa-solid fa-person-walking"></i>③ 천천히 걸어서 건넌다</button>
             </div>
-            <div class="media-wrapper">
-                <!-- 
-                    [TIP] 여기에 '신호등 점멸' 영상 링크를 넣으세요 
-                    현재: 교통안전 예시 영상 (자동재생, 음소거, 반복)
-                -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <!-- 네이버 영상 링크 적용 -->
+                    <iframe src="https://naver.me/F16SH5nq" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Q2: 야간 보행 (시공간/시인성) - 영상 삽입 -->
+    <!-- 3. Q2: 야간 보행 -->
     <div class="slide-container" id="page-q2">
         <div class="split-box">
-            <div class="media-wrapper">
-                <!-- [TIP] 여기에 '야간 보행' 영상 링크를 넣으세요 -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <!-- 유튜브 직접 삽입 (playsinline=1 필수) -->
+                    <iframe src="https://www.youtube.com/embed/SNFpQjgokSM?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                </div>
             </div>
             <div>
                 <h2>Q2. <span style="color:#ff6b6b;">밤에 외출할 때</span><br>가장 안전한 옷차림은?</h2>
@@ -241,7 +243,7 @@
         </div>
     </div>
 
-    <!-- 4. Q3: 버스 하차 (주의력) - 영상 삽입 -->
+    <!-- 4. Q3: 버스 하차 -->
     <div class="slide-container" id="page-q3">
         <div class="split-box">
             <div>
@@ -250,19 +252,21 @@
                 <button class="btn-option btn-action" onclick="answer(3, 0)"><i class="fa-solid fa-person-falling"></i>② 미리 문 앞으로 걸어 나간다</button>
                 <button class="btn-option btn-action" onclick="answer(3, 5)"><i class="fa-solid fa-hands-holding-circle"></i>③ 손잡이를 꼭 잡고 기다린다</button>
             </div>
-            <div class="media-wrapper">
-                <!-- [TIP] 여기에 '버스 하차' 영상 링크를 넣으세요 -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <iframe src="https://www.youtube.com/embed/TQ0MmKOPVn8?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 5. Q4: 무단횡단 (판단력/지남력) - 영상 삽입 -->
+    <!-- 5. Q4: 무단횡단 -->
     <div class="slide-container" id="page-q4">
         <div class="split-box">
-            <div class="media-wrapper">
-                <!-- [TIP] 여기에 '무단횡단 위험' 영상 링크를 넣으세요 -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <iframe src="https://www.youtube.com/embed/gg8lMb-WSpg?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                </div>
             </div>
             <div>
                 <h2>Q4. 횡단보도가 없는 곳에서<br>길을 건너야 한다면?</h2>
@@ -273,7 +277,7 @@
         </div>
     </div>
 
-    <!-- 6. Q5: 골목길 (기억력/규칙) - 영상 삽입 -->
+    <!-- 6. Q5: 골목길 -->
     <div class="slide-container" id="page-q5">
         <div class="split-box">
             <div>
@@ -282,14 +286,15 @@
                 <button class="btn-option btn-action" onclick="answer(5, 10)"><i class="fa-solid fa-car-side"></i>② 차와 마주 보고 가장자리로</button>
                 <button class="btn-option btn-action" onclick="answer(5, 5)"><i class="fa-solid fa-person-walking"></i>③ 차를 등지고 가장자리로</button>
             </div>
-            <div class="media-wrapper">
-                <!-- [TIP] 여기에 '골목길 보행' 영상 링크를 넣으세요 -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <iframe src="https://www.youtube.com/embed/64JQUbItWiY?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 7. Q6: 오늘 날짜 (지남력 - 숫자 패드) -->
+    <!-- 7. Q6: 오늘 날짜 (지남력) -->
     <div class="slide-container" id="page-q6">
         <div class="center-box">
             <h2 style="margin-bottom: 25px; text-align: center;">Q6. 오늘은 몇 월 며칠 인가요?</h2>
@@ -316,12 +321,13 @@
         </div>
     </div>
 
-    <!-- 8. Q7: 인지안전 퀴즈 (계산/판단) - 영상 삽입 -->
+    <!-- 8. Q7: 인지안전 퀴즈 (계산/판단) -->
     <div class="slide-container" id="page-q7">
         <div class="split-box">
-            <div class="media-wrapper">
-                <!-- [TIP] 여기에 '신호등 카운트' 영상 링크를 넣으세요 -->
-                <iframe src="https://www.youtube.com/embed/zGbdJ4F3PXE?autoplay=1&mute=1&controls=0&loop=1&playlist=zGbdJ4F3PXE" allow="autoplay; encrypted-media"></iframe>
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <iframe src="https://www.youtube.com/embed/ZPMKuTK1pdQ?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                </div>
             </div>
             <div>
                 <h2>Q7. 보행 신호가 <span style="color:#e74c3c;">5초</span> 남았습니다.<br>횡단보도는 아직 절반도<br>못 건넜습니다. 어떻게 할까요?</h2>
@@ -332,7 +338,7 @@
         </div>
     </div>
 
-    <!-- 9. Q8: 학력 (기초 정보) -->
+    <!-- 9. Q8: 학력 -->
     <div class="slide-container" id="page-q8">
         <div class="center-box">
             <h2 style="text-align: center;">Q8. 어르신의 최종 학력을<br>선택해주세요.</h2>
@@ -346,7 +352,7 @@
         </div>
     </div>
 
-    <!-- 10. 결과 분석 중 -->
+    <!-- 10. 로딩 -->
     <div class="slide-container" id="page-loading">
         <div class="center-box">
             <i class="fa-solid fa-gear fa-spin" style="font-size: 80px; color: #ffaa00; margin-bottom: 30px;"></i>
@@ -354,9 +360,8 @@
         </div>
     </div>
 
-    <!-- 11. 최종 결과 보고서 -->
+    <!-- 11. 결과 보고서 -->
     <div class="slide-container" id="page-result">
-        <!-- 관리자용 리셋 버튼 (우측 상단) -->
         <button class="admin-reset-btn" onclick="resetQuiz()" title="처음으로 돌아가기 (관리자용)">
             <i class="fa-solid fa-rotate-right"></i>
         </button>
@@ -371,7 +376,6 @@
                 <button class="tab-btn" onclick="switchTab('cognitive')">🧠 인지 보고서</button>
             </div>
 
-            <!-- 안전 보고서 내용 (영상 추천 삭제, 텍스트 분석 집중) -->
             <div id="report-safety" class="report-content show">
                 <div class="score-box">
                     <span style="font-size: 28px; color:#555;">나의 교통안전 점수</span><br>
@@ -380,33 +384,24 @@
                 
                 <h3 style="text-align: center; margin-bottom: 15px; color: #d35400;">👇 나를 위한 안전 그림 카드 👇</h3>
                 
-                <!-- 그림 카드 그리드 (동적 생성) -->
-                <div id="safety-visual-grid" class="safety-grid">
-                    <!-- 여기에 그림 카드가 들어갑니다 -->
-                </div>
+                <div id="safety-visual-grid" class="safety-grid"></div>
 
-                <!-- 데이터 분석 텍스트 영역 -->
                 <div class="analysis-box">
                     <div class="analysis-title"><i class="fa-solid fa-chart-line"></i> 데이터 분석 리포트</div>
-                    <div id="safety-analysis-text" class="analysis-text">
-                        <!-- JS로 내용이 채워집니다 -->
-                    </div>
+                    <div id="safety-analysis-text" class="analysis-text"></div>
                 </div>
             </div>
 
-            <!-- 인지 보고서 내용 -->
             <div id="report-cognitive" class="report-content">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h3>🧠 인지 기능 분석 결과</h3>
                     <p style="font-size: 22px; color: #666;">영역별 점수를 바탕으로 분석한 결과입니다.</p>
                 </div>
 
-                <!-- 4개 이상 위험 시 경고 메시지 표시 영역 -->
                 <div id="cognitive-warning"></div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-bottom: 40px; padding: 0 20px;">
                     <div>
-                        <!-- 차트 왼쪽 -->
                         <div class="chart-row">
                             <div class="chart-label">지남력<br><span style="font-size:16px; color:#999;">(시간/장소)</span></div>
                             <div class="chart-bar-bg"><div class="chart-bar" id="bar-orientation" style="width:0%"></div></div>
@@ -424,7 +419,6 @@
                         </div>
                     </div>
                     <div>
-                        <!-- 차트 오른쪽 -->
                          <div class="chart-row">
                             <div class="chart-label">판단력<br><span style="font-size:16px; color:#999;">(의사결정)</span></div>
                             <div class="chart-bar-bg"><div class="chart-bar" id="bar-executive" style="width:0%"></div></div>
@@ -438,15 +432,9 @@
                     </div>
                 </div>
 
-                <!-- 인지 건강 솔루션 카드 영역 -->
                 <h3 style="text-align: center; margin-bottom: 20px; color: #27ae60;">👇 인지 건강을 위한 추천 활동 👇</h3>
-                <div id="cognitive-visual-grid" class="safety-grid">
-                    <!-- JS로 그림 카드가 들어갑니다 -->
-                </div>
-
+                <div id="cognitive-visual-grid" class="safety-grid"></div>
             </div>
-
-            <!-- 하단 버튼 제거됨 -->
         </div>
     </div>
 
@@ -455,22 +443,19 @@
         let currentScore = 0;
         let answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0 };
         const totalSlides = 8;
-        
-        // 행동 데이터 추적 변수
-        let startTime = 0; // 슬라이드 시작 시간
-        let slowCount = 0; // 5초 이상 걸린 횟수
-        let missClickCount = 0; // 공백 터치 횟수
-        let multiTapCount = 0; // 버튼 연타 횟수
-        let lastTapTime = 0; // 마지막 탭 시간 (더블탭 감지용)
+        let startTime = 0; 
+        let slowCount = 0; 
+        let missClickCount = 0; 
+        let multiTapCount = 0; 
+        let lastTapTime = 0; 
+        let dateInput = ""; 
 
-        // 날짜 입력용 변수 (Q6)
-        let dateInput = ""; // 입력된 숫자 스트링
+        // 비디오 로드 함수 제거 (정적 iframe 사용)
 
-        // 시작 버튼
         function startQuiz() {
             resetVariables();
             goToSlide('q1');
-            startTouchTracker(); // 터치 추적 시작
+            startTouchTracker(); 
         }
 
         function resetVariables() {
@@ -482,28 +467,21 @@
             dateInput = "";
             document.getElementById('display-month').innerText = "";
             document.getElementById('display-day').innerText = "";
-            // UI 초기화
             document.getElementById('cognitive-warning').innerHTML = "";
             document.getElementById('cognitive-visual-grid').innerHTML = "";
-            // 리스트 초기화
             document.getElementById('safety-visual-grid').innerHTML = "";
             document.getElementById('safety-analysis-text').innerHTML = "";
         }
 
-        // 터치 추적기 (body 전체)
         function startTouchTracker() {
             document.body.addEventListener('click', function(e) {
-                // 1. 공백 터치 감지
-                // 버튼이나 입력창이 아닌 곳을 터치했는지 확인
-                if (!e.target.closest('.btn-action')) {
-                    // console.log("Miss click!");
+                // 버튼이나 미디어 래퍼가 아니면 미스 클릭으로 간주
+                if (!e.target.closest('.btn-action') && !e.target.closest('.media-wrapper') && !e.target.closest('.num-btn')) {
                     missClickCount++;
                 }
-
-                // 2. 버튼 연타 감지 (같은 버튼을 빠르게 누르는 경우)
                 if (e.target.closest('.btn-action')) {
                     const currentTime = new Date().getTime();
-                    if (currentTime - lastTapTime < 500) { // 0.5초 이내 재터치
+                    if (currentTime - lastTapTime < 500) { 
                         multiTapCount++;
                     }
                     lastTapTime = currentTime;
@@ -511,17 +489,12 @@
             });
         }
 
-        // 슬라이드 이동 함수
         function goToSlide(id) {
-            // 시간 측정 시작 (새 슬라이드 진입 시)
             startTime = new Date().getTime();
-
-            // 모든 슬라이드 숨김 & 목표 표시
             document.querySelectorAll('.slide-container').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('page-' + id);
             if (target) target.classList.add('active');
             
-            // 진행바 업데이트
             let progress = 0;
             if(id.startsWith('q')) {
                 let num = parseInt(id.substring(1));
@@ -532,17 +505,15 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
-        // 정답 처리 함수
         function answer(qNum, score) {
-            // 반응 시간 체크
             const endTime = new Date().getTime();
-            const duration = (endTime - startTime) / 1000; // 초 단위
+            const duration = (endTime - startTime) / 1000; 
             if (duration > 5) {
                 slowCount++;
             }
 
             answers['q' + qNum] = score;
-            if (qNum !== 8) { // 학력(Q8)은 점수에 미반영 혹은 별도처리
+            if (qNum !== 8) { 
                 currentScore += score;
             }
             
@@ -558,56 +529,30 @@
             }
         }
 
-        // --- Q6: 날짜 입력 로직 (스마트 입력 개선) ---
         function inputDate(num) {
             if (dateInput.length >= 4) return;
-
             let len = dateInput.length;
-
-            // 1. 월 입력 단계
             if (len === 0) {
-                if (num === 1) {
-                    dateInput = "1"; // '1'만 입력 시 01로 보이지만, 변경 가능 상태
-                } else if (num >= 2) {
-                    dateInput = "0" + num; // 2~9는 자동 0 붙임
-                } else {
-                    dateInput = "0"; // 0
-                }
-            } 
-            else if (len === 1) {
-                // 이전 입력이 '1'이었을 경우 (특수 케이스)
+                if (num === 1) dateInput = "1";
+                else if (num >= 2) dateInput = "0" + num;
+                else dateInput = "0";
+            } else if (len === 1) {
                 if (dateInput === "1") {
-                    if (num <= 2) {
-                        // 10, 11, 12월 입력
-                        dateInput += num;
-                    } else {
-                        // 01월로 확정하고 Day 입력 시작
-                        // 현재 입력값 num은 일(Day)의 첫 자리로
+                    if (num <= 2) dateInput += num;
+                    else {
                         let fixedMonth = "01";
-                        if (num >= 4) {
-                            dateInput = fixedMonth + "0" + num;
-                        } else {
-                            dateInput = fixedMonth + num;
-                        }
+                        if (num >= 4) dateInput = fixedMonth + "0" + num;
+                        else dateInput = fixedMonth + num;
                     }
-                } 
-                // 이전 입력이 '0'이었을 경우
-                else if (dateInput === "0") {
+                } else if (dateInput === "0") {
                     dateInput += num;
                 }
-            }
-            // 2. 일 입력 단계 (월이 2자리 채워진 후)
-            else if (len === 2) {
-                if (num >= 4) {
-                    dateInput += "0" + num;
-                } else {
-                    dateInput += num;
-                }
-            }
-            else if (len === 3) {
+            } else if (len === 2) {
+                if (num >= 4) dateInput += "0" + num;
+                else dateInput += num;
+            } else if (len === 3) {
                 dateInput += num;
             }
-
             updateDateDisplay();
         }
 
@@ -619,232 +564,112 @@
         function updateDateDisplay() {
             let month = "";
             let day = "";
-
-            if (dateInput === "1") {
-                month = "01"; // '1'만 입력해도 '01'로 보여줌
-            } else if (dateInput.length >= 2) {
+            if (dateInput === "1") month = "01";
+            else if (dateInput.length >= 2) {
                 month = dateInput.substring(0, 2);
-                if (dateInput.length > 2) {
-                    day = dateInput.substring(2);
-                }
+                if (dateInput.length > 2) day = dateInput.substring(2);
             } else {
                 month = dateInput;
             }
-
             document.getElementById('display-month').innerText = month;
             document.getElementById('display-day').innerText = day;
         }
 
         function submitDate() {
-            // 정답 체크 로직 (실제 오늘 날짜와 비교)
             const today = new Date();
             const currentMonth = today.getMonth() + 1; 
             const currentDay = today.getDate();
-            
-            // 입력 보정: "1" 상태에서 확인 누르면 "01"월로 처리
             let finalInput = dateInput;
             if (finalInput === "1") finalInput = "01";
-
-            let inputM = 0;
-            let inputD = 0;
-
+            let inputM = 0, inputD = 0;
             if (finalInput.length >= 2) inputM = parseInt(finalInput.substring(0, 2));
             if (finalInput.length >= 3) inputD = parseInt(finalInput.substring(2));
 
-            // 반응 시간 체크
             const endTime = new Date().getTime();
-            if ((endTime - startTime) / 1000 > 8) { // 날짜 입력은 좀 더 여유있게 (8초)
-                slowCount++; 
-            } else if ((endTime - startTime) / 1000 > 5) {
-               // 5초 초과는 일반 카운트
-               slowCount++;
-            }
+            if ((endTime - startTime) / 1000 > 8) slowCount++; 
+            else if ((endTime - startTime) / 1000 > 5) slowCount++;
 
             let score = 0;
             if (inputM === currentMonth && inputD === currentDay) score = 10;
             else if (inputM === currentMonth) score = 5; 
-            
             answers['q6'] = score;
             currentScore += score;
             nextStep(6);
         }
-        // -------------------------
 
-        // 결과 계산 및 표시 함수
         function showResult() {
             goToSlide('result');
-            
-            // 1. 안전 점수 계산
             let safetyTotal = answers.q1 + answers.q2 + answers.q3 + answers.q4 + answers.q5 + answers.q7;
             let finalSafetyScore = Math.round((safetyTotal / 60) * 100);
-            
             document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
 
-            // -----------------------------------------------------------
-            // [데이터 기반 시각화] 안전 보고서 그림 카드 및 분석 생성 (수정된 로직)
-            // -----------------------------------------------------------
             const visualGrid = document.getElementById('safety-visual-grid');
             let cardsHTML = "";
-            let analysisText = ""; // 데이터 분석 설명 텍스트
+            let analysisText = ""; 
             let weaknessFound = false;
 
-            // 1. 오프닝 멘트 (종합 점수 기반)
-            if (finalSafetyScore >= 90) {
-                analysisText = "<strong>[종합 평가: 최우수]</strong><br>안전 지식이 매우 뛰어납니다. ";
-            } else if (finalSafetyScore >= 70) {
-                analysisText = "<strong>[종합 평가: 우수]</strong><br>대체로 안전하시지만, 몇 가지 <strong>취약점</strong>이 발견되었습니다.<br><br>";
-            } else {
-                analysisText = "<strong>[종합 평가: 주의]</strong><br>사고 위험이 높은 습관이 보입니다. 아래 내용을 꼭 확인해주세요.<br><br>";
-            }
+            if (finalSafetyScore >= 90) analysisText = "<strong>[종합 평가: 최우수]</strong><br>안전 지식이 매우 뛰어납니다. ";
+            else if (finalSafetyScore >= 70) analysisText = "<strong>[종합 평가: 우수]</strong><br>대체로 안전하시지만, 몇 가지 <strong>취약점</strong>이 발견되었습니다.<br><br>";
+            else analysisText = "<strong>[종합 평가: 주의]</strong><br>사고 위험이 높은 습관이 보입니다. 아래 내용을 꼭 확인해주세요.<br><br>";
 
-            // 2. 세부 분석 (문항별 분리)
-            
-            // [Q1] 신호등 습관 (깜빡일 때)
             if (answers.q1 < 10) {
-                cardsHTML += `
-                <div class="safety-card">
-                    <span class="card-badge correction">복습하기</span>
-                    <i class="fa-solid fa-traffic-light" style="color:#e74c3c;"></i>
-                    <p>초록 불이 깜빡이면<br>멈추세요</p>
-                    <div class="desc">지금 건너기엔 늦었습니다.</div>
-                </div>`;
+                cardsHTML += `<div class="safety-card"><span class="card-badge correction">복습하기</span><i class="fa-solid fa-traffic-light" style="color:#e74c3c;"></i><p>초록 불이 깜빡이면<br>멈추세요</p><div class="desc">지금 건너기엔 늦었습니다.</div></div>`;
                 analysisText += "• <strong>신호등 습관:</strong> 신호가 깜빡일 때 무리하게 진입하는 경향이 있습니다. 이는 보행자 사고의 주원인입니다.<br>";
                 weaknessFound = true;
             }
-
-            // [Q4, Q7] 횡단 판단력 (무단횡단/시간부족)
             if (answers.q4 < 10 || answers.q7 < 10) {
-                cardsHTML += `
-                <div class="safety-card">
-                    <span class="card-badge activity">실천하기</span>
-                    <i class="fa-solid fa-hand" style="color:#3498db;"></i>
-                    <p>횡단보도 찾기 &<br>다음 신호 기다리기</p>
-                    <div class="desc">무단횡단은 절대 안 됩니다.</div>
-                </div>`;
+                cardsHTML += `<div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-hand" style="color:#3498db;"></i><p>횡단보도 찾기 &<br>다음 신호 기다리기</p><div class="desc">무단횡단은 절대 안 됩니다.</div></div>`;
                 analysisText += "• <strong>횡단 판단력:</strong> 횡단보도가 아니거나 시간이 부족할 때 '건널 수 있다'고 판단하는 것은 매우 위험합니다. 조금 늦더라도 안전한 방법을 선택하세요.<br>";
                 weaknessFound = true;
             }
-
-            // [Q2] 야간 보행 (시인성)
             if (answers.q2 < 10) {
-                cardsHTML += `
-                <div class="safety-card">
-                    <span class="card-badge correction">복습하기</span>
-                    <i class="fa-solid fa-shirt" style="color:#333;"></i>
-                    <p>밤에 검은 옷은<br>안 돼요</p>
-                    <div class="desc">운전자 눈에 보이지 않아요.</div>
-                </div>
-                <div class="safety-card">
-                    <span class="card-badge activity">실천하기</span>
-                    <i class="fa-solid fa-vest-patches" style="color:#f1c40f;"></i>
-                    <p>밝은 옷과<br>야광 조끼 입기</p>
-                    <div class="desc">밤에는 나를 보여주는 것이 생명입니다.</div>
-                </div>`;
+                cardsHTML += `<div class="safety-card"><span class="card-badge correction">복습하기</span><i class="fa-solid fa-shirt" style="color:#333;"></i><p>밤에 검은 옷은<br>안 돼요</p><div class="desc">운전자 눈에 보이지 않아요.</div></div><div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-vest-patches" style="color:#f1c40f;"></i><p>밝은 옷과<br>야광 조끼 입기</p><div class="desc">밤에는 나를 보여주는 것이 생명입니다.</div></div>`;
                 analysisText += "• <strong>야간 시인성:</strong> 어두운 옷은 밤길 사고를 유발합니다. 외출 시 밝은 옷을 입는 것만으로도 사고를 크게 예방할 수 있습니다.<br>";
                 weaknessFound = true;
             }
-
-            // [Q3] 버스 안전
             if (answers.q3 < 10) {
-                cardsHTML += `
-                <div class="safety-card">
-                    <span class="card-badge correction">복습하기</span>
-                    <i class="fa-solid fa-person-falling" style="color:#e74c3c;"></i>
-                    <p>차 안에서<br>미리 일어서지 마세요</p>
-                    <div class="desc">넘어지면 크게 다칩니다.</div>
-                </div>`;
+                cardsHTML += `<div class="safety-card"><span class="card-badge correction">복습하기</span><i class="fa-solid fa-person-falling" style="color:#e74c3c;"></i><p>차 안에서<br>미리 일어서지 마세요</p><div class="desc">넘어지면 크게 다칩니다.</div></div>`;
                 analysisText += "• <strong>대중교통:</strong> 버스 정차 전 이동은 낙상 사고의 위험이 큽니다. 기사님이 기다려 드리니 천천히 하차하세요.<br>";
                 weaknessFound = true;
             }
-
-            // [Q5] 골목길 보행
             if (answers.q5 < 10) {
-                cardsHTML += `
-                <div class="safety-card">
-                    <span class="card-badge activity">실천하기</span>
-                    <i class="fa-solid fa-car-side" style="color:#3498db;"></i>
-                    <p>차를 마주 보고<br>가장자리로 걷기</p>
-                    <div class="desc">다가오는 차를 눈으로 확인하세요.</div>
-                </div>`;
+                cardsHTML += `<div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-car-side" style="color:#3498db;"></i><p>차를 마주 보고<br>가장자리로 걷기</p><div class="desc">다가오는 차를 눈으로 확인하세요.</div></div>`;
                 analysisText += "• <strong>보행 방법:</strong> 차를 등지고 걸으면 뒤에서 오는 위험을 감지할 수 없습니다. 항상 차와 마주 보는 습관이 중요합니다.<br>";
                 weaknessFound = true;
             }
 
-            // 점수가 완벽하거나 특별한 약점이 없는 경우
             if (!weaknessFound) {
                 if (finalSafetyScore >= 90) {
-                    cardsHTML = `
-                    <div class="safety-card" style="grid-column: span 3; border-color: #27ae60;">
-                        <i class="fa-solid fa-thumbs-up" style="color:#27ae60;"></i>
-                        <p>안전 점수 최고!<br>완벽합니다</p>
-                        <div class="desc">지금 알고 계신 안전 수칙을<br>친구들에게도 알려주세요.</div>
-                    </div>`;
+                    cardsHTML = `<div class="safety-card" style="grid-column: span 3; border-color: #27ae60;"><i class="fa-solid fa-thumbs-up" style="color:#27ae60;"></i><p>안전 점수 최고!<br>완벽합니다</p><div class="desc">지금 알고 계신 안전 수칙을<br>친구들에게도 알려주세요.</div></div>`;
                     analysisText += "특별히 교정할 행동이 없으며, 지금처럼 안전한 습관을 유지하시면 됩니다.";
                 } else {
-                    cardsHTML += `
-                    <div class="safety-card">
-                        <i class="fa-solid fa-shield-heart" style="color:#e67e22;"></i>
-                        <p>오늘도<br>안전하게<br>다니세요</p>
-                        <div class="desc">안전은 매일 지키는 약속입니다.</div>
-                    </div>`;
+                    cardsHTML += `<div class="safety-card"><i class="fa-solid fa-shield-heart" style="color:#e67e22;"></i><p>오늘도<br>안전하게<br>다니세요</p><div class="desc">안전은 매일 지키는 약속입니다.</div></div>`;
                     analysisText += "전반적으로 양호하나, 실제 상황에서도 이 안전 수칙들을 잊지 말고 실천해 주세요.";
                 }
             }
 
             visualGrid.innerHTML = cardsHTML;
             document.getElementById('safety-analysis-text').innerHTML = analysisText;
-            // -----------------------------------------------------------
 
-
-            // 2. 인지 점수 계산
             let cognitive = {
-                orientation: Math.min(100, (answers.q6 * 10)), // 지남력 (날짜)
-                memory: Math.min(100, (answers.q1 * 5 + answers.q5 * 5) + 20), // 기억력 (규칙)
-                attention: Math.min(100, (answers.q3 * 10) + 20), // 주의력 (버스)
-                visuospatial: Math.min(100, (answers.q2 * 10) + 20), // 시공간 (야간)
-                executive: Math.min(100, (answers.q1 * 5 + answers.q4 * 5 + answers.q7 * 5) + 10), // 판단력 (신호/횡단)
+                orientation: Math.min(100, (answers.q6 * 10)), 
+                memory: Math.min(100, (answers.q1 * 5 + answers.q5 * 5) + 20), 
+                attention: Math.min(100, (answers.q3 * 10) + 20), 
+                visuospatial: Math.min(100, (answers.q2 * 10) + 20), 
+                executive: Math.min(100, (answers.q1 * 5 + answers.q4 * 5 + answers.q7 * 5) + 10), 
             };
 
-            // 행동 데이터 표시 생략 (사용자 요청)
-
-            // --- 신규 로직: 인지 솔루션 그림 카드 생성 ---
             const cogVisualGrid = document.getElementById('cognitive-visual-grid');
             let cogCardsHTML = "";
             let lowScoreCount = 0;
             let cogIssueFound = false;
 
-            // 각 영역별 솔루션 매핑 (아이콘 + 제목 + 설명)
             const cogSolutions = {
-                orientation: {
-                    icon: 'fa-calendar-check',
-                    color: '#e67e22',
-                    title: '매일 달력 보기',
-                    desc: '오늘 날짜와 요일을<br>소리 내어 읽어보세요.'
-                },
-                memory: {
-                    icon: 'fa-note-sticky',
-                    color: '#f1c40f',
-                    title: '메모 습관 갖기',
-                    desc: '중요한 약속이나 할 일은<br>꼭 적어두세요.'
-                },
-                attention: {
-                    icon: 'fa-eye',
-                    color: '#3498db',
-                    title: '한 번에 하나씩',
-                    desc: '걸을 때는 걷기만!<br>딴생각은 위험해요.'
-                },
-                visuospatial: {
-                    icon: 'fa-shoe-prints',
-                    color: '#9b59b6',
-                    title: '발밑 조심하기',
-                    desc: '계단이나 턱을 지날 때<br>천천히 확인하세요.'
-                },
-                executive: {
-                    icon: 'fa-traffic-light',
-                    color: '#e74c3c',
-                    title: '침착하게 판단',
-                    desc: '급할수록 돌아가세요.<br>신호는 여유 있게!'
-                }
+                orientation: { icon: 'fa-calendar-check', color: '#e67e22', title: '매일 달력 보기', desc: '오늘 날짜와 요일을<br>소리 내어 읽어보세요.' },
+                memory: { icon: 'fa-note-sticky', color: '#f1c40f', title: '메모 습관 갖기', desc: '중요한 약속이나 할 일은<br>꼭 적어두세요.' },
+                attention: { icon: 'fa-eye', color: '#3498db', title: '한 번에 하나씩', desc: '걸을 때는 걷기만!<br>딴생각은 위험해요.' },
+                visuospatial: { icon: 'fa-shoe-prints', color: '#9b59b6', title: '발밑 조심하기', desc: '계단이나 턱을 지날 때<br>천천히 확인하세요.' },
+                executive: { icon: 'fa-traffic-light', color: '#e74c3c', title: '침착하게 판단', desc: '급할수록 돌아가세요.<br>신호는 여유 있게!' }
             };
 
             for (const [key, score] of Object.entries(cognitive)) {
@@ -852,46 +677,22 @@
                     lowScoreCount++;
                     cogIssueFound = true;
                     const sol = cogSolutions[key];
-                    cogCardsHTML += `
-                    <div class="safety-card">
-                        <span class="card-badge activity">뇌 건강 습관</span>
-                        <i class="fa-solid ${sol.icon}" style="color:${sol.color};"></i>
-                        <p>${sol.title}</p>
-                        <div class="desc">${sol.desc}</div>
-                    </div>`;
+                    cogCardsHTML += `<div class="safety-card"><span class="card-badge activity">뇌 건강 습관</span><i class="fa-solid ${sol.icon}" style="color:${sol.color};"></i><p>${sol.title}</p><div class="desc">${sol.desc}</div></div>`;
                 }
             }
 
             if (!cogIssueFound) {
-                cogCardsHTML = `
-                <div class="safety-card" style="grid-column: span 3; border-color: #27ae60;">
-                    <i class="fa-solid fa-brain" style="color:#27ae60;"></i>
-                    <p>인지 건강<br>매우 튼튼!</p>
-                    <div class="desc">지금처럼 활기차게<br>생활하시면 됩니다.</div>
-                </div>`;
+                cogCardsHTML = `<div class="safety-card" style="grid-column: span 3; border-color: #27ae60;"><i class="fa-solid fa-brain" style="color:#27ae60;"></i><p>인지 건강<br>매우 튼튼!</p><div class="desc">지금처럼 활기차게<br>생활하시면 됩니다.</div></div>`;
             }
 
-            // 4개 이상 시 강력 경고 메시지
             let warningMsg = "";
             if (lowScoreCount >= 4) {
-                warningMsg = `<div style="background-color: #ffebee; border: 3px solid #e53935; padding: 20px; border-radius: 15px; margin-bottom: 30px; animation: pulse 2s infinite;">
-                    <h3 style="color: #c62828; margin: 0 0 10px 0; font-size: 28px;"><i class="fa-solid fa-triangle-exclamation"></i> 전문 상담 권장</h3>
-                    <p style="margin: 0; font-size: 22px; color: #b71c1c; font-weight: bold;">
-                        4개 이상의 영역에서 기능 저하가 의심됩니다.<br>
-                        가까운 <span style="text-decoration: underline;">치매안심센터</span>나 병원을 방문하여<br>
-                        정밀 검사를 받아보시기를 권해 드립니다.
-                    </p>
-                </div>
-                <style>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }</style>
-                `;
+                warningMsg = `<div style="background-color: #ffebee; border: 3px solid #e53935; padding: 20px; border-radius: 15px; margin-bottom: 30px; animation: pulse 2s infinite;"><h3 style="color: #c62828; margin: 0 0 10px 0; font-size: 28px;"><i class="fa-solid fa-triangle-exclamation"></i> 전문 상담 권장</h3><p style="margin: 0; font-size: 22px; color: #b71c1c; font-weight: bold;">4개 이상의 영역에서 기능 저하가 의심됩니다.<br>가까운 <span style="text-decoration: underline;">치매안심센터</span>나 병원을 방문하여<br>정밀 검사를 받아보시기를 권해 드립니다.</p></div><style>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }</style>`;
             }
 
-            // DOM 삽입
             document.getElementById('cognitive-warning').innerHTML = warningMsg;
             cogVisualGrid.innerHTML = cogCardsHTML;
-            // ---------------------------------------------
 
-            // 차트 애니메이션
             setTimeout(() => {
                 updateChart('orientation', cognitive.orientation);
                 updateChart('memory', cognitive.memory);
@@ -912,13 +713,11 @@
 
         function resetQuiz() {
             resetVariables();
-            // 차트 초기화
             const charts = ['orientation', 'memory', 'attention', 'visuospatial', 'executive'];
             charts.forEach(id => {
                 document.getElementById('bar-' + id).style.width = '0%';
                 document.getElementById('val-' + id).innerText = '0';
             });
-            // 탭 초기화
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-btn')[0].classList.add('active'); 
             document.querySelectorAll('.report-content').forEach(content => content.classList.remove('show'));
