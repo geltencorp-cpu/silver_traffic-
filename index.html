@@ -60,23 +60,8 @@
             display: grid; grid-template-columns: 1fr 1fr; gap: 60px; 
             height: 100%; align-items: center; 
         }
-
-        /* 메인 화면 이미지 스타일 (New) */
-        .main-image-wrapper {
-            width: 500px; height: 280px;
-            border-radius: 30px;
-            overflow: hidden;
-            margin-bottom: 30px;
-            border: 5px solid #fff;
-            box-shadow: 0 10px 25px rgba(211, 84, 0, 0.2);
-        }
-        .main-image-wrapper img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.3s;
-        }
-        .main-image-wrapper:hover img { transform: scale(1.05); }
         
-        /* 5. 미디어 래퍼 (영상 직접 삽입 방식) */
+        /* 5. 미디어 래퍼 */
         .media-group {
             display: flex; flex-direction: column; gap: 10px; width: 100%;
         }
@@ -86,6 +71,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             position: relative;
         }
+        /* Iframe은 JS로 동적 생성됨 */
         .media-wrapper iframe { 
             width: 100%; height: 100%; border: none; 
         }
@@ -95,7 +81,7 @@
             background: #ff6b6b; color: white; border: none;
             padding: 20px 80px; font-size: 40px; font-family: 'Jua', sans-serif;
             border-radius: 60px; cursor: pointer;
-            box-shadow: 0 6px 0 #c0392b; transition: transform 0.1s; margin-top: 20px;
+            box-shadow: 0 6px 0 #c0392b; transition: transform 0.1s; margin-top: 40px;
         }
         .btn-start:active { transform: translateY(6px); box-shadow: none; }
 
@@ -215,9 +201,9 @@
     <!-- 1. 시작 화면 -->
     <div class="slide-container active" id="page-start">
         <div class="center-box">
-            <!-- 기존 아이콘 대신 이미지로 교체 -->
-            <div class="main-image-wrapper">
-                <img src="https://images.unsplash.com/photo-1581579438747-104c53d7fbc4?q=80&w=800&auto=format&fit=crop" alt="활짝 웃는 어르신들">
+            <!-- 메인 이미지 제거하고 아이콘으로 대체 (요청사항 반영) -->
+            <div style="font-size: 150px; color: #ffaa00; margin-bottom: 40px;">
+                <i class="fa-solid fa-traffic-light"></i>
             </div>
 
             <h1>어르신 교통안전 <span class="highlight">및 인지능력 진단</span></h1>
@@ -226,7 +212,7 @@
         </div>
     </div>
 
-    <!-- 2. Q1: 신호등 (집행기능) - 네이버 영상 직접 삽입 -->
+    <!-- 2. Q1: 신호등 -->
     <div class="slide-container" id="page-q1">
         <div class="split-box">
             <div>
@@ -236,9 +222,8 @@
                 <button class="btn-option btn-action" onclick="answer(1, 3)"><i class="fa-solid fa-person-walking"></i>③ 천천히 걸어서 건넌다</button>
             </div>
             <div class="media-group">
-                <div class="media-wrapper">
-                    <!-- 네이버 영상 링크 적용 -->
-                    <iframe src="https://naver.me/F16SH5nq" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q1">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
         </div>
@@ -248,9 +233,8 @@
     <div class="slide-container" id="page-q2">
         <div class="split-box">
             <div class="media-group">
-                <div class="media-wrapper">
-                    <!-- 유튜브 직접 삽입 (playsinline=1 필수) -->
-                    <iframe src="https://www.youtube.com/embed/SNFpQjgokSM?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q2">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
             <div>
@@ -272,8 +256,8 @@
                 <button class="btn-option btn-action" onclick="answer(3, 5)"><i class="fa-solid fa-hands-holding-circle"></i>③ 손잡이를 꼭 잡고 기다린다</button>
             </div>
             <div class="media-group">
-                <div class="media-wrapper">
-                    <iframe src="https://www.youtube.com/embed/TQ0MmKOPVn8?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q3">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
         </div>
@@ -283,8 +267,8 @@
     <div class="slide-container" id="page-q4">
         <div class="split-box">
             <div class="media-group">
-                <div class="media-wrapper">
-                    <iframe src="https://www.youtube.com/embed/gg8lMb-WSpg?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q4">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
             <div>
@@ -306,14 +290,14 @@
                 <button class="btn-option btn-action" onclick="answer(5, 5)"><i class="fa-solid fa-person-walking"></i>③ 차를 등지고 가장자리로</button>
             </div>
             <div class="media-group">
-                <div class="media-wrapper">
-                    <iframe src="https://www.youtube.com/embed/64JQUbItWiY?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q5">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 7. Q6: 오늘 날짜 (지남력) -->
+    <!-- 7. Q6: 오늘 날짜 -->
     <div class="slide-container" id="page-q6">
         <div class="center-box">
             <h2 style="margin-bottom: 25px; text-align: center;">Q6. 오늘은 몇 월 며칠 인가요?</h2>
@@ -340,12 +324,12 @@
         </div>
     </div>
 
-    <!-- 8. Q7: 인지안전 퀴즈 (계산/판단) -->
+    <!-- 8. Q7: 인지안전 퀴즈 -->
     <div class="slide-container" id="page-q7">
         <div class="split-box">
             <div class="media-group">
-                <div class="media-wrapper">
-                    <iframe src="https://www.youtube.com/embed/ZPMKuTK1pdQ?rel=0&modestbranding=1&playsinline=1" allowfullscreen></iframe>
+                <div class="media-wrapper" id="video-q7">
+                    <!-- JS로 영상 로드됨 -->
                 </div>
             </div>
             <div>
@@ -468,6 +452,16 @@
         let lastTapTime = 0; 
         let dateInput = ""; 
 
+        // 비디오 ID 매핑
+        const videoIds = {
+            q1: "fQqtMe2qCOo",
+            q2: "SNFpQjgokSM",
+            q3: "TQ0MmKOPVn8",
+            q4: "gg8lMb-WSpg",
+            q5: "64JQUbItWiY",
+            q7: "ZPMKuTK1pdQ"
+        };
+
         function startQuiz() {
             resetVariables();
             goToSlide('q1');
@@ -504,28 +498,29 @@
             });
         }
 
-        // [핵심 로직] 슬라이드 이동 시 iframe 제어 (중복 재생 방지 & 자동 재생)
         function goToSlide(id) {
             startTime = new Date().getTime();
             
-            // 1. 모든 슬라이드 숨김 및 영상 정지(src 제거)
-            document.querySelectorAll('.slide-container').forEach(el => {
-                el.classList.remove('active');
-                const iframe = el.querySelector('iframe');
-                if (iframe) {
-                    iframe.setAttribute('src', ''); // 영상 즉시 정지
-                }
+            // 모든 영상 제거 (소리 겹침 방지)
+            document.querySelectorAll('.media-wrapper').forEach(el => {
+                el.innerHTML = ''; 
             });
 
-            // 2. 타겟 슬라이드 활성화 및 영상 재생(data-src 주입)
+            document.querySelectorAll('.slide-container').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('page-' + id);
             if (target) {
                 target.classList.add('active');
                 
-                const iframe = target.querySelector('iframe');
-                if (iframe && iframe.dataset.src) {
-                    // GitHub Pages 등에서는 보안 정책에 따라 자동 재생이 될 수도 있음
-                    iframe.setAttribute('src', iframe.dataset.src);
+                // 해당 슬라이드에 영상이 있다면 재생 (새로 삽입)
+                if (videoIds[id]) {
+                    const wrapper = target.querySelector('.media-wrapper');
+                    if (wrapper) {
+                        const iframe = document.createElement('iframe');
+                        iframe.setAttribute('src', `https://www.youtube.com/embed/${videoIds[id]}?rel=0&modestbranding=1&playsinline=1`);
+                        iframe.setAttribute('allowfullscreen', '');
+                        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                        wrapper.appendChild(iframe);
+                    }
                 }
             }
             
