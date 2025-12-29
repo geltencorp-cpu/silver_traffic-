@@ -29,7 +29,6 @@
             position: relative; overflow: hidden;
             display: none;
             flex-direction: column;
-            /* 상단 여백 유지 */
             padding: 70px 60px 40px 60px; 
             border: 4px solid #ffaa00;
         }
@@ -45,9 +44,10 @@
         }
         h2 { 
             font-family: 'Jua', sans-serif; 
-            font-size: 44px; color: #333; 
-            margin: 0 0 30px 0; line-height: 1.35;
+            font-size: 38px; color: #333; 
+            margin: 0 0 30px 0; line-height: 1.3;
             text-align: left; 
+            letter-spacing: -1px; 
         }
         p { font-size: 26px; color: #555; line-height: 1.6; margin-bottom: 20px; }
         .highlight { color: #d35400; font-weight: bold; }
@@ -74,6 +74,11 @@
         }
         .media-wrapper iframe { width: 100%; height: 100%; border: none; }
 
+        .video-guide-text {
+            text-align: center; font-size: 22px; color: #2980b9; 
+            font-weight: bold; margin-bottom: 5px; font-family: 'Jua', sans-serif;
+        }
+
         /* 6. 버튼 스타일 */
         .btn-start {
             background: #ff6b6b; color: white; border: none;
@@ -95,7 +100,7 @@
         .btn-option:active { background: #ffe0b2; transform: scale(0.99); }
         .btn-option i { margin-right: 25px; color: #ffaa00; width: 45px; text-align: center; flex-shrink: 0; font-size: 32px; }
 
-        /* 뒤로가기 버튼 스타일 (왼쪽 상단 배치) */
+        /* 뒤로가기 버튼 스타일 */
         .btn-prev {
             position: absolute; top: 15px; left: 30px;
             background: #95a5a6; color: white; border: none;
@@ -221,27 +226,27 @@
         </div>
     </div>
 
-    <!-- 2. Q1: 신호등 (보기 섞임 대상) -->
+    <!-- 2. Q1: 신호등 -->
     <div class="slide-container" id="page-q1">
         <button class="btn-prev" onclick="prevStep('q1')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         
         <div class="split-box">
             <div>
-                <h2>Q1. 신호등이 <span style="color:#27ae60;">초록불로 깜빡일 때</span><br>올바른 행동은?</h2>
-                <!-- 보기 순서가 섞입니다 -->
+                <h2>Q1. <span style="color:#27ae60;">초록불이 깜빡일 때</span><br>올바른 행동은 무엇인가요?</h2>
                 <button class="btn-option btn-action" onclick="answer(1, 0)"><i class="fa-solid fa-person-running"></i>① 얼른 뛰어서 건넌다</button>
                 <button class="btn-option btn-action" onclick="answer(1, 10)"><i class="fa-solid fa-hand"></i>② 멈추고 다음 신호를 기다린다</button>
                 <button class="btn-option btn-action" onclick="answer(1, 3)"><i class="fa-solid fa-person-walking"></i>③ 천천히 걸어서 건넌다</button>
             </div>
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/fQqtMe2qCOo?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/fQqtMe2qCOo?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Q2: 흡연량 설문 (보기 섞임 제외) -->
+    <!-- 3. Q2: 흡연량 설문 -->
     <div class="slide-container" id="page-q2">
         <button class="btn-prev" onclick="prevStep('q2')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -266,13 +271,14 @@
         </div>
     </div>
 
-    <!-- 4. Q3: 야간 보행 (보기 섞임 대상) -->
+    <!-- 4. Q3: 야간 보행 -->
     <div class="slide-container" id="page-q3">
         <button class="btn-prev" onclick="prevStep('q3')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
             <div>
@@ -284,35 +290,37 @@
         </div>
     </div>
 
-    <!-- 5. Q4: 버스 하차 (보기 섞임 대상) -->
+    <!-- 5. Q4: 버스 하차 -->
     <div class="slide-container" id="page-q4">
         <button class="btn-prev" onclick="prevStep('q4')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div>
-                <h2>Q4. 버스에서 내릴 때 <span style="color:#c0392b;">가장 위험한</span><br>행동은 무엇일까요?</h2>
+                <h2>Q4. 버스 하차 시 <span style="color:#c0392b;">가장 위험한</span><br>행동은 무엇인가요?</h2>
                 <button class="btn-option btn-action" onclick="answer(4, 10)"><i class="fa-solid fa-chair"></i>① 차가 멈춘 뒤 일어난다</button>
                 <button class="btn-option btn-action" onclick="answer(4, 0)"><i class="fa-solid fa-person-falling"></i>② 미리 문 앞으로 걸어 나간다</button>
                 <button class="btn-option btn-action" onclick="answer(4, 5)"><i class="fa-solid fa-hands-holding-circle"></i>③ 손잡이를 꼭 잡고 기다린다</button>
             </div>
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/TQ0MmKOPVn8?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/TQ0MmKOPVn8?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 6. Q5: 무단횡단 (보기 섞임 대상) -->
+    <!-- 6. Q5: 무단횡단 -->
     <div class="slide-container" id="page-q5">
         <button class="btn-prev" onclick="prevStep('q5')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/gg8lMb-WSpg?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/gg8lMb-WSpg?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
             <div>
-                <h2>Q5. 횡단보도가 없는 곳에서<br>길을 건너야 한다면?</h2>
+                <h2>Q5. 횡단보도가 없는 곳이라면<br>어떻게 건너야 할까요?</h2>
                 <button class="btn-option btn-action" onclick="answer(5, 0)"><i class="fa-solid fa-person-walking-arrow-right"></i>① 차가 없으면 빨리 건넌다</button>
                 <button class="btn-option btn-action" onclick="answer(5, 5)"><i class="fa-solid fa-hand"></i>② 손을 들고 조심히 건넌다</button>
                 <button class="btn-option btn-action" onclick="answer(5, 10)"><i class="fa-solid fa-map-location-dot"></i>③ 멀더라도 횡단보도를 찾는다</button>
@@ -320,19 +328,20 @@
         </div>
     </div>
 
-    <!-- 7. Q6: 골목길 (보기 섞임 대상) -->
+    <!-- 7. Q6: 골목길 -->
     <div class="slide-container" id="page-q6">
         <button class="btn-prev" onclick="prevStep('q6')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div>
-                <h2>Q6. 인도가 없는 골목길에서<br>어디로 걸어야 할까요?</h2>
+                <h2>Q6. 인도가 없는 골목길,<br>어디로 걸어야 안전할까요?</h2>
                 <button class="btn-option btn-action" onclick="answer(6, 0)"><i class="fa-solid fa-road"></i>① 길 한가운데로 걷는다</button>
                 <button class="btn-option btn-action" onclick="answer(6, 10)"><i class="fa-solid fa-car-side"></i>② 차와 마주 보고 가장자리로</button>
                 <button class="btn-option btn-action" onclick="answer(6, 5)"><i class="fa-solid fa-person-walking"></i>③ 차를 등지고 가장자리로</button>
             </div>
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/64JQUbItWiY?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/64JQUbItWiY?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
@@ -366,17 +375,18 @@
         </div>
     </div>
 
-    <!-- 9. Q8: 인지안전 퀴즈 (보기 섞임 대상) -->
+    <!-- 9. Q8: 인지안전 퀴즈 -->
     <div class="slide-container" id="page-q8">
         <button class="btn-prev" onclick="prevStep('q8')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
+                <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
                 <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/ZPMKuTK1pdQ?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                    <iframe data-src="https://www.youtube.com/embed/ZPMKuTK1pdQ?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 </div>
             </div>
             <div>
-                <h2>Q8. 보행 신호가 <span style="color:#e74c3c;">5초</span> 남았습니다.<br>횡단보도는 아직 절반도<br>못 건넜습니다. 어떻게 할까요?</h2>
+                <h2>Q8. 신호가 <span style="color:#e74c3c;">5초</span> 남았을 때<br>횡단보도 중간이라면?</h2>
                 <button class="btn-option btn-action" onclick="answer(8, 0)"><i class="fa-solid fa-person-running"></i>① 뛰어서 건넌다</button>
                 <button class="btn-option btn-action" onclick="answer(8, 10)"><i class="fa-solid fa-hand"></i>② 다음 신호를 기다린다</button>
                 <button class="btn-option btn-action" onclick="answer(8, 5)"><i class="fa-solid fa-person-walking"></i>③ 차가 안 오면 그냥 건넌다</button>
@@ -384,7 +394,7 @@
         </div>
     </div>
 
-    <!-- 10. Q9: 학력 (보기 섞임 제외) -->
+    <!-- 10. Q9: 학력 -->
     <div class="slide-container" id="page-q9">
         <button class="btn-prev" onclick="prevStep('q9')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -499,40 +509,36 @@
         let multiTapCount = 0; 
         let lastTapTime = 0; 
         let dateInput = ""; 
+        let longPressCount = 0;
+        let pressTimer = null;
+        let isPressing = false;
 
         function startQuiz() {
             resetVariables();
-            shuffleAllQuizOptions(); // 퀴즈 보기 섞기 (진단 시작 시 1회 실행)
+            shuffleAllQuizOptions(); 
             goToSlide('q1');
             startTouchTracker(); 
         }
 
-        // [NEW] 보기 순서 섞기 함수 (Q2, Q7, Q9 등 순서가 중요한 문제는 제외)
+        // 보기 순서 섞기 함수
         function shuffleAllQuizOptions() {
-            // 보기를 섞을 문제 ID 목록
             const quizPages = ['page-q1', 'page-q3', 'page-q4', 'page-q5', 'page-q6', 'page-q8'];
             
             quizPages.forEach(pageId => {
                 const page = document.getElementById(pageId);
                 if(!page) return;
                 
-                // .btn-option 클래스를 가진 버튼 찾기
                 const firstBtn = page.querySelector('.btn-option');
                 if(!firstBtn) return;
                 
-                const container = firstBtn.parentNode; // 버튼들을 감싸고 있는 부모 div
+                const container = firstBtn.parentNode; 
                 const buttons = Array.from(container.querySelectorAll('.btn-option'));
                 
-                // Fisher-Yates Shuffle 알고리즘으로 섞기
                 for (let i = buttons.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
                 }
                 
-                // 섞인 순서대로 다시 DOM에 추가 (기존 버튼들은 이동됨)
-                // 주의: h2 등 다른 요소가 먼저 있을 수 있으므로 버튼들만 다시 append하면 맨 뒤로 감
-                // 여기서는 h2 다음에 버튼들이 오므로 appendChild를 써도 순서가 섞인 채로 아래에 붙음
-                // (기존 구조: h2 -> btn -> btn -> btn)
                 buttons.forEach(btn => container.appendChild(btn));
             });
         }
@@ -542,6 +548,8 @@
             slowCount = 0;
             missClickCount = 0;
             multiTapCount = 0;
+            longPressCount = 0;
+            isPressing = false;
             dateInput = "";
             document.getElementById('display-month').innerText = "";
             document.getElementById('display-day').innerText = "";
@@ -554,10 +562,12 @@
         }
 
         function startTouchTracker() {
+            // 빈 공간 터치 (Miss Click)
             document.body.addEventListener('click', function(e) {
                 if (!e.target.closest('.btn-action') && !e.target.closest('.media-wrapper') && !e.target.closest('.num-btn')) {
                     missClickCount++;
                 }
+                // 멀티 탭 (빠른 반복 터치)
                 if (e.target.closest('.btn-action')) {
                     const currentTime = new Date().getTime();
                     if (currentTime - lastTapTime < 500) { 
@@ -566,6 +576,27 @@
                     lastTapTime = currentTime;
                 }
             });
+
+            // 꾹 누르기 (Long Press) 감지 (1.5초 이상)
+            const handleStart = (e) => {
+                 if (e.target.closest('.btn-action') || e.target.closest('.num-btn')) return; // 버튼은 제외
+                 if (isPressing) return;
+                 isPressing = true;
+                 pressTimer = setTimeout(() => {
+                     longPressCount++;
+                     isPressing = false; 
+                 }, 1500); // 1.5초
+            };
+            
+            const handleEnd = () => {
+                if (pressTimer) clearTimeout(pressTimer);
+                isPressing = false;
+            };
+
+            document.body.addEventListener('mousedown', handleStart);
+            document.body.addEventListener('mouseup', handleEnd);
+            document.body.addEventListener('touchstart', handleStart);
+            document.body.addEventListener('touchend', handleEnd);
         }
 
         function goToSlide(id) {
@@ -586,6 +617,17 @@
                 const iframe = target.querySelector('iframe');
                 if (iframe && iframe.dataset.src) {
                     iframe.setAttribute('src', iframe.dataset.src);
+                    
+                    // [NEW] iframe 로드 시 볼륨 50 설정 명령 전송
+                    iframe.onload = function() {
+                        setTimeout(() => {
+                            iframe.contentWindow.postMessage(JSON.stringify({
+                                "event": "command",
+                                "func": "setVolume",
+                                "args": [50]
+                            }), '*');
+                        }, 500); 
+                    };
                 }
             }
             
@@ -772,21 +814,42 @@
             visualGrid.innerHTML = cardsHTML;
             document.getElementById('safety-analysis-text').innerHTML = analysisText;
 
+            // --- 인지 점수 계산 ---
             let penaltyExec = smokeLevel * 5; 
             let penaltyAttn = smokeLevel * 5;
+            
+            // 터치 실수 페널티 (5회 이상부터 감점)
+            let missClickPenalty = 0;
+            if (missClickCount >= 5) {
+                missClickPenalty = Math.min(20, (missClickCount - 4) * 2);
+            }
+            
+            // 꾹 누르기(Long Press) 페널티 (3회 이상부터 감점)
+            let longPressPenalty = 0;
+            if (longPressCount >= 3) {
+                longPressPenalty = Math.min(20, (longPressCount - 2) * 5); // 5점씩 감점
+            }
 
             let cognitive = {
                 orientation: Math.min(100, (answers.q7 * 10)), 
                 memory: Math.min(100, (answers.q1 * 5 + answers.q6 * 5) + 20), 
-                attention: Math.max(0, Math.min(100, (answers.q4 * 10) + 20 - penaltyAttn)), 
+                // 주의력: 정답 + 흡연 감점 + 터치실수 감점 + 꾹누르기 감점
+                attention: Math.max(0, Math.min(100, (answers.q4 * 10) + 20 - penaltyAttn - missClickPenalty - longPressPenalty)), 
                 visuospatial: Math.min(100, (answers.q3 * 10) + 20), 
                 executive: Math.max(0, Math.min(100, (answers.q1 * 5 + answers.q5 * 5 + answers.q8 * 5) + 10 - penaltyExec)), 
             };
             
+            let msg = "";
             if(smokeLevel > 0) {
-                let msg = `※ 흡연 습관이 판단력과 주의력(순발력) 결과에 반영되었습니다. (-${penaltyExec}%)`;
-                document.getElementById('smoke-analysis-msg').innerText = msg;
+                msg += `※ 흡연 습관이 판단력과 주의력 결과에 반영되었습니다. (-${penaltyExec}%)\n`;
             }
+            if(missClickCount >= 5) {
+                msg += `※ 화면 빈 곳 터치(${missClickCount}회)가 감지되어 주의력 점수가 조정되었습니다.\n`;
+            }
+            if(longPressCount >= 3) {
+                msg += `※ 화면을 길게 누르는 행동(${longPressCount}회)이 감지되어 주의력 점수가 조정되었습니다.`;
+            }
+            document.getElementById('smoke-analysis-msg').innerText = msg;
 
             const cogVisualGrid = document.getElementById('cognitive-visual-grid');
             let cogCardsHTML = "";
@@ -814,6 +877,18 @@
                 cogCardsHTML += `<div class="safety-card" style="border-color: #e67e22; background-color: #fffaf0;"><span class="card-badge correction" style="background:#e67e22; color:white;">뇌 혈류 주의</span><i class="fa-solid fa-cloud" style="color:#7f8c8d;"></i><p>담배 연기가<br>뇌를 막아요</p><div class="desc">판단력과 기억력이<br>흐려질 수 있습니다.</div></div>`;
             } else {
                 cogCardsHTML += `<div class="safety-card" style="border-color: #3498db; background-color: #f0f9ff;"><span class="card-badge activity" style="background:#3498db; color:white;">맑은 두뇌</span><i class="fa-solid fa-wind" style="color:#3498db;"></i><p>깨끗한 혈관<br>기억력 쑥쑥</p><div class="desc">뇌에 산소가 잘<br>공급되고 있습니다.</div></div>`;
+            }
+
+            // 터치 실수 피드백 카드
+            if (missClickCount >= 5) {
+                cogCardsHTML += `<div class="safety-card" style="border-color: #e74c3c; background-color: #fff5f5;"><span class="card-badge correction" style="background:#c0392b; color:white;">터치 정확도</span><i class="fa-solid fa-arrow-pointer" style="color:#c0392b;"></i><p>빈 공간 터치<br>${missClickCount}회 감지</p><div class="desc">버튼을 정확히 누르는<br>집중력이 필요합니다.</div></div>`;
+                cogIssueFound = true; 
+            }
+            
+            // 꾹 누르기(지연) 피드백 카드
+            if (longPressCount >= 3) {
+                cogCardsHTML += `<div class="safety-card" style="border-color: #f39c12; background-color: #fffaf0;"><span class="card-badge correction" style="background:#d35400; color:white;">반응 지연</span><i class="fa-solid fa-hourglass-half" style="color:#d35400;"></i><p>꾹 누르는<br>행동 감지</p><div class="desc">손을 빨리 떼는<br>연습이 필요합니다.</div></div>`;
+                cogIssueFound = true; 
             }
 
             if (!cogIssueFound) {
