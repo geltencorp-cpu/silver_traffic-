@@ -29,7 +29,8 @@
             position: relative; overflow: hidden;
             display: none;
             flex-direction: column;
-            padding: 40px 60px; 
+            /* 상단 여백 유지 */
+            padding: 70px 60px 40px 60px; 
             border: 4px solid #ffaa00;
         }
         .slide-container.active { display: flex; animation: fadeIn 0.4s ease-out; }
@@ -71,10 +72,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             position: relative;
         }
-        /* Iframe은 JS로 동적 생성됨 */
-        .media-wrapper iframe { 
-            width: 100%; height: 100%; border: none; 
-        }
+        .media-wrapper iframe { width: 100%; height: 100%; border: none; }
 
         /* 6. 버튼 스타일 */
         .btn-start {
@@ -97,9 +95,22 @@
         .btn-option:active { background: #ffe0b2; transform: scale(0.99); }
         .btn-option i { margin-right: 25px; color: #ffaa00; width: 45px; text-align: center; flex-shrink: 0; font-size: 32px; }
 
+        /* 뒤로가기 버튼 스타일 (왼쪽 상단 배치) */
+        .btn-prev {
+            position: absolute; top: 15px; left: 30px;
+            background: #95a5a6; color: white; border: none;
+            padding: 10px 25px; font-size: 22px; font-family: 'Jua', sans-serif;
+            border-radius: 30px; cursor: pointer;
+            box-shadow: 0 4px 0 #7f8c8d; transition: transform 0.1s;
+            display: flex; align-items: center; gap: 8px;
+            z-index: 50;
+        }
+        .btn-prev:active { transform: translateY(4px); box-shadow: none; }
+        .btn-prev:hover { background: #7f8c8d; }
+
         /* 관리자용 리셋 버튼 */
         .admin-reset-btn {
-            position: absolute; top: 30px; right: 30px;
+            position: absolute; top: 15px; right: 30px;
             width: 50px; height: 50px; border-radius: 50%;
             background-color: #ecf0f1; color: #95a5a6;
             border: 2px solid #bdc3c7; font-size: 20px;
@@ -201,61 +212,87 @@
     <!-- 1. 시작 화면 -->
     <div class="slide-container active" id="page-start">
         <div class="center-box">
-            <!-- 메인 이미지 제거하고 아이콘으로 대체 -->
             <div style="font-size: 150px; color: #ffaa00; margin-bottom: 40px;">
                 <i class="fa-solid fa-traffic-light"></i>
             </div>
-
             <h1>어르신 교통안전 <span class="highlight">및 인지능력 진단</span></h1>
             <p>문제를 풀면 <strong>나에게 딱 맞는 안전 수칙</strong>과<br><strong>인지 건강 상태</strong>를 알려드립니다.</p>
             <button class="btn-start btn-action" onclick="startQuiz()">시작하기</button>
         </div>
     </div>
 
-    <!-- 2. Q1: 신호등 -->
+    <!-- 2. Q1: 신호등 (보기 섞임 대상) -->
     <div class="slide-container" id="page-q1">
+        <button class="btn-prev" onclick="prevStep('q1')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        
         <div class="split-box">
             <div>
                 <h2>Q1. 신호등이 <span style="color:#27ae60;">초록불로 깜빡일 때</span><br>올바른 행동은?</h2>
+                <!-- 보기 순서가 섞입니다 -->
                 <button class="btn-option btn-action" onclick="answer(1, 0)"><i class="fa-solid fa-person-running"></i>① 얼른 뛰어서 건넌다</button>
                 <button class="btn-option btn-action" onclick="answer(1, 10)"><i class="fa-solid fa-hand"></i>② 멈추고 다음 신호를 기다린다</button>
                 <button class="btn-option btn-action" onclick="answer(1, 3)"><i class="fa-solid fa-person-walking"></i>③ 천천히 걸어서 건넌다</button>
             </div>
             <div class="media-group">
                 <div class="media-wrapper">
-                    <!-- YouTube 영상: autoplay=1 추가 -->
                     <iframe data-src="https://www.youtube.com/embed/fQqtMe2qCOo?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Q2: 야간 보행 -->
+    <!-- 3. Q2: 흡연량 설문 (보기 섞임 제외) -->
     <div class="slide-container" id="page-q2">
-        <div class="split-box">
-            <div class="media-group">
-                <div class="media-wrapper">
-                    <!-- YouTube 영상: autoplay=1 추가 -->
-                    <iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                </div>
-            </div>
-            <div>
-                <h2>Q2. <span style="color:#ff6b6b;">밤에 외출할 때</span><br>가장 안전한 옷차림은?</h2>
-                <button class="btn-option btn-action" onclick="answer(2, 0)"><i class="fa-solid fa-shirt" style="color:#333"></i>① 때가 안 타는 검은색 옷</button>
-                <button class="btn-option btn-action" onclick="answer(2, 5)"><i class="fa-solid fa-shirt" style="color:#999"></i>② 무난한 회색 옷</button>
-                <button class="btn-option btn-action" onclick="answer(2, 10)"><i class="fa-solid fa-vest-patches" style="color:#f39c12"></i>③ 눈에 잘 띄는 밝은/야광 옷</button>
+        <button class="btn-prev" onclick="prevStep('q2')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="center-box">
+            <h2 style="text-align: center; margin-bottom: 40px;">Q2. 평소에 담배를<br>얼마나 피우시나요?</h2>
+            <div style="width: 600px;">
+                <button class="btn-option btn-action" onclick="answer(2, 0)">
+                    <i class="fa-solid fa-ban" style="color:#27ae60;"></i>① 흡연 안 함
+                </button>
+                <button class="btn-option btn-action" onclick="answer(2, 1)">
+                    <i class="fa-solid fa-smoking" style="color:#95a5a6;"></i>② 5개비 이하
+                </button>
+                <button class="btn-option btn-action" onclick="answer(2, 2)">
+                    <i class="fa-solid fa-smoking" style="color:#f39c12;"></i>③ 10개비 이하
+                </button>
+                <button class="btn-option btn-action" onclick="answer(2, 3)">
+                    <i class="fa-solid fa-smoking" style="color:#e67e22;"></i>④ 15개비 이하
+                </button>
+                <button class="btn-option btn-action" onclick="answer(2, 4)">
+                    <i class="fa-solid fa-smoking" style="color:#c0392b;"></i>⑤ 1갑(20개비) 이상
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 4. Q3: 버스 하차 -->
+    <!-- 4. Q3: 야간 보행 (보기 섞임 대상) -->
     <div class="slide-container" id="page-q3">
+        <button class="btn-prev" onclick="prevStep('q3')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="split-box">
+            <div class="media-group">
+                <div class="media-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&mute=0&rel=0&playsinline=1" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div>
+                <h2>Q3. <span style="color:#ff6b6b;">밤에 외출할 때</span><br>가장 안전한 옷차림은?</h2>
+                <button class="btn-option btn-action" onclick="answer(3, 0)"><i class="fa-solid fa-shirt" style="color:#333"></i>① 때가 안 타는 검은색 옷</button>
+                <button class="btn-option btn-action" onclick="answer(3, 5)"><i class="fa-solid fa-shirt" style="color:#999"></i>② 무난한 회색 옷</button>
+                <button class="btn-option btn-action" onclick="answer(3, 10)"><i class="fa-solid fa-vest-patches" style="color:#f39c12"></i>③ 눈에 잘 띄는 밝은/야광 옷</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Q4: 버스 하차 (보기 섞임 대상) -->
+    <div class="slide-container" id="page-q4">
+        <button class="btn-prev" onclick="prevStep('q4')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div>
-                <h2>Q3. 버스에서 내릴 때 <span style="color:#c0392b;">가장 위험한</span><br>행동은 무엇일까요?</h2>
-                <button class="btn-option btn-action" onclick="answer(3, 10)"><i class="fa-solid fa-chair"></i>① 차가 멈춘 뒤 일어난다</button>
-                <button class="btn-option btn-action" onclick="answer(3, 0)"><i class="fa-solid fa-person-falling"></i>② 미리 문 앞으로 걸어 나간다</button>
-                <button class="btn-option btn-action" onclick="answer(3, 5)"><i class="fa-solid fa-hands-holding-circle"></i>③ 손잡이를 꼭 잡고 기다린다</button>
+                <h2>Q4. 버스에서 내릴 때 <span style="color:#c0392b;">가장 위험한</span><br>행동은 무엇일까요?</h2>
+                <button class="btn-option btn-action" onclick="answer(4, 10)"><i class="fa-solid fa-chair"></i>① 차가 멈춘 뒤 일어난다</button>
+                <button class="btn-option btn-action" onclick="answer(4, 0)"><i class="fa-solid fa-person-falling"></i>② 미리 문 앞으로 걸어 나간다</button>
+                <button class="btn-option btn-action" onclick="answer(4, 5)"><i class="fa-solid fa-hands-holding-circle"></i>③ 손잡이를 꼭 잡고 기다린다</button>
             </div>
             <div class="media-group">
                 <div class="media-wrapper">
@@ -265,8 +302,9 @@
         </div>
     </div>
 
-    <!-- 5. Q4: 무단횡단 -->
-    <div class="slide-container" id="page-q4">
+    <!-- 6. Q5: 무단횡단 (보기 섞임 대상) -->
+    <div class="slide-container" id="page-q5">
+        <button class="btn-prev" onclick="prevStep('q5')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
                 <div class="media-wrapper">
@@ -274,22 +312,23 @@
                 </div>
             </div>
             <div>
-                <h2>Q4. 횡단보도가 없는 곳에서<br>길을 건너야 한다면?</h2>
-                <button class="btn-option btn-action" onclick="answer(4, 0)"><i class="fa-solid fa-person-walking-arrow-right"></i>① 차가 없으면 빨리 건넌다</button>
-                <button class="btn-option btn-action" onclick="answer(4, 5)"><i class="fa-solid fa-hand"></i>② 손을 들고 조심히 건넌다</button>
-                <button class="btn-option btn-action" onclick="answer(4, 10)"><i class="fa-solid fa-map-location-dot"></i>③ 멀더라도 횡단보도를 찾는다</button>
+                <h2>Q5. 횡단보도가 없는 곳에서<br>길을 건너야 한다면?</h2>
+                <button class="btn-option btn-action" onclick="answer(5, 0)"><i class="fa-solid fa-person-walking-arrow-right"></i>① 차가 없으면 빨리 건넌다</button>
+                <button class="btn-option btn-action" onclick="answer(5, 5)"><i class="fa-solid fa-hand"></i>② 손을 들고 조심히 건넌다</button>
+                <button class="btn-option btn-action" onclick="answer(5, 10)"><i class="fa-solid fa-map-location-dot"></i>③ 멀더라도 횡단보도를 찾는다</button>
             </div>
         </div>
     </div>
 
-    <!-- 6. Q5: 골목길 -->
-    <div class="slide-container" id="page-q5">
+    <!-- 7. Q6: 골목길 (보기 섞임 대상) -->
+    <div class="slide-container" id="page-q6">
+        <button class="btn-prev" onclick="prevStep('q6')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div>
-                <h2>Q5. 인도가 없는 골목길에서<br>어디로 걸어야 할까요?</h2>
-                <button class="btn-option btn-action" onclick="answer(5, 0)"><i class="fa-solid fa-road"></i>① 길 한가운데로 걷는다</button>
-                <button class="btn-option btn-action" onclick="answer(5, 10)"><i class="fa-solid fa-car-side"></i>② 차와 마주 보고 가장자리로</button>
-                <button class="btn-option btn-action" onclick="answer(5, 5)"><i class="fa-solid fa-person-walking"></i>③ 차를 등지고 가장자리로</button>
+                <h2>Q6. 인도가 없는 골목길에서<br>어디로 걸어야 할까요?</h2>
+                <button class="btn-option btn-action" onclick="answer(6, 0)"><i class="fa-solid fa-road"></i>① 길 한가운데로 걷는다</button>
+                <button class="btn-option btn-action" onclick="answer(6, 10)"><i class="fa-solid fa-car-side"></i>② 차와 마주 보고 가장자리로</button>
+                <button class="btn-option btn-action" onclick="answer(6, 5)"><i class="fa-solid fa-person-walking"></i>③ 차를 등지고 가장자리로</button>
             </div>
             <div class="media-group">
                 <div class="media-wrapper">
@@ -299,10 +338,11 @@
         </div>
     </div>
 
-    <!-- 7. Q6: 오늘 날짜 -->
-    <div class="slide-container" id="page-q6">
+    <!-- 8. Q7: 오늘 날짜 -->
+    <div class="slide-container" id="page-q7">
+        <button class="btn-prev" onclick="prevStep('q7')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
-            <h2 style="margin-bottom: 25px; text-align: center;">Q6. 오늘은 몇 월 며칠 인가요?</h2>
+            <h2 style="margin-bottom: 25px; text-align: center;">Q7. 오늘은 몇 월 며칠 인가요?</h2>
             
             <div class="date-display">
                 <span id="display-month" class="date-part"></span>월
@@ -326,8 +366,9 @@
         </div>
     </div>
 
-    <!-- 8. Q7: 인지안전 퀴즈 -->
-    <div class="slide-container" id="page-q7">
+    <!-- 9. Q8: 인지안전 퀴즈 (보기 섞임 대상) -->
+    <div class="slide-container" id="page-q8">
+        <button class="btn-prev" onclick="prevStep('q8')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
                 <div class="media-wrapper">
@@ -335,29 +376,30 @@
                 </div>
             </div>
             <div>
-                <h2>Q7. 보행 신호가 <span style="color:#e74c3c;">5초</span> 남았습니다.<br>횡단보도는 아직 절반도<br>못 건넜습니다. 어떻게 할까요?</h2>
-                <button class="btn-option btn-action" onclick="answer(7, 0)"><i class="fa-solid fa-person-running"></i>① 뛰어서 건넌다</button>
-                <button class="btn-option btn-action" onclick="answer(7, 10)"><i class="fa-solid fa-hand"></i>② 다음 신호를 기다린다</button>
-                <button class="btn-option btn-action" onclick="answer(7, 5)"><i class="fa-solid fa-person-walking"></i>③ 차가 안 오면 그냥 건넌다</button>
+                <h2>Q8. 보행 신호가 <span style="color:#e74c3c;">5초</span> 남았습니다.<br>횡단보도는 아직 절반도<br>못 건넜습니다. 어떻게 할까요?</h2>
+                <button class="btn-option btn-action" onclick="answer(8, 0)"><i class="fa-solid fa-person-running"></i>① 뛰어서 건넌다</button>
+                <button class="btn-option btn-action" onclick="answer(8, 10)"><i class="fa-solid fa-hand"></i>② 다음 신호를 기다린다</button>
+                <button class="btn-option btn-action" onclick="answer(8, 5)"><i class="fa-solid fa-person-walking"></i>③ 차가 안 오면 그냥 건넌다</button>
             </div>
         </div>
     </div>
 
-    <!-- 9. Q8: 학력 -->
-    <div class="slide-container" id="page-q8">
+    <!-- 10. Q9: 학력 (보기 섞임 제외) -->
+    <div class="slide-container" id="page-q9">
+        <button class="btn-prev" onclick="prevStep('q9')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
-            <h2 style="text-align: center;">Q8. 어르신의 최종 학력을<br>선택해주세요.</h2>
+            <h2 style="text-align: center;">Q9. 어르신의 최종 학력을<br>선택해주세요.</h2>
             <p>맞춤형 결과를 위해 필요한 정보입니다.</p>
             <div style="width: 600px;">
-                <button class="btn-option btn-action" onclick="answer(8, 0)">① 무학 / 초등학교 졸업</button>
-                <button class="btn-option btn-action" onclick="answer(8, 0)">② 중학교 졸업</button>
-                <button class="btn-option btn-action" onclick="answer(8, 0)">③ 고등학교 졸업</button>
-                <button class="btn-option btn-action" onclick="answer(8, 0)">④ 대학교 졸업 이상</button>
+                <button class="btn-option btn-action" onclick="answer(9, 0)">① 무학 / 초등학교 졸업</button>
+                <button class="btn-option btn-action" onclick="answer(9, 0)">② 중학교 졸업</button>
+                <button class="btn-option btn-action" onclick="answer(9, 0)">③ 고등학교 졸업</button>
+                <button class="btn-option btn-action" onclick="answer(9, 0)">④ 대학교 졸업 이상</button>
             </div>
         </div>
     </div>
 
-    <!-- 10. 로딩 -->
+    <!-- 11. 로딩 -->
     <div class="slide-container" id="page-loading">
         <div class="center-box">
             <i class="fa-solid fa-gear fa-spin" style="font-size: 80px; color: #ffaa00; margin-bottom: 30px;"></i>
@@ -365,7 +407,7 @@
         </div>
     </div>
 
-    <!-- 11. 결과 보고서 -->
+    <!-- 12. 결과 보고서 -->
     <div class="slide-container" id="page-result">
         <button class="admin-reset-btn" onclick="resetQuiz()" title="처음으로 돌아가기 (관리자용)">
             <i class="fa-solid fa-rotate-right"></i>
@@ -381,10 +423,12 @@
                 <button class="tab-btn" onclick="switchTab('cognitive')">🧠 인지 보고서</button>
             </div>
 
+            <!-- 안전 보고서 -->
             <div id="report-safety" class="report-content show">
                 <div class="score-box">
                     <span style="font-size: 28px; color:#555;">나의 교통안전 점수</span><br>
                     <span class="score-num" id="safety-score">0점</span>
+                    <div id="safety-smoke-penalty" style="font-size: 18px; color: #c0392b; margin-top: 5px;"></div>
                 </div>
                 
                 <h3 style="text-align: center; margin-bottom: 15px; color: #d35400;">👇 나를 위한 안전 그림 카드 👇</h3>
@@ -397,6 +441,7 @@
                 </div>
             </div>
 
+            <!-- 인지 보고서 -->
             <div id="report-cognitive" class="report-content">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h3>🧠 인지 기능 분석 결과</h3>
@@ -436,6 +481,8 @@
                         </div>
                     </div>
                 </div>
+                
+                <div id="smoke-analysis-msg" style="text-align: center; color: #c0392b; font-size: 18px; margin-bottom: 20px; font-weight: bold;"></div>
 
                 <h3 style="text-align: center; margin-bottom: 20px; color: #27ae60;">👇 인지 건강을 위한 추천 활동 👇</h3>
                 <div id="cognitive-visual-grid" class="safety-grid"></div>
@@ -444,9 +491,8 @@
     </div>
 
     <script>
-        let currentScore = 0;
-        let answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0 };
-        const totalSlides = 8;
+        let answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0 };
+        const totalSlides = 9;
         let startTime = 0; 
         let slowCount = 0; 
         let missClickCount = 0; 
@@ -456,13 +502,43 @@
 
         function startQuiz() {
             resetVariables();
+            shuffleAllQuizOptions(); // 퀴즈 보기 섞기 (진단 시작 시 1회 실행)
             goToSlide('q1');
             startTouchTracker(); 
         }
 
+        // [NEW] 보기 순서 섞기 함수 (Q2, Q7, Q9 등 순서가 중요한 문제는 제외)
+        function shuffleAllQuizOptions() {
+            // 보기를 섞을 문제 ID 목록
+            const quizPages = ['page-q1', 'page-q3', 'page-q4', 'page-q5', 'page-q6', 'page-q8'];
+            
+            quizPages.forEach(pageId => {
+                const page = document.getElementById(pageId);
+                if(!page) return;
+                
+                // .btn-option 클래스를 가진 버튼 찾기
+                const firstBtn = page.querySelector('.btn-option');
+                if(!firstBtn) return;
+                
+                const container = firstBtn.parentNode; // 버튼들을 감싸고 있는 부모 div
+                const buttons = Array.from(container.querySelectorAll('.btn-option'));
+                
+                // Fisher-Yates Shuffle 알고리즘으로 섞기
+                for (let i = buttons.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
+                }
+                
+                // 섞인 순서대로 다시 DOM에 추가 (기존 버튼들은 이동됨)
+                // 주의: h2 등 다른 요소가 먼저 있을 수 있으므로 버튼들만 다시 append하면 맨 뒤로 감
+                // 여기서는 h2 다음에 버튼들이 오므로 appendChild를 써도 순서가 섞인 채로 아래에 붙음
+                // (기존 구조: h2 -> btn -> btn -> btn)
+                buttons.forEach(btn => container.appendChild(btn));
+            });
+        }
+
         function resetVariables() {
-            currentScore = 0;
-            answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0 };
+            answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0 };
             slowCount = 0;
             missClickCount = 0;
             multiTapCount = 0;
@@ -473,6 +549,8 @@
             document.getElementById('cognitive-visual-grid').innerHTML = "";
             document.getElementById('safety-visual-grid').innerHTML = "";
             document.getElementById('safety-analysis-text').innerHTML = "";
+            document.getElementById('safety-smoke-penalty').innerText = "";
+            document.getElementById('smoke-analysis-msg').innerText = "";
         }
 
         function startTouchTracker() {
@@ -490,27 +568,23 @@
             });
         }
 
-        // [핵심 로직] 슬라이드 이동 시 iframe 제어 (중복 재생 방지 & 자동 재생)
         function goToSlide(id) {
             startTime = new Date().getTime();
             
-            // 1. 모든 슬라이드 숨김 및 영상 정지(src 제거)
             document.querySelectorAll('.slide-container').forEach(el => {
                 el.classList.remove('active');
                 const iframe = el.querySelector('iframe');
                 if (iframe) {
-                    iframe.setAttribute('src', ''); // 영상 즉시 정지
+                    iframe.setAttribute('src', ''); 
                 }
             });
 
-            // 2. 타겟 슬라이드 활성화 및 영상 재생(data-src 주입)
             const target = document.getElementById('page-' + id);
             if (target) {
                 target.classList.add('active');
                 
                 const iframe = target.querySelector('iframe');
                 if (iframe && iframe.dataset.src) {
-                    // GitHub Pages 등에서는 보안 정책에 따라 자동 재생이 될 수도 있음
                     iframe.setAttribute('src', iframe.dataset.src);
                 }
             }
@@ -525,6 +599,16 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
+        function prevStep(currentId) {
+            if(currentId === 'q1') {
+                goToSlide('start');
+            } else {
+                const currentNum = parseInt(currentId.substring(1));
+                const prevNum = currentNum - 1;
+                goToSlide('q' + prevNum);
+            }
+        }
+
         function answer(qNum, score) {
             const endTime = new Date().getTime();
             const duration = (endTime - startTime) / 1000; 
@@ -533,10 +617,6 @@
             }
 
             answers['q' + qNum] = score;
-            if (qNum !== 8) { 
-                currentScore += score;
-            }
-            
             nextStep(qNum);
         }
 
@@ -612,16 +692,30 @@
             let score = 0;
             if (inputM === currentMonth && inputD === currentDay) score = 10;
             else if (inputM === currentMonth) score = 5; 
-            answers['q6'] = score;
-            currentScore += score;
-            nextStep(6);
+            
+            answers['q7'] = score;
+            nextStep(7);
         }
 
         function showResult() {
             goToSlide('result');
-            let safetyTotal = answers.q1 + answers.q2 + answers.q3 + answers.q4 + answers.q5 + answers.q7;
+            
+            let safetyTotal = answers.q1 + answers.q3 + answers.q4 + answers.q5 + answers.q6 + answers.q8;
             let finalSafetyScore = Math.round((safetyTotal / 60) * 100);
+            
+            let smokeLevel = answers.q2; 
+            let smokePenaltySafety = smokeLevel * 2; 
+            finalSafetyScore -= smokePenaltySafety;
+            if (finalSafetyScore < 0) finalSafetyScore = 0;
+
             document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
+            if(smokeLevel > 0) {
+                document.getElementById('safety-smoke-penalty').innerText = `(흡연 습관으로 인해 ${smokePenaltySafety}점이 차감되었습니다)`;
+                document.getElementById('safety-smoke-penalty').style.color = "#c0392b";
+            } else {
+                document.getElementById('safety-smoke-penalty').innerText = "(비흡연 가산점 적용 중)";
+                document.getElementById('safety-smoke-penalty').style.color = "#27ae60";
+            }
 
             const visualGrid = document.getElementById('safety-visual-grid');
             let cardsHTML = "";
@@ -637,33 +731,40 @@
                 analysisText += "• <strong>신호등 습관:</strong> 신호가 깜빡일 때 무리하게 진입하는 경향이 있습니다. 이는 보행자 사고의 주원인입니다.<br>";
                 weaknessFound = true;
             }
-            if (answers.q4 < 10 || answers.q7 < 10) {
+            if (answers.q5 < 10 || answers.q8 < 10) {
                 cardsHTML += `<div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-hand" style="color:#3498db;"></i><p>횡단보도 찾기 &<br>다음 신호 기다리기</p><div class="desc">무단횡단은 절대 안 됩니다.</div></div>`;
                 analysisText += "• <strong>횡단 판단력:</strong> 횡단보도가 아니거나 시간이 부족할 때 '건널 수 있다'고 판단하는 것은 매우 위험합니다. 조금 늦더라도 안전한 방법을 선택하세요.<br>";
                 weaknessFound = true;
             }
-            if (answers.q2 < 10) {
+            if (answers.q3 < 10) {
                 cardsHTML += `<div class="safety-card"><span class="card-badge correction">복습하기</span><i class="fa-solid fa-shirt" style="color:#333;"></i><p>밤에 검은 옷은<br>안 돼요</p><div class="desc">운전자 눈에 보이지 않아요.</div></div><div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-vest-patches" style="color:#f1c40f;"></i><p>밝은 옷과<br>야광 조끼 입기</p><div class="desc">밤에는 나를 보여주는 것이 생명입니다.</div></div>`;
                 analysisText += "• <strong>야간 시인성:</strong> 어두운 옷은 밤길 사고를 유발합니다. 외출 시 밝은 옷을 입는 것만으로도 사고를 크게 예방할 수 있습니다.<br>";
                 weaknessFound = true;
             }
-            if (answers.q3 < 10) {
+            if (answers.q4 < 10) {
                 cardsHTML += `<div class="safety-card"><span class="card-badge correction">복습하기</span><i class="fa-solid fa-person-falling" style="color:#e74c3c;"></i><p>차 안에서<br>미리 일어서지 마세요</p><div class="desc">넘어지면 크게 다칩니다.</div></div>`;
                 analysisText += "• <strong>대중교통:</strong> 버스 정차 전 이동은 낙상 사고의 위험이 큽니다. 기사님이 기다려 드리니 천천히 하차하세요.<br>";
                 weaknessFound = true;
             }
-            if (answers.q5 < 10) {
+            if (answers.q6 < 10) {
                 cardsHTML += `<div class="safety-card"><span class="card-badge activity">실천하기</span><i class="fa-solid fa-car-side" style="color:#3498db;"></i><p>차를 마주 보고<br>가장자리로 걷기</p><div class="desc">다가오는 차를 눈으로 확인하세요.</div></div>`;
                 analysisText += "• <strong>보행 방법:</strong> 차를 등지고 걸으면 뒤에서 오는 위험을 감지할 수 없습니다. 항상 차와 마주 보는 습관이 중요합니다.<br>";
                 weaknessFound = true;
             }
 
+            if (smokeLevel > 0) {
+                cardsHTML += `<div class="safety-card" style="border-color: #e74c3c; background-color: #fff5f5;"><span class="card-badge correction" style="background:#c0392b; color:white;">반응 속도 저하</span><i class="fa-solid fa-smoking" style="color:#c0392b;"></i><p>흡연은 순발력을<br>떨어뜨려요</p><div class="desc">위급 상황에서<br>피하기 어려울 수 있습니다.</div></div>`;
+                analysisText += "• <strong>흡연 영향:</strong> 흡연은 운동 신경과 반응 속도를 저하시켜 교통 사고 위험을 높입니다.<br>";
+            } else {
+                cardsHTML += `<div class="safety-card" style="border-color: #27ae60; background-color: #f0fdf4;"><span class="card-badge activity" style="background:#27ae60; color:white;">최고의 습관</span><i class="fa-solid fa-lungs" style="color:#27ae60;"></i><p>비흡연 유지<br>칭찬합니다!</p><div class="desc">폐활량이 좋아<br>보행이 안전합니다.</div></div>`;
+            }
+
             if (!weaknessFound) {
                 if (finalSafetyScore >= 90) {
-                    cardsHTML = `<div class="safety-card" style="grid-column: span 3; border-color: #27ae60;"><i class="fa-solid fa-thumbs-up" style="color:#27ae60;"></i><p>안전 점수 최고!<br>완벽합니다</p><div class="desc">지금 알고 계신 안전 수칙을<br>친구들에게도 알려주세요.</div></div>`;
+                    cardsHTML = `<div class="safety-card" style="grid-column: span 3; border-color: #27ae60;"><i class="fa-solid fa-thumbs-up" style="color:#27ae60;"></i><p>안전 점수 최고!<br>완벽합니다</p><div class="desc">지금 알고 계신 안전 수칙을<br>친구들에게도 알려주세요.</div></div>` + cardsHTML; 
                     analysisText += "특별히 교정할 행동이 없으며, 지금처럼 안전한 습관을 유지하시면 됩니다.";
                 } else {
-                    cardsHTML += `<div class="safety-card"><i class="fa-solid fa-shield-heart" style="color:#e67e22;"></i><p>오늘도<br>안전하게<br>다니세요</p><div class="desc">안전은 매일 지키는 약속입니다.</div></div>`;
+                    cardsHTML = `<div class="safety-card"><i class="fa-solid fa-shield-heart" style="color:#e67e22;"></i><p>오늘도<br>안전하게<br>다니세요</p><div class="desc">안전은 매일 지키는 약속입니다.</div></div>` + cardsHTML;
                     analysisText += "전반적으로 양호하나, 실제 상황에서도 이 안전 수칙들을 잊지 말고 실천해 주세요.";
                 }
             }
@@ -671,13 +772,21 @@
             visualGrid.innerHTML = cardsHTML;
             document.getElementById('safety-analysis-text').innerHTML = analysisText;
 
+            let penaltyExec = smokeLevel * 5; 
+            let penaltyAttn = smokeLevel * 5;
+
             let cognitive = {
-                orientation: Math.min(100, (answers.q6 * 10)), 
-                memory: Math.min(100, (answers.q1 * 5 + answers.q5 * 5) + 20), 
-                attention: Math.min(100, (answers.q3 * 10) + 20), 
-                visuospatial: Math.min(100, (answers.q2 * 10) + 20), 
-                executive: Math.min(100, (answers.q1 * 5 + answers.q4 * 5 + answers.q7 * 5) + 10), 
+                orientation: Math.min(100, (answers.q7 * 10)), 
+                memory: Math.min(100, (answers.q1 * 5 + answers.q6 * 5) + 20), 
+                attention: Math.max(0, Math.min(100, (answers.q4 * 10) + 20 - penaltyAttn)), 
+                visuospatial: Math.min(100, (answers.q3 * 10) + 20), 
+                executive: Math.max(0, Math.min(100, (answers.q1 * 5 + answers.q5 * 5 + answers.q8 * 5) + 10 - penaltyExec)), 
             };
+            
+            if(smokeLevel > 0) {
+                let msg = `※ 흡연 습관이 판단력과 주의력(순발력) 결과에 반영되었습니다. (-${penaltyExec}%)`;
+                document.getElementById('smoke-analysis-msg').innerText = msg;
+            }
 
             const cogVisualGrid = document.getElementById('cognitive-visual-grid');
             let cogCardsHTML = "";
@@ -701,8 +810,14 @@
                 }
             }
 
+            if (smokeLevel > 0) {
+                cogCardsHTML += `<div class="safety-card" style="border-color: #e67e22; background-color: #fffaf0;"><span class="card-badge correction" style="background:#e67e22; color:white;">뇌 혈류 주의</span><i class="fa-solid fa-cloud" style="color:#7f8c8d;"></i><p>담배 연기가<br>뇌를 막아요</p><div class="desc">판단력과 기억력이<br>흐려질 수 있습니다.</div></div>`;
+            } else {
+                cogCardsHTML += `<div class="safety-card" style="border-color: #3498db; background-color: #f0f9ff;"><span class="card-badge activity" style="background:#3498db; color:white;">맑은 두뇌</span><i class="fa-solid fa-wind" style="color:#3498db;"></i><p>깨끗한 혈관<br>기억력 쑥쑥</p><div class="desc">뇌에 산소가 잘<br>공급되고 있습니다.</div></div>`;
+            }
+
             if (!cogIssueFound) {
-                cogCardsHTML = `<div class="safety-card" style="grid-column: span 3; border-color: #27ae60;"><i class="fa-solid fa-brain" style="color:#27ae60;"></i><p>인지 건강<br>매우 튼튼!</p><div class="desc">지금처럼 활기차게<br>생활하시면 됩니다.</div></div>`;
+                cogCardsHTML = `<div class="safety-card" style="grid-column: span 2; border-color: #27ae60;"><i class="fa-solid fa-brain" style="color:#27ae60;"></i><p>인지 건강<br>매우 튼튼!</p><div class="desc">지금처럼 활기차게<br>생활하시면 됩니다.</div></div>` + cogCardsHTML;
             }
 
             let warningMsg = "";
