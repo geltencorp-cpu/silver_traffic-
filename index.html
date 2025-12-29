@@ -29,7 +29,7 @@
             position: relative; overflow: hidden;
             display: none;
             flex-direction: column;
-            padding: 70px 60px 40px 60px; 
+            padding: 70px 60px 40px 60px; /* 상단 여백 확보 */
             border: 4px solid #ffaa00;
         }
         .slide-container.active { display: flex; animation: fadeIn 0.4s ease-out; }
@@ -100,22 +100,22 @@
         .btn-option:active { background: #ffe0b2; transform: scale(0.99); }
         .btn-option i { margin-right: 25px; color: #ffaa00; width: 45px; text-align: center; flex-shrink: 0; font-size: 32px; }
 
-        /* 뒤로가기 버튼 스타일 */
+        /* [수정] 뒤로가기 버튼 (위치 및 z-index 상향) */
         .btn-prev {
-            position: absolute; top: 15px; left: 30px;
+            position: absolute; top: 20px; left: 30px;
             background: #95a5a6; color: white; border: none;
             padding: 10px 25px; font-size: 22px; font-family: 'Jua', sans-serif;
             border-radius: 30px; cursor: pointer;
             box-shadow: 0 4px 0 #7f8c8d; transition: transform 0.1s;
             display: flex; align-items: center; gap: 8px;
-            z-index: 50;
+            z-index: 100; /* 다른 요소보다 위에 오도록 설정 */
         }
         .btn-prev:active { transform: translateY(4px); box-shadow: none; }
         .btn-prev:hover { background: #7f8c8d; }
 
         /* 관리자용 리셋 버튼 */
         .admin-reset-btn {
-            position: absolute; top: 15px; right: 30px;
+            position: absolute; top: 20px; right: 30px;
             width: 50px; height: 50px; border-radius: 50%;
             background-color: #ecf0f1; color: #95a5a6;
             border: 2px solid #bdc3c7; font-size: 20px;
@@ -208,11 +208,40 @@
         .num-btn:active { transform: translateY(4px); box-shadow: none; background: #eee; }
         .num-btn.confirm { background: #27ae60; color: white; border-color: #219150; box-shadow: 0 4px 0 #1e8449; }
 
+        /* [NEW] 토스트 메시지 스타일 */
+        #toast-msg {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: rgba(50, 50, 50, 0.9);
+            color: #fff;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px 30px;
+            position: fixed;
+            z-index: 2000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        #toast-msg.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="progress-container"><div class="progress-fill" id="progressBar"></div></div>
+    
+    <!-- 토스트 메시지 컨테이너 -->
+    <div id="toast-msg">알림 메시지</div>
 
     <!-- 1. 시작 화면 -->
     <div class="slide-container active" id="page-start">
@@ -513,6 +542,16 @@
         let pressTimer = null;
         let isPressing = false;
 
+        // [NEW] 토스트 메시지 함수
+        function showToast(message) {
+            const toast = document.getElementById("toast-msg");
+            toast.innerText = message;
+            toast.classList.add("show");
+            setTimeout(function(){ 
+                toast.classList.remove("show"); 
+            }, 3000);
+        }
+
         function startQuiz() {
             resetVariables();
             shuffleAllQuizOptions(); 
@@ -520,7 +559,6 @@
             startTouchTracker(); 
         }
 
-        // 보기 순서 섞기 함수
         function shuffleAllQuizOptions() {
             const quizPages = ['page-q1', 'page-q3', 'page-q4', 'page-q5', 'page-q6', 'page-q8'];
             
@@ -562,12 +600,10 @@
         }
 
         function startTouchTracker() {
-            // 빈 공간 터치 (Miss Click)
             document.body.addEventListener('click', function(e) {
                 if (!e.target.closest('.btn-action') && !e.target.closest('.media-wrapper') && !e.target.closest('.num-btn')) {
                     missClickCount++;
                 }
-                // 멀티 탭 (빠른 반복 터치)
                 if (e.target.closest('.btn-action')) {
                     const currentTime = new Date().getTime();
                     if (currentTime - lastTapTime < 500) { 
@@ -577,15 +613,14 @@
                 }
             });
 
-            // 꾹 누르기 (Long Press) 감지 (1.5초 이상)
             const handleStart = (e) => {
-                 if (e.target.closest('.btn-action') || e.target.closest('.num-btn')) return; // 버튼은 제외
+                 if (e.target.closest('.btn-action') || e.target.closest('.num-btn')) return; 
                  if (isPressing) return;
                  isPressing = true;
                  pressTimer = setTimeout(() => {
                      longPressCount++;
                      isPressing = false; 
-                 }, 1500); // 1.5초
+                 }, 1500); 
             };
             
             const handleEnd = () => {
@@ -618,7 +653,6 @@
                 if (iframe && iframe.dataset.src) {
                     iframe.setAttribute('src', iframe.dataset.src);
                     
-                    // [NEW] iframe 로드 시 볼륨 50 설정 명령 전송
                     iframe.onload = function() {
                         setTimeout(() => {
                             iframe.contentWindow.postMessage(JSON.stringify({
@@ -818,22 +852,19 @@
             let penaltyExec = smokeLevel * 5; 
             let penaltyAttn = smokeLevel * 5;
             
-            // 터치 실수 페널티 (5회 이상부터 감점)
             let missClickPenalty = 0;
             if (missClickCount >= 5) {
                 missClickPenalty = Math.min(20, (missClickCount - 4) * 2);
             }
             
-            // 꾹 누르기(Long Press) 페널티 (3회 이상부터 감점)
             let longPressPenalty = 0;
             if (longPressCount >= 3) {
-                longPressPenalty = Math.min(20, (longPressCount - 2) * 5); // 5점씩 감점
+                longPressPenalty = Math.min(20, (longPressCount - 2) * 5); 
             }
 
             let cognitive = {
                 orientation: Math.min(100, (answers.q7 * 10)), 
                 memory: Math.min(100, (answers.q1 * 5 + answers.q6 * 5) + 20), 
-                // 주의력: 정답 + 흡연 감점 + 터치실수 감점 + 꾹누르기 감점
                 attention: Math.max(0, Math.min(100, (answers.q4 * 10) + 20 - penaltyAttn - missClickPenalty - longPressPenalty)), 
                 visuospatial: Math.min(100, (answers.q3 * 10) + 20), 
                 executive: Math.max(0, Math.min(100, (answers.q1 * 5 + answers.q5 * 5 + answers.q8 * 5) + 10 - penaltyExec)), 
@@ -879,13 +910,11 @@
                 cogCardsHTML += `<div class="safety-card" style="border-color: #3498db; background-color: #f0f9ff;"><span class="card-badge activity" style="background:#3498db; color:white;">맑은 두뇌</span><i class="fa-solid fa-wind" style="color:#3498db;"></i><p>깨끗한 혈관<br>기억력 쑥쑥</p><div class="desc">뇌에 산소가 잘<br>공급되고 있습니다.</div></div>`;
             }
 
-            // 터치 실수 피드백 카드
             if (missClickCount >= 5) {
                 cogCardsHTML += `<div class="safety-card" style="border-color: #e74c3c; background-color: #fff5f5;"><span class="card-badge correction" style="background:#c0392b; color:white;">터치 정확도</span><i class="fa-solid fa-arrow-pointer" style="color:#c0392b;"></i><p>빈 공간 터치<br>${missClickCount}회 감지</p><div class="desc">버튼을 정확히 누르는<br>집중력이 필요합니다.</div></div>`;
                 cogIssueFound = true; 
             }
             
-            // 꾹 누르기(지연) 피드백 카드
             if (longPressCount >= 3) {
                 cogCardsHTML += `<div class="safety-card" style="border-color: #f39c12; background-color: #fffaf0;"><span class="card-badge correction" style="background:#d35400; color:white;">반응 지연</span><i class="fa-solid fa-hourglass-half" style="color:#d35400;"></i><p>꾹 누르는<br>행동 감지</p><div class="desc">손을 빨리 떼는<br>연습이 필요합니다.</div></div>`;
                 cogIssueFound = true; 
@@ -897,7 +926,18 @@
 
             let warningMsg = "";
             if (lowScoreCount >= 4) {
-                warningMsg = `<div style="background-color: #ffebee; border: 3px solid #e53935; padding: 20px; border-radius: 15px; margin-bottom: 30px; animation: pulse 2s infinite;"><h3 style="color: #c62828; margin: 0 0 10px 0; font-size: 28px;"><i class="fa-solid fa-triangle-exclamation"></i> 전문 상담 권장</h3><p style="margin: 0; font-size: 22px; color: #b71c1c; font-weight: bold;">4개 이상의 영역에서 기능 저하가 의심됩니다.<br>가까운 <span style="text-decoration: underline;">치매안심센터</span>나 병원을 방문하여<br>정밀 검사를 받아보시기를 권해 드립니다.</p></div><style>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }</style>`;
+                // [NEW] 토스트 메시지 함수 사용
+                warningMsg = `
+                <div style="background-color: #ffebee; border: 3px solid #e53935; padding: 20px; border-radius: 15px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; animation: pulse 2s infinite;">
+                    <div style="text-align: left;">
+                        <h3 style="color: #c62828; margin: 0 0 10px 0; font-size: 28px;"><i class="fa-solid fa-triangle-exclamation"></i> 전문 상담 권장</h3>
+                        <p style="margin: 0; font-size: 22px; color: #b71c1c; font-weight: bold;">4개 이상의 영역에서 기능 저하가 의심됩니다.<br>가까운 <span style="text-decoration: underline;">치매안심센터</span>나 병원을 방문하여<br>정밀 검사를 받아보시기를 권해 드립니다.</p>
+                    </div>
+                    <button onclick="showToast('서비스 연결 예정입니다.')" style="background: #e53935; color: white; border: none; padding: 15px 25px; font-size: 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-family: 'Jua', sans-serif; box-shadow: 0 4px 0 #b71c1c; white-space: nowrap; margin-left: 20px;">
+                        <i class="fa-solid fa-share-from-square"></i> 데이터 전송
+                    </button>
+                </div>
+                <style>@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }</style>`;
             }
 
             document.getElementById('cognitive-warning').innerHTML = warningMsg;
