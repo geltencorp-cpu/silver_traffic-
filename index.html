@@ -2,34 +2,33 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <!-- [수정] 뷰포트 설정 강화 (확대 방지, 전체화면 대응) -->
+    <!-- 뷰포트 설정 (확대 방지, 전체화면 대응) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- [NEW] 전체 화면(PWA) 모드 지원 메타 태그 및 매니페스트 -->
-    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS -->
-    <meta name="mobile-web-app-capable" content="yes"> <!-- Android Legacy -->
+    <!-- 전체 화면(PWA) 모드 지원 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- [NEW] 인라인 매니페스트 (안드로이드 전체화면 지원 핵심) -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"어르신 교통안전","short_name":"교통안전","start_url":".","display":"fullscreen","background_color":"#ffffff","theme_color":"#ffffff","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063823.png","sizes":"192x192","type":"image/png"}]}'>
-
     <title>어르신 교통안전 및 정밀 인지 진단 앱</title>
+    
+    <!-- 폰트 및 아이콘 로드 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         /* 1. 기본 설정 */
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         html, body {
             margin: 0; padding: 0;
             background-color: #f0f2f5;
-            /* [수정] 화면 높이 문제 해결을 위한 설정 */
             height: 100%; 
-            height: 100dvh; /* 동적 뷰포트 높이 사용 */
+            height: 100dvh; 
             width: 100%;
-            overflow: hidden; /* 전체 페이지 스크롤 방지 (컨테이너 내부만 스크롤) */
+            overflow: hidden; 
             display: flex; 
             justify-content: center; 
             align-items: center;
@@ -37,38 +36,32 @@
             word-break: keep-all; 
         }
 
-        /* 2. 슬라이드 컨테이너 [수정] */
+        /* 2. 슬라이드 컨테이너 */
         .slide-container {
             width: 95%; 
             max-width: 1280px; 
-            /* [수정] 높이를 95dvh에서 90dvh로 줄여서 상하 여백 확보 */
             height: 90dvh; 
             max-height: 900px;
-            
             background-color: #ffffff;
             border-radius: 30px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             position: relative; 
-            overflow-y: auto; /* 내용 넘침 시 스크롤 */
+            overflow-y: auto; 
             overflow-x: hidden;
             display: none;
             flex-direction: column;
             padding: 4vh 4vw;
             border: 4px solid #ffaa00;
-            
-            /* 스크롤바 디자인 */
             scrollbar-width: thin;
             scrollbar-color: #ffaa00 #eee;
         }
         
-        /* 모바일/태블릿 전체화면 대응 */
+        /* 모바일/태블릿 대응 */
         @media (max-width: 1024px) {
             .slide-container {
                 width: 96%; 
-                /* 모바일에서도 너무 꽉 차지 않게 약간의 여백 부여 */
                 height: 92dvh; 
                 max-height: none;
-                /* 테두리 및 둥근 모서리 유지 */
                 border-radius: 20px; 
                 border: 3px solid #ffaa00; 
                 padding: 20px;
@@ -91,7 +84,7 @@
         }
         h2 { 
             font-family: 'Jua', sans-serif; 
-            font-size: clamp(24px, 4vw, 40px); /* 문제 글자 크기 적절히 조절 */
+            font-size: clamp(24px, 4vw, 40px);
             color: #333; margin: 0 0 2vh 0; line-height: 1.3; 
             text-align: left; letter-spacing: -1px; 
         }
@@ -106,54 +99,49 @@
         .split-box { display: flex; flex-direction: row; gap: 40px; height: 100%; align-items: center; justify-content: center; }
         .split-box > div { flex: 1; width: 100%; }
         
-        /* [수정] 태블릿 세로(Portrait) 및 모바일 레이아웃 최적화 */
-        @media (max-width: 1024px) { /* 900px -> 1024px로 확대하여 태블릿 포함 */
+        /* 태블릿 세로 및 모바일 레이아웃 최적화 */
+        @media (max-width: 1024px) {
             .split-box { 
-                flex-direction: column-reverse; /* 미디어(영상)가 위로 오게 */
+                flex-direction: column-reverse; 
                 gap: 20px; 
                 overflow-y: auto; 
                 justify-content: flex-start; 
                 padding-top: 30px; 
-                align-items: center; /* 수평 중앙 정렬 */
+                align-items: center; 
             }
             .split-box > div { 
                 flex: none; 
                 width: 100%; 
                 display: flex;
                 flex-direction: column;
-                align-items: center; /* 내부 요소 중앙 정렬 */
+                align-items: center; 
             }
             .text-area { 
                 padding-bottom: 30px; 
-                text-align: center; /* 텍스트 중앙 정렬 */
+                text-align: center; 
                 width: 100%;
             }
-            /* 세로 모드에서 질문 제목 중앙 정렬 */
             .text-area h2, .center-box h2 {
                 text-align: center;
                 word-break: keep-all;
                 width: 100%;
             }
-            /* 세로 모드에서 버튼들 중앙 정렬 */
             .text-area > div, .center-box > div {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
-            /* 보기 버튼 너비 및 정렬 조정 */
             .btn-option {
                 max-width: 500px;
                 margin: 0 auto 12px auto;
             }
-            /* 모바일/태블릿에서 센터 박스 위치 조정 */
             .center-box { 
                 justify-content: flex-start; 
                 padding-top: 50px; 
             }
-            /* Q9번 미디어 그룹 조정 (그림 문제) */
             #page-q9 .split-box {
-                flex-direction: column; /* 그림이 위, 문제가 아래 */
+                flex-direction: column; /* 그림 위, 문제 아래 */
             }
         }
 
@@ -201,25 +189,18 @@
         .btn-prev:active { transform: translateY(4px); box-shadow: none; }
         .admin-reset-btn { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background-color: #ecf0f1; color: #95a5a6; border: 2px solid #bdc3c7; font-size: 18px; cursor: pointer; transition: all 0.2s; z-index: 100; display: flex; justify-content: center; align-items: center; }
         
-        /* [NEW] 우측 하단 전체 화면 버튼 (위치 수정됨) */
+        /* 전체 화면 버튼 */
         .btn-fullscreen {
             position: fixed;
-            bottom: 20px; /* bottom으로 수정 */
-            right: 20px;
-            width: 50px;
-            height: 50px;
+            bottom: 20px; right: 20px;
+            width: 50px; height: 50px;
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid #333;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; cursor: pointer; z-index: 2000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.2s, background-color 0.2s;
-            color: #333;
+            transition: transform 0.2s, background-color 0.2s; color: #333;
         }
         .btn-fullscreen:hover { transform: scale(1.1); background-color: #fff; }
         .btn-fullscreen:active { transform: scale(0.95); }
@@ -273,52 +254,31 @@
         /* 데이터 분석 박스 */
         .analysis-box { background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px; border-radius: 0 20px 20px 0; margin-top: 20px; }
         
-        /* [수정] 보고서 제목 스타일 통일 (폰트, 크기, 정렬) */
+        /* 보고서 제목 스타일 통일 */
         .analysis-title { 
             font-size: 24px; 
             font-weight: 800; 
-            color: #333; /* 기본색 변경 */
+            color: #333; 
             margin-bottom: 15px; 
             display: flex; 
             align-items: center; 
             gap: 10px; 
-            /* 모든 제목 스타일 통일을 위해 추가 */
             font-family: 'Jua', sans-serif;
         }
-        /* 개별 색상은 인라인 스타일로 적용됨 */
-
         .analysis-text { 
             font-size: 18px; 
             color: #333; line-height: 1.6; 
         }
 
-        /* Q7 레이아웃 (가로 배치) */
+        /* Q7 레이아웃 */
         .q7-layout { display: flex; flex-direction: row; gap: 30px; width: 100%; height: 100%; align-items: center; justify-content: center; }
         .q7-left { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 2px dashed #ddd; padding-right: 15px; }
         .q7-right { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        /* [수정] 태블릿 세로 및 모바일에서 Q7 레이아웃 중앙 정렬 */
         @media (max-width: 1024px) {
-            .q7-layout { 
-                flex-direction: column; 
-                gap: 15px; 
-                overflow-y: auto; 
-                padding-top: 30px; 
-                justify-content: flex-start;
-                align-items: center;
-            }
-            .q7-left { 
-                border-right: none; 
-                border-bottom: 2px dashed #ddd; 
-                padding-right: 0; 
-                padding-bottom: 15px; 
-                flex: none; 
-                width: 100%; 
-            }
-            .q7-right { 
-                flex: none; 
-                width: 100%; 
-            }
+            .q7-layout { flex-direction: column; gap: 15px; overflow-y: auto; padding-top: 30px; justify-content: flex-start; align-items: center; }
+            .q7-left { border-right: none; border-bottom: 2px dashed #ddd; padding-right: 0; padding-bottom: 15px; flex: none; width: 100%; }
+            .q7-right { flex: none; width: 100%; }
         }
 
         .date-display { background: #fff; border: 3px solid #ccc; border-radius: 15px; padding: 10px; width: 100%; max-width: 360px; font-size: clamp(30px, 6vw, 42px); font-weight: bold; text-align: center; margin: 0 auto 20px auto; color: #333; display: flex; justify-content: center; gap: 15px; height: 80px; align-items: center; }
@@ -328,7 +288,7 @@
         .num-btn { background: #f8f9fa; border: 2px solid #ddd; border-radius: 12px; font-size: 28px; font-weight: bold; padding: 0; cursor: pointer; box-shadow: 0 4px 0 #ddd; transition: 0.1s; height: 60px; display: flex; align-items: center; justify-content: center; }
         .num-btn:active { transform: translateY(4px); box-shadow: none; background: #eee; }
         
-        .season-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; margin: 0 auto; /* 중앙 정렬 추가 */ }
+        .season-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; margin: 0 auto; }
         .season-btn { background: white; border: 3px solid #eee; border-radius: 15px; font-size: 24px; font-weight: bold; padding: 15px; color: #555; cursor: pointer; transition: 0.2s; font-family: 'Jua', sans-serif; }
         .season-btn.selected { background: #fff3e0; border-color: #ffaa00; color: #d35400; transform: scale(1.02); box-shadow: 0 4px 10px rgba(255, 170, 0, 0.2); }
 
@@ -378,7 +338,7 @@
         /* 모달 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; animation: fadeIn 0.3s; }
-        /* [수정] 모달 박스 - 키보드 발생 시 스크롤 가능하도록 max-height 및 overflow 설정 */
+        /* 모달 박스 - 키보드 대응 */
         .modal-box { 
             background: white; 
             width: 90%; 
@@ -388,18 +348,16 @@
             text-align: center; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
             position: relative; 
-            max-height: 90vh; /* 화면 높이의 90% 제한 */
-            overflow-y: auto; /* 내용이 넘칠 경우 스크롤 허용 */
+            max-height: 90vh; 
+            overflow-y: auto; 
         }
         .modal-title { font-size: 26px; font-weight: bold; margin-bottom: 20px; color: #333; font-family: 'Jua', sans-serif; }
         .privacy-box { background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; height: 140px; overflow-y: auto; font-size: 15px; color: #555; line-height: 1.5; }
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 18px; }
-        /* [NEW] 번호 입력란 옆 확인 버튼 스타일 */
-        .phone-confirm-container {
-            display: flex;
-            gap: 8px;
-        }
+        
+        /* [NEW] 전화번호 입력 및 확인 버튼 컨테이너 */
+        .phone-confirm-container { display: flex; gap: 8px; }
         .btn-phone-confirm {
             background-color: #95a5a6;
             color: white;
@@ -412,10 +370,8 @@
             transition: background 0.2s;
             white-space: nowrap;
         }
-        .btn-phone-confirm:active {
-            background-color: #7f8c8d;
-            transform: scale(0.95);
-        }
+        .btn-phone-confirm:active { background-color: #7f8c8d; transform: scale(0.95); }
+        
         .input-group input { width: 100%; padding: 15px; border: 3px solid #ddd; border-radius: 12px; font-size: 20px; outline: none; transition: border-color 0.2s; }
         .input-group input:focus { border-color: #3498db; }
         .chk-group { text-align: left; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -428,7 +384,7 @@
         .btn-close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #999; background: none; border: none; padding: 0; }
         .btn-close-modal:hover { color: #333; }
 
-        /* [수정] 토스트 메시지 스타일 */
+        /* 토스트 메시지 스타일 */
         #toast-msg {
             visibility: hidden;
             opacity: 0;
@@ -459,10 +415,10 @@
 <body>
 
     <div class="progress-container"><div class="progress-fill" id="progressBar"></div></div>
-    <!-- 토스트 메시지 (초기값 비움) -->
+    <!-- 토스트 메시지 -->
     <div id="toast-msg"></div>
 
-    <!-- [NEW] 전체화면 버튼 (우측 상단) -->
+    <!-- 전체화면 버튼 -->
     <button class="btn-fullscreen" onclick="app.toggleFullScreen()">
         <i class="fa-solid fa-expand"></i>
     </button>
