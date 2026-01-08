@@ -5,11 +5,14 @@
     <!-- [수정] 뷰포트 설정 강화 (확대 방지, 전체화면 대응) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- [NEW] 전체 화면(PWA) 모드 지원 메타 태그 -->
+    <!-- [NEW] 전체 화면(PWA) 모드 지원 메타 태그 및 매니페스트 -->
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS -->
-    <meta name="mobile-web-app-capable" content="yes"> <!-- Android -->
+    <meta name="mobile-web-app-capable" content="yes"> <!-- Android Legacy -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
+    
+    <!-- [NEW] 인라인 매니페스트 (안드로이드 전체화면 지원 핵심) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"어르신 교통안전","short_name":"교통안전","start_url":".","display":"fullscreen","background_color":"#ffffff","theme_color":"#ffffff","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063823.png","sizes":"192x192","type":"image/png"}]}'>
 
     <title>어르신 교통안전 및 정밀 인지 진단 앱</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,28 +178,41 @@
         .score-box { background: #fff3cd; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 25px; border: 3px dashed #ffecb3; }
         .score-num { font-size: clamp(50px, 10vw, 80px); font-family: 'Jua', sans-serif; color: #d35400; line-height: 1; }
         
-        /* 안전 카드 */
+        /* 안전 카드 스타일 */
         .safety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; margin-bottom: 40px; }
         .safety-card { background: white; border: 3px solid #e0e0e0; border-radius: 25px; padding: 25px 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); position: relative; overflow: hidden; height: 100%; min-height: 240px; }
         
-        .card-badge { position: absolute; top: 12px; left: 12px; font-size: 14px; font-weight: 800; padding: 6px 12px; border-radius: 30px; }
+        .card-badge { 
+            position: absolute; top: 12px; left: 12px; 
+            font-size: 14px; 
+            font-weight: 800; padding: 6px 12px; border-radius: 30px; 
+        }
         .card-badge.correction { background: #ffebee; color: #c0392b; border: 1px solid #ef9a9a; }
         .card-badge.activity { background: #e8f8f5; color: #27ae60; border: 1px solid #a5d6a7; }
         .card-badge.habit { background: #fff3e0; color: #e67e22; border: 1px solid #ffe0b2; }
         
         .safety-reason { 
             margin-top: 12px; padding: 10px; background-color: #fff8e1; border-radius: 12px;
-            font-size: 15px; color: #d35400; font-weight: bold; width: 95%; text-align: center; line-height: 1.4;
+            font-size: 15px; 
+            color: #d35400; font-weight: bold; width: 95%; text-align: center; line-height: 1.4;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
         }
+        .safety-reason strong { color: #e65100; font-size: 16px; }
         .safety-card > i { font-size: 60px; margin: 15px 0 15px 0; }
+        
         .safety-card p { font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #333; line-height: 1.3; }
         .safety-card .desc { font-size: 17px; color: #555; line-height: 1.5; margin-bottom: 5px; font-weight: 500; }
 
         /* 데이터 분석 박스 */
         .analysis-box { background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px; border-radius: 0 20px 20px 0; margin-top: 20px; }
-        .analysis-title { font-size: 24px; font-weight: 800; color: #2980b9; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .analysis-text { font-size: 18px; color: #333; line-height: 1.6; }
+        .analysis-title { 
+            font-size: 24px; 
+            font-weight: 800; color: #2980b9; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; 
+        }
+        .analysis-text { 
+            font-size: 18px; 
+            color: #333; line-height: 1.6; 
+        }
 
         /* Q7 레이아웃 (가로 배치) */
         .q7-layout { display: flex; flex-direction: row; gap: 30px; width: 100%; height: 100%; align-items: center; justify-content: center; }
@@ -450,7 +466,7 @@
         </div>
     </div>
 
-    <!-- Q7 -->
+    <!-- Q7: 가로 배치 -->
     <div class="slide-container" id="page-q7">
         <button class="btn-prev" onclick="app.prev('q7')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="q7-layout">
@@ -694,16 +710,30 @@
                 const reactionTime = endTime - this.data.startTime; 
                 this.data.reactionTimes.push(reactionTime);
                 return reactionTime;
+            },
+            
+            // [NEW] 강제 전체 화면 시도
+            requestFullScreen() {
+                try {
+                    const doc = document.documentElement;
+                    if (doc.requestFullscreen) {
+                        doc.requestFullscreen().catch(err => {
+                            console.log("Full screen mode denied or not supported in this context:", err);
+                        });
+                    }
+                    else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+                    else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
+                } catch(e) {
+                    console.warn("Fullscreen request failed", e);
+                }
             }
         };
 
         const app = {
             answers: { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 },
             totalSlides: 12,
-            
-            // 날짜 입력을 위한 변수
             dateInput: { month: "", day: "" },
-            inputStep: 'month', // 'month' or 'day'
+            inputStep: 'month',
             selectedSeason: "",
 
             init() {
@@ -719,6 +749,8 @@
             },
 
             start() {
+                // 시작 시 전체화면 시도
+                BehaviorTracker.requestFullScreen();
                 this.resetVariables();
                 this.shuffleOptions();
                 this.goToSlide('q1');
@@ -726,7 +758,6 @@
 
             resetVariables() {
                 this.answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 };
-                // 날짜 변수 초기화
                 this.dateInput = { month: "", day: "" };
                 this.inputStep = 'month';
                 this.selectedSeason = "";
@@ -738,7 +769,6 @@
 
                 document.getElementById('display-month').innerText = "";
                 document.getElementById('display-day').innerText = "";
-                // ... (리포트 초기화)
                 document.getElementById('cognitive-warning').innerHTML = "";
                 document.getElementById('safety-visual-grid').innerHTML = "";
                 document.getElementById('cognitive-visual-grid').innerHTML = "";
@@ -747,29 +777,23 @@
                 BehaviorTracker.reset();
             },
 
-            // [NEW] 스마트 날짜 입력 함수
             inputSmart(num) {
                 const nStr = num.toString();
-                
                 if (this.inputStep === 'month') {
-                    // 월 입력 단계
                     if (this.dateInput.month.length === 0) {
                         if (num >= 2) {
-                            // 2~9 입력 시 자동 02~09 변환 후 일 입력으로 이동
                             this.dateInput.month = "0" + nStr;
                             this.inputStep = 'day';
                         } else {
-                            // 0 또는 1은 대기
                             this.dateInput.month = nStr;
                         }
                     } else if (this.dateInput.month.length === 1) {
                         const temp = this.dateInput.month + nStr;
                         const tempNum = parseInt(temp);
                         if (tempNum > 12) {
-                            // 13 이상 입력 시 -> 앞자리(1)를 01월로 고정, 뒷자리는 일의 첫자리로
                             this.dateInput.month = "0" + this.dateInput.month; 
                             this.inputStep = 'day';
-                            this.inputSmart(num); // 재귀 호출하여 일(Day) 입력 처리
+                            this.inputSmart(num); 
                             return; 
                         } else {
                             this.dateInput.month = temp;
@@ -777,10 +801,8 @@
                         }
                     }
                 } else {
-                    // 일 입력 단계
                     if (this.dateInput.day.length === 0) {
                         if (num >= 4) {
-                            // 4~9 입력 시 자동 04~09 변환
                             this.dateInput.day = "0" + nStr;
                         } else {
                             this.dateInput.day = nStr;
@@ -789,9 +811,7 @@
                         const temp = this.dateInput.day + nStr;
                         const tempNum = parseInt(temp);
                         if (tempNum > 31) {
-                            // 32 이상 입력 시 -> 앞자리(3)를 03일로 고정
                             this.dateInput.day = "0" + this.dateInput.day;
-                            // 뒷자리는 무시하거나 새로 입력? 여기선 입력 완료 처리
                         } else {
                             this.dateInput.day = temp;
                         }
