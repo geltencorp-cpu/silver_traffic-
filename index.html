@@ -2,7 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- [수정] 뷰포트 설정 강화 (확대 방지, 전체화면 대응) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- [NEW] 전체 화면(PWA) 모드 지원 메타 태그 -->
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iOS -->
+    <meta name="mobile-web-app-capable" content="yes"> <!-- Android -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
+
     <title>어르신 교통안전 및 정밀 인지 진단 앱</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,36 +19,63 @@
     <style>
         /* 1. 기본 설정 */
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body {
+        html, body {
             margin: 0; padding: 0;
             background-color: #f0f2f5;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh;
+            /* [수정] 화면 높이 문제 해결을 위한 설정 */
+            height: 100%; 
+            height: 100dvh; /* 동적 뷰포트 높이 사용 */
+            width: 100%;
+            overflow: hidden; /* 전체 페이지 스크롤 방지 (컨테이너 내부만 스크롤) */
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
             font-family: 'Noto Sans KR', sans-serif;
             word-break: keep-all; 
-            overflow: hidden;
         }
 
-        /* 2. 슬라이드 컨테이너 */
+        /* 2. 슬라이드 컨테이너 [수정] */
         .slide-container {
-            width: 95%; max-width: 1280px; 
-            height: 90vh; max-height: 850px; 
+            width: 95%; 
+            max-width: 1280px; 
+            /* [수정] 높이를 화면에 꽉 차되 여유를 둠 */
+            height: 95%; 
+            height: 95dvh; 
+            max-height: 900px;
+            
             background-color: #ffffff;
             border-radius: 30px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            position: relative; overflow: hidden;
+            position: relative; 
+            overflow-y: auto; /* 내용 넘침 시 스크롤 */
+            overflow-x: hidden;
             display: none;
             flex-direction: column;
             padding: 4vh 4vw;
             border: 4px solid #ffaa00;
-            overflow-y: auto; /* 내용 넘침 방지 */
+            
+            /* 스크롤바 디자인 */
+            scrollbar-width: thin;
+            scrollbar-color: #ffaa00 #eee;
         }
+        
+        /* 모바일/태블릿 전체화면 대응 */
         @media (max-width: 1024px) {
             .slide-container {
-                width: 100%; height: 100vh; max-height: none;
-                border-radius: 0; border: none; padding: 20px;
+                width: 100%; 
+                height: 100%; 
+                height: 100dvh; /* 모바일에서는 꽉 채움 */
+                max-height: none;
+                border-radius: 0; 
+                border: none; 
+                padding: 20px;
             }
         }
+
+        .slide-container::-webkit-scrollbar { width: 8px; }
+        .slide-container::-webkit-scrollbar-thumb { background-color: #ffaa00; border-radius: 10px; }
+        .slide-container::-webkit-scrollbar-track { background-color: #eee; }
+
         .slide-container.active { display: flex; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
@@ -64,13 +99,15 @@
         .highlight { color: #d35400; font-weight: bold; }
 
         /* 4. 레이아웃 */
-        .center-box { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; }
+        .center-box { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; margin: auto 0; }
         .split-box { display: flex; flex-direction: row; gap: 40px; height: 100%; align-items: center; justify-content: center; }
         .split-box > div { flex: 1; width: 100%; }
         @media (max-width: 900px) {
-            .split-box { flex-direction: column-reverse; gap: 20px; overflow-y: auto; justify-content: flex-start; padding-top: 40px; }
+            .split-box { flex-direction: column-reverse; gap: 20px; overflow-y: auto; justify-content: flex-start; padding-top: 20px; }
             .split-box > div { flex: none; }
             .text-area { padding-bottom: 20px; }
+            /* 모바일에서 센터 박스 위치 조정 */
+            .center-box { justify-content: flex-start; padding-top: 40px; }
         }
 
         /* 5. 미디어 */
@@ -192,10 +229,12 @@
         .cognitive-card.danger { border-color: #ef9a9a; background-color: #fffbfb; }
         .cognitive-card.warning { border-color: #ffe082; background-color: #fffdf5; }
         .cognitive-card.good { border-color: #a5d6a7; background-color: #f1f8e9; }
+
         .cognitive-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 10px; color: white; }
         .danger .cognitive-icon { background-color: #e57373; }
         .warning .cognitive-icon { background-color: #ffb74d; }
         .good .cognitive-icon { background-color: #81c784; }
+
         .cognitive-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #333; }
         .cognitive-score { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
         .danger .cognitive-score { color: #c62828; }
@@ -218,6 +257,7 @@
         .warning-icon-wrapper { font-size: 40px; margin-bottom: 10px; display: inline-block; animation: fa-beat-fade 2s infinite; }
         .warning-box h3 { color: #c62828; font-size: 24px; margin: 0 0 10px 0; font-weight: 800; }
         .warning-box p { color: #b71c1c; font-size: 18px; margin: 0 0 20px 0; line-height: 1.5; font-weight: 600; }
+        
         .btn-warning-action { background-color: #c62828; color: white; border: none; padding: 15px 35px; font-size: 22px; border-radius: 50px; font-family: 'Jua', sans-serif; cursor: pointer; box-shadow: 0 4px 10px rgba(198, 40, 40, 0.4); transition: transform 0.2s, background-color 0.2s; display: inline-flex; align-items: center; gap: 10px; justify-content: center; }
         .btn-warning-action:hover { transform: scale(1.05); background-color: #b71c1c; }
         .btn-warning-action:active { transform: scale(0.95); }
