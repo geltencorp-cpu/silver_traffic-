@@ -395,6 +395,27 @@
         .privacy-box { background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; height: 140px; overflow-y: auto; font-size: 15px; color: #555; line-height: 1.5; }
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 18px; }
+        /* [NEW] 번호 입력란 옆 확인 버튼 스타일 */
+        .phone-confirm-container {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-phone-confirm {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-size: 18px;
+            font-family: 'Jua', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .btn-phone-confirm:active {
+            background-color: #7f8c8d;
+            transform: scale(0.95);
+        }
         .input-group input { width: 100%; padding: 15px; border: 3px solid #ddd; border-radius: 12px; font-size: 20px; outline: none; transition: border-color 0.2s; }
         .input-group input:focus { border-color: #3498db; }
         .chk-group { text-align: left; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -453,7 +474,11 @@
             <div class="modal-title"><i class="fa-solid fa-file-medical"></i> 상담 신청 및 데이터 전송</div>
             <div class="input-group">
                 <label>휴대폰 번호</label>
-                <input type="tel" id="user-phone" placeholder="010-0000-0000" maxlength="13">
+                <!-- [수정] 번호 입력란 + 확인 버튼 -->
+                <div class="phone-confirm-container">
+                    <input type="tel" id="user-phone" placeholder="010-0000-0000" maxlength="13" style="flex: 1;">
+                    <button class="btn-phone-confirm" onclick="app.hideKeyboard()">확인</button>
+                </div>
             </div>
             <div class="privacy-box">
                 <strong>[개인정보 수집 및 이용 동의]</strong><br>
@@ -923,6 +948,14 @@
             // [수정] 전체 화면 토글 기능 추가 (HTML 버튼에서 호출)
             toggleFullScreen() {
                 BehaviorTracker.toggleFullScreen();
+            },
+            
+            // [NEW] 키보드 숨기기 (확인 버튼용)
+            hideKeyboard() {
+                const input = document.getElementById('user-phone');
+                if(input) {
+                    input.blur(); // 포커스 해제 -> 키보드 내려감
+                }
             },
 
             showToast(msg) {
@@ -1523,4 +1556,4 @@
         window.onload = () => app.init();
     </script>
 </body>
-</html>```
+</html>
