@@ -6,10 +6,10 @@
     <title>어르신 교통안전 및 정밀 인지 진단 앱</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* [기존 스타일 유지] */
+        /* 1. 기본 설정 */
         * { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0;
@@ -21,9 +21,10 @@
             overflow: hidden;
         }
 
+        /* 2. 슬라이드 컨테이너 */
         .slide-container {
             width: 95%; max-width: 1280px; 
-            height: 90vh; max-height: 720px;
+            height: 90vh; max-height: 850px; 
             background-color: #ffffff;
             border-radius: 30px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.1);
@@ -42,11 +43,26 @@
         .slide-container.active { display: flex; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        h1 { font-family: 'Jua', sans-serif; font-size: clamp(32px, 5vw, 64px); color: #333; margin: 0 0 2vh 0; line-height: 1.2; white-space: nowrap; text-align: center; }
-        h2 { font-family: 'Jua', sans-serif; font-size: clamp(24px, 4vw, 38px); color: #333; margin: 0 0 2vh 0; line-height: 1.3; text-align: left; letter-spacing: -1px; }
-        p { font-size: clamp(18px, 2.5vw, 26px); color: #555; line-height: 1.6; margin-bottom: 2vh; }
+        /* 3. 폰트 및 텍스트 */
+        h1 { 
+            font-family: 'Jua', sans-serif; 
+            font-size: clamp(32px, 5vw, 60px); 
+            color: #333; margin: 0 0 2vh 0; line-height: 1.2; 
+            white-space: nowrap; text-align: center;
+        }
+        h2 { 
+            font-family: 'Jua', sans-serif; 
+            font-size: clamp(24px, 4vw, 40px);
+            color: #333; margin: 0 0 2vh 0; line-height: 1.3; 
+            text-align: left; letter-spacing: -1px; 
+        }
+        p { 
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: #444; line-height: 1.6; margin-bottom: 2vh; font-weight: 500;
+        }
         .highlight { color: #d35400; font-weight: bold; }
 
+        /* 4. 레이아웃 */
         .center-box { text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; }
         .split-box { display: flex; flex-direction: row; gap: 40px; height: 100%; align-items: center; justify-content: center; }
         .split-box > div { flex: 1; width: 100%; }
@@ -56,203 +72,199 @@
             .text-area { padding-bottom: 20px; }
         }
 
+        /* 5. 미디어 */
         .media-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .media-wrapper { width: 100%; aspect-ratio: 16/9; height: auto; border-radius: 20px; overflow: hidden; background: #000; border: 2px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; }
         .media-wrapper iframe { width: 100%; height: 100%; border: none; }
-        .video-guide-text { text-align: center; font-size: clamp(16px, 2vw, 22px); color: #2980b9; font-weight: bold; margin-bottom: 5px; font-family: 'Jua', sans-serif; }
+        .video-guide-text { 
+            text-align: center; 
+            font-size: clamp(18px, 2.5vw, 24px);
+            color: #2980b9; font-weight: bold; margin-bottom: 10px; font-family: 'Jua', sans-serif; 
+        }
 
-        .btn-start { background: #ff6b6b; color: white; border: none; padding: 2vh 5vw; font-size: clamp(24px, 4vw, 40px); font-family: 'Jua', sans-serif; border-radius: 60px; cursor: pointer; box-shadow: 0 6px 0 #c0392b; transition: transform 0.1s; margin-top: 4vh; }
+        /* 6. 버튼 */
+        .btn-start { 
+            background: #ff6b6b; color: white; border: none; 
+            padding: 2vh 5vw; 
+            font-size: clamp(28px, 4vw, 42px); 
+            font-family: 'Jua', sans-serif; border-radius: 80px; cursor: pointer; 
+            box-shadow: 0 6px 0 #c0392b; transition: transform 0.1s; margin-top: 4vh; 
+        }
         .btn-start:active { transform: translateY(6px); box-shadow: none; }
-        .btn-option { background: white; border: 3px solid #eee; border-radius: 20px; padding: clamp(15px, 2vh, 22px) clamp(20px, 2vw, 30px); font-size: clamp(18px, 2.5vw, 28px); text-align: left; width: 100%; margin-bottom: 15px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; font-weight: 500; line-height: 1.3; color: #444; }
+        
+        .btn-option { 
+            background: white; border: 3px solid #eee; 
+            border-radius: 20px; 
+            padding: clamp(15px, 2vh, 22px);
+            font-size: clamp(20px, 2.5vw, 28px);
+            text-align: left; width: 100%; margin-bottom: 12px;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; 
+            font-weight: 700; line-height: 1.3; color: #333; 
+        }
         .btn-option:hover { background: #fff8e1; border-color: #ffaa00; transform: translateX(5px); }
         .btn-option:active { background: #ffe0b2; transform: scale(0.99); }
         .btn-option i { margin-right: 20px; color: #ffaa00; width: 40px; text-align: center; flex-shrink: 0; font-size: 1.2em; }
 
-        .btn-prev { position: absolute; top: 20px; left: 20px; background: #95a5a6; color: white; border: none; padding: 8px 20px; font-size: 20px; font-family: 'Jua', sans-serif; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 0 #7f8c8d; transition: transform 0.1s; display: flex; align-items: center; gap: 8px; z-index: 100; }
+        .btn-prev { 
+            position: absolute; top: 20px; left: 20px; 
+            background: #95a5a6; color: white; border: none; 
+            padding: 10px 25px; font-size: 20px; 
+            font-family: 'Jua', sans-serif; border-radius: 40px; cursor: pointer; 
+            box-shadow: 0 4px 0 #7f8c8d; transition: transform 0.1s; 
+            display: flex; align-items: center; gap: 8px; z-index: 100; 
+        }
         .btn-prev:active { transform: translateY(4px); box-shadow: none; }
-        .btn-prev:hover { background: #7f8c8d; }
         .admin-reset-btn { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background-color: #ecf0f1; color: #95a5a6; border: 2px solid #bdc3c7; font-size: 18px; cursor: pointer; transition: all 0.2s; z-index: 100; display: flex; justify-content: center; align-items: center; }
-        .admin-reset-btn:active { background-color: #bdc3c7; color: white; }
-
-        .tab-menu { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; width: 100%; }
-        .tab-btn { padding: 10px 0; width: 32%; font-size: clamp(16px, 2.5vw, 22px); font-family: 'Jua', sans-serif; border: none; background: #eee; border-radius: 15px; cursor: pointer; color: #7f8c8d; transition: 0.2s; }
-        .tab-btn.active { background: #ffaa00; color: white; box-shadow: 0 4px 10px rgba(255, 170, 0, 0.3); transform: translateY(-2px); }
         
-        .report-content { flex: 1; border: 3px solid #ffaa00; border-radius: 24px; padding: 20px; background: white; display: none; overflow-y: auto; width: 100%; scrollbar-width: thin; scrollbar-color: #ffaa00 #eee; }
-        .report-content::-webkit-scrollbar { width: 8px; }
-        .report-content::-webkit-scrollbar-thumb { background-color: #ffaa00; border-radius: 10px; }
+        /* 7. 탭 메뉴 & 리포트 */
+        .tab-menu { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; width: 100%; }
+        .tab-btn { 
+            padding: 12px 0; width: 32%; 
+            font-size: clamp(18px, 2.5vw, 24px);
+            font-family: 'Jua', sans-serif; border: none; background: #eee; border-radius: 15px; 
+            cursor: pointer; color: #7f8c8d; transition: 0.2s; font-weight: bold;
+        }
+        .tab-btn.active { background: #ffaa00; color: white; box-shadow: 0 4px 10px rgba(255, 170, 0, 0.3); transform: translateY(-3px); }
+        
+        .report-content { 
+            flex: 1; border: 4px solid #ffaa00; border-radius: 30px; padding: 25px; 
+            background: white; display: none; overflow-y: auto; 
+            width: 100%; scrollbar-width: thin; scrollbar-color: #ffaa00 #eee; 
+            font-size: 1.1em;
+        }
         .report-content.show { display: block; animation: fadeIn 0.3s; }
         
-        .score-box { background: #fff3cd; padding: 15px; border-radius: 20px; text-align: center; margin-bottom: 20px; border: 2px dashed #ffecb3; }
-        .score-num { font-size: clamp(40px, 8vw, 64px); font-family: 'Jua', sans-serif; color: #d35400; line-height: 1; }
-        .safety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; margin-bottom: 30px; }
-        .safety-card { background: white; border: 2px solid #e0e0e0; border-radius: 24px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); position: relative; overflow: hidden; height: 100%; min-height: 220px; }
+        .score-box { background: #fff3cd; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 25px; border: 3px dashed #ffecb3; }
+        .score-num { font-size: clamp(50px, 10vw, 80px); font-family: 'Jua', sans-serif; color: #d35400; line-height: 1; }
         
-        .card-badge { position: absolute; top: 10px; left: 10px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 30px; }
+        /* 안전 카드 스타일 */
+        .safety-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; margin-bottom: 40px; }
+        .safety-card { background: white; border: 3px solid #e0e0e0; border-radius: 25px; padding: 25px 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); position: relative; overflow: hidden; height: 100%; min-height: 240px; }
+        
+        .card-badge { 
+            position: absolute; top: 12px; left: 12px; 
+            font-size: 14px; 
+            font-weight: 800; padding: 6px 12px; border-radius: 30px; 
+        }
         .card-badge.correction { background: #ffebee; color: #c0392b; border: 1px solid #ef9a9a; }
         .card-badge.activity { background: #e8f8f5; color: #27ae60; border: 1px solid #a5d6a7; }
+        .card-badge.habit { background: #fff3e0; color: #e67e22; border: 1px solid #ffe0b2; }
         
         .safety-reason { 
-            margin-top: 12px; padding: 10px; background-color: #fff8e1; border-radius: 10px;
-            font-size: 14px; color: #d35400; font-weight: bold; width: 90%; text-align: center; line-height: 1.4;
+            margin-top: 12px; padding: 10px; background-color: #fff8e1; border-radius: 12px;
+            font-size: 15px; 
+            color: #d35400; font-weight: bold; width: 95%; text-align: center; line-height: 1.4;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+        }
+        .safety-reason strong { color: #e65100; font-size: 16px; }
+        .safety-card > i { font-size: 60px; margin: 15px 0 15px 0; }
+        
+        .safety-card p { font-size: 22px; font-weight: 800; margin: 0 0 8px 0; color: #333; line-height: 1.3; }
+        .safety-card .desc { font-size: 17px; color: #555; line-height: 1.5; margin-bottom: 5px; font-weight: 500; }
+
+        /* 데이터 분석 박스 */
+        .analysis-box { background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px; border-radius: 0 20px 20px 0; margin-top: 20px; }
+        .analysis-title { 
+            font-size: 24px; 
+            font-weight: 800; color: #2980b9; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; 
+        }
+        .analysis-text { 
+            font-size: 18px; 
+            color: #333; line-height: 1.6; 
         }
 
-        .safety-card i { font-size: 48px; margin: 10px 0 10px 0; }
-        .safety-card p { font-size: 20px; font-weight: 700; margin: 0 0 5px 0; color: #333; line-height: 1.3; }
-        .safety-card .desc { font-size: 15px; color: #666; line-height: 1.5; margin-bottom: 5px; }
+        /* Q7 레이아웃 (가로 배치) */
+        .q7-layout { display: flex; flex-direction: row; gap: 30px; width: 100%; height: 100%; align-items: center; justify-content: center; }
+        .q7-left { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 2px dashed #ddd; padding-right: 15px; }
+        .q7-right { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        @media (max-width: 900px) {
+            .q7-layout { flex-direction: column; gap: 15px; overflow-y: auto; padding-top: 20px; justify-content: flex-start; }
+            .q7-left { border-right: none; border-bottom: 2px dashed #ddd; padding-right: 0; padding-bottom: 15px; flex: none; width: 100%; }
+            .q7-right { flex: none; width: 100%; }
+        }
+
+        .date-display { background: #fff; border: 3px solid #ccc; border-radius: 15px; padding: 10px; width: 100%; max-width: 360px; font-size: clamp(30px, 6vw, 42px); font-weight: bold; text-align: center; margin: 0 auto 20px auto; color: #333; display: flex; justify-content: center; gap: 15px; height: 80px; align-items: center; }
+        .date-part { color: #d35400; border-bottom: 4px solid #d35400; padding: 0 5px; min-width: 70px; display: inline-block; text-align: center;}
         
-        .analysis-box { background-color: #f8f9fa; border-left: 6px solid #3498db; padding: 20px; border-radius: 0 15px 15px 0; margin-top: 10px; }
-        .analysis-title { font-size: 22px; font-weight: bold; color: #2980b9; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .analysis-text { font-size: 18px; color: #444; line-height: 1.6; }
-
-        .progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: #eee; z-index: 50; }
-        .progress-fill { height: 100%; background: #27ae60; width: 0%; transition: width 0.3s; }
-
-        .date-display { background: #fff; border: 3px solid #ccc; border-radius: 15px; padding: 10px; width: 100%; max-width: 360px; font-size: clamp(30px, 6vw, 40px); font-weight: bold; text-align: center; margin: 0 auto 20px auto; color: #333; display: flex; justify-content: center; gap: 15px; height: 80px; align-items: center; }
-        .date-part { color: #d35400; border-bottom: 4px solid #d35400; padding: 0 5px; min-width: 60px; display: inline-block; text-align: center;}
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 360px; margin: 0 auto; }
         .num-btn { background: #f8f9fa; border: 2px solid #ddd; border-radius: 12px; font-size: 28px; font-weight: bold; padding: 0; cursor: pointer; box-shadow: 0 4px 0 #ddd; transition: 0.1s; height: 60px; display: flex; align-items: center; justify-content: center; }
         .num-btn:active { transform: translateY(4px); box-shadow: none; background: #eee; }
-        .num-btn.confirm { background: #27ae60; color: white; border-color: #219150; box-shadow: 0 4px 0 #1e8449; }
+        
+        .season-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; }
+        .season-btn { background: white; border: 3px solid #eee; border-radius: 15px; font-size: 24px; font-weight: bold; padding: 15px; color: #555; cursor: pointer; transition: 0.2s; font-family: 'Jua', sans-serif; }
+        .season-btn.selected { background: #fff3e0; border-color: #ffaa00; color: #d35400; transform: scale(1.02); box-shadow: 0 4px 10px rgba(255, 170, 0, 0.2); }
 
-        #toast-msg { visibility: hidden; min-width: 250px; background-color: rgba(50, 50, 50, 0.9); color: #fff; text-align: center; border-radius: 50px; padding: 16px 30px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 20px; font-weight: bold; opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 80%; max-width: 400px; }
-        #toast-msg.show { visibility: visible; opacity: 1; bottom: 50px; }
+        /* 인지 차트 */
+        .chart-container { position: relative; width: 100%; max-width: 500px; height: 350px; margin: 0 auto 30px auto; display: flex; justify-content: center; align-items: center; }
+        canvas { max-width: 100%; max-height: 100%; }
 
-        .cognitive-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
-            margin-bottom: 30px;
-        }
-        .cognitive-card {
-            background: #fff; border-radius: 20px; padding: 20px; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 2px solid transparent;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-        }
+        /* 인지 카드 */
+        .cognitive-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .cognitive-card { background: #fff; border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; text-align: center; }
         .cognitive-card.danger { border-color: #ef9a9a; background-color: #fffbfb; }
         .cognitive-card.warning { border-color: #ffe082; background-color: #fffdf5; }
         .cognitive-card.good { border-color: #a5d6a7; background-color: #f1f8e9; }
 
-        .cognitive-icon {
-            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; margin-bottom: 10px; color: white;
-        }
+        .cognitive-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 10px; color: white; }
         .danger .cognitive-icon { background-color: #e57373; }
         .warning .cognitive-icon { background-color: #ffb74d; }
         .good .cognitive-icon { background-color: #81c784; }
 
-        .cognitive-title { font-size: 20px; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .cognitive-score { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+        .cognitive-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #333; }
+        .cognitive-score { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
         .danger .cognitive-score { color: #c62828; }
         .warning .cognitive-score { color: #f57f17; }
         .good .cognitive-score { color: #2e7d32; }
+        .cognitive-desc { font-size: 16px; color: #444; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 10px; width: 100%; font-weight: 500; }
 
-        .cognitive-desc { font-size: 15px; color: #555; line-height: 1.4; background: rgba(255,255,255,0.7); padding: 10px; border-radius: 10px; width: 100%; }
-
-        .behavior-card { background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 20px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        /* 행동 분석 카드 */
+        .behavior-card { background: #fff; border: 2px solid #ddd; border-radius: 20px; padding: 20px; margin-bottom: 15px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .behavior-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
-        .behavior-content h4 { margin: 0 0 5px 0; font-size: 18px; color: #333; }
-        .behavior-content p { margin: 0; font-size: 15px; color: #666; line-height: 1.4; }
-        .risk-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .behavior-content h4 { margin: 0 0 5px 0; font-size: 20px; color: #333; font-weight: 800; }
+        .behavior-content p { margin: 0; font-size: 16px; color: #555; line-height: 1.4; }
+        .risk-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 800; margin-bottom: 5px; }
         .risk-high { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
         .risk-low { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
 
-        .visual-search-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 500px;
-        }
-        .visual-search-item {
-            background: white; border: 3px solid #eee; border-radius: 15px;
-            height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.2s; font-size: 20px; font-weight: bold; color: #555;
-        }
-        .visual-search-item:active { transform: scale(0.95); background: #f0f0f0; }
-        .visual-search-item i { font-size: 50px; margin-bottom: 10px; }
-
-        /* [NEW] 위험 경고 박스 디자인 (사이렌) */
-        .warning-box {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
-            border: 3px solid #ef5350;
-            border-radius: 20px;
-            padding: 30px 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(239, 83, 80, 0.2);
-            animation: pulse-border 2s infinite;
-            position: relative;
-            overflow: hidden;
-        }
+        /* 경고 박스 */
+        .warning-box { background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%); border: 3px solid #ef5350; border-radius: 20px; padding: 25px 20px; margin-bottom: 30px; text-align: center; box-shadow: 0 8px 20px rgba(239, 83, 80, 0.2); animation: pulse-border 2s infinite; position: relative; overflow: hidden; }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 83, 80, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0); } }
+        .warning-icon-wrapper { font-size: 40px; margin-bottom: 10px; display: inline-block; animation: fa-beat-fade 2s infinite; }
+        .warning-box h3 { color: #c62828; font-size: 24px; margin: 0 0 10px 0; font-weight: 800; }
+        .warning-box p { color: #b71c1c; font-size: 18px; margin: 0 0 20px 0; line-height: 1.5; font-weight: 600; }
         
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(239, 83, 80, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0); }
-        }
-
-        .warning-icon-wrapper { font-size: 60px; margin-bottom: 15px; display: inline-block; animation: fa-beat-fade 2s infinite; }
-        .warning-box h3 { color: #c62828; font-size: 26px; margin: 0 0 10px 0; font-weight: 800; }
-        .warning-box p { color: #b71c1c; font-size: 18px; margin: 0 0 20px 0; line-height: 1.5; }
-        
-        .btn-warning-action {
-            background-color: #c62828; color: white; border: none;
-            padding: 15px 30px; font-size: 20px; border-radius: 50px;
-            font-family: 'Jua', sans-serif; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.4);
-            transition: transform 0.2s, background-color 0.2s;
-            display: inline-flex; align-items: center; gap: 10px;
-        }
+        .btn-warning-action { background-color: #c62828; color: white; border: none; padding: 15px 35px; font-size: 22px; border-radius: 50px; font-family: 'Jua', sans-serif; cursor: pointer; box-shadow: 0 4px 10px rgba(198, 40, 40, 0.4); transition: transform 0.2s, background-color 0.2s; display: inline-flex; align-items: center; gap: 10px; justify-content: center; }
         .btn-warning-action:hover { transform: scale(1.05); background-color: #b71c1c; }
         .btn-warning-action:active { transform: scale(0.95); }
 
-        /* [NEW] 모달 스타일 */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 9999;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
-        }
+        /* 모달 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; animation: fadeIn 0.3s; }
-        
-        .modal-box {
-            background: white; width: 90%; max-width: 450px;
-            padding: 30px; border-radius: 25px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        
-        .modal-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333; font-family: 'Jua', sans-serif; }
-        
-        .privacy-box {
-            background: #f8f9fa; border: 1px solid #ddd; border-radius: 10px;
-            padding: 15px; margin-bottom: 20px; text-align: left;
-            height: 120px; overflow-y: auto; font-size: 13px; color: #555; line-height: 1.5;
-        }
-        
+        .modal-box { background: white; width: 90%; max-width: 500px; padding: 30px; border-radius: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; }
+        .modal-title { font-size: 26px; font-weight: bold; margin-bottom: 20px; color: #333; font-family: 'Jua', sans-serif; }
+        .privacy-box { background: #f8f9fa; border: 1px solid #ddd; border-radius: 12px; padding: 15px; margin-bottom: 20px; text-align: left; height: 140px; overflow-y: auto; font-size: 15px; color: #555; line-height: 1.5; }
         .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 16px; }
-        .input-group input { 
-            width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 18px; 
-            outline: none; transition: border-color 0.2s;
-        }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 18px; }
+        .input-group input { width: 100%; padding: 15px; border: 3px solid #ddd; border-radius: 12px; font-size: 20px; outline: none; transition: border-color 0.2s; }
         .input-group input:focus { border-color: #3498db; }
-        
         .chk-group { text-align: left; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .chk-group input { width: 20px; height: 20px; cursor: pointer; accent-color: #3498db; }
-        .chk-group label { cursor: pointer; font-size: 16px; font-weight: bold; color: #333; }
-        
-        .btn-submit { 
-            width: 100%; padding: 16px; background: #27ae60; color: white; 
-            border: none; border-radius: 15px; font-size: 20px; font-family: 'Jua', sans-serif;
-            cursor: pointer; transition: background-color 0.2s;
-            box-shadow: 0 4px 0 #1e8449;
-        }
+        .chk-group input { width: 24px; height: 24px; cursor: pointer; accent-color: #3498db; }
+        .chk-group label { cursor: pointer; font-size: 18px; font-weight: bold; color: #333; }
+        .btn-submit { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 15px; font-size: 24px; font-family: 'Jua', sans-serif; cursor: pointer; transition: background-color 0.2s; box-shadow: 0 5px 0 #1e8449; }
         .btn-submit:hover { background-color: #2ecc71; }
         .btn-submit:active { transform: translateY(4px); box-shadow: none; }
         .btn-submit:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; }
-
-        .btn-close-modal {
-            position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #999;
-            background: none; border: none; padding: 0;
-        }
+        .btn-close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #999; background: none; border: none; padding: 0; }
         .btn-close-modal:hover { color: #333; }
 
+        #toast-msg { visibility: hidden; min-width: 300px; background-color: rgba(50, 50, 50, 0.95); color: #fff; text-align: center; border-radius: 60px; padding: 20px 40px; position: fixed; z-index: 2000; left: 50%; bottom: 40px; transform: translateX(-50%); font-size: 24px; font-weight: bold; opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 85%; max-width: 450px; }
+        #toast-msg.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .visual-search-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 500px; }
+        .visual-search-item { background: white; border: 3px solid #eee; border-radius: 15px; height: 150px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; font-size: 20px; font-weight: bold; color: #555; }
+        .visual-search-item:active { transform: scale(0.95); background: #f0f0f0; }
+        .visual-search-item i { font-size: 50px; margin-bottom: 10px; }
+        .progress-container { position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: #eee; z-index: 50; }
+        .progress-fill { height: 100%; background: #27ae60; width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -260,49 +272,42 @@
     <div class="progress-container"><div class="progress-fill" id="progressBar"></div></div>
     <div id="toast-msg">알림 메시지</div>
 
-    <!-- [NEW] 개인정보 동의 및 전송 모달 -->
+    <!-- 모달 -->
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-box">
             <button class="btn-close-modal" onclick="app.closeConsentModal()"><i class="fa-solid fa-xmark"></i></button>
             <div class="modal-title"><i class="fa-solid fa-file-medical"></i> 상담 신청 및 데이터 전송</div>
-            
             <div class="input-group">
                 <label>휴대폰 번호</label>
                 <input type="tel" id="user-phone" placeholder="010-0000-0000" maxlength="13">
             </div>
-
             <div class="privacy-box">
                 <strong>[개인정보 수집 및 이용 동의]</strong><br>
                 1. 수집 목적: 치매안심센터 상담 연계 및 정밀 진단 예약<br>
-                2. 수집 항목: 휴대폰 번호, 진단 결과 데이터(인지/행동 지표)<br>
+                2. 수집 항목: 휴대폰 번호, 진단 결과 데이터<br>
                 3. 보유 기간: 상담 종료 시까지 (최대 1년)<br>
-                ※ 귀하는 동의를 거부할 권리가 있으나, 거부 시 상담 신청이 불가능합니다.
+                ※ 동의 거부 시 상담 신청이 제한될 수 있습니다.
             </div>
-
             <div class="chk-group">
                 <input type="checkbox" id="privacy-agree" onchange="app.toggleSubmitBtn()">
                 <label for="privacy-agree">위 내용에 동의하며 전송합니다.</label>
             </div>
-
-            <button id="btn-submit-data" class="btn-submit" onclick="app.submitUserData()" disabled>
-                데이터 전송하기
-            </button>
+            <button id="btn-submit-data" class="btn-submit" onclick="app.submitUserData()" disabled>데이터 전송하기</button>
         </div>
     </div>
 
-    <!-- 1. 시작 화면 -->
+    <!-- 1. 시작 -->
     <div class="slide-container active" id="page-start">
         <div class="center-box">
-            <div style="font-size: clamp(80px, 15vw, 150px); color: #ffaa00; margin-bottom: 4vh;">
-                <i class="fa-solid fa-traffic-light"></i>
-            </div>
+            <div style="font-size: clamp(80px, 15vw, 150px); color: #ffaa00; margin-bottom: 4vh;"><i class="fa-solid fa-traffic-light"></i></div>
             <h1>어르신 교통안전 <span class="highlight">및 인지능력 진단</span></h1>
             <p>문제를 풀면 <strong>6대 인지 영역 분석</strong>과<br><strong>무의식적 행동 패턴</strong>을 분석해드립니다.</p>
             <button class="btn-start btn-action" onclick="app.start()">시작하기</button>
         </div>
     </div>
 
-    <!-- 2. Q1: 신호등 (집행기능/기억력/언어) -->
+    <!-- Q1 ~ Q12 -->
+    <!-- Q1 -->
     <div class="slide-container" id="page-q1">
         <button class="btn-prev" onclick="app.prev('q1')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
@@ -314,14 +319,12 @@
             </div>
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/fQqtMe2qCOo?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/fQqtMe2qCOo?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
         </div>
     </div>
 
-    <!-- 3. Q2: 흡연량 (설문) -->
+    <!-- Q2 -->
     <div class="slide-container" id="page-q2">
         <button class="btn-prev" onclick="app.prev('q2')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -336,15 +339,13 @@
         </div>
     </div>
 
-    <!-- 4. Q3: 야간 보행 (시공간/주의력) -->
+    <!-- Q3 -->
     <div class="slide-container" id="page-q3">
         <button class="btn-prev" onclick="app.prev('q3')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/SNFpQjgokSM?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
             <div class="text-area">
                 <h2>Q3. <span style="color:#ff6b6b;">밤에 외출할 때</span><br>가장 안전한 옷차림은?</h2>
@@ -355,7 +356,7 @@
         </div>
     </div>
 
-    <!-- 5. Q4: 버스 하차 (주의력/집행기능) -->
+    <!-- Q4 -->
     <div class="slide-container" id="page-q4">
         <button class="btn-prev" onclick="app.prev('q4')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
@@ -367,22 +368,18 @@
             </div>
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/TQ0MmKOPVn8?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/TQ0MmKOPVn8?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
         </div>
     </div>
 
-    <!-- 6. Q5: 무단횡단 (집행기능/판단력) -->
+    <!-- Q5 -->
     <div class="slide-container" id="page-q5">
         <button class="btn-prev" onclick="app.prev('q5')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/gg8lMb-WSpg?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/gg8lMb-WSpg?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
             <div class="text-area">
                 <h2>Q5. 횡단보도가 없는 곳이라면<br>어떻게 건너야 할까요?</h2>
@@ -393,7 +390,7 @@
         </div>
     </div>
 
-    <!-- 7. Q6: 골목길 (시공간/기억력) -->
+    <!-- Q6 -->
     <div class="slide-container" id="page-q6">
         <button class="btn-prev" onclick="app.prev('q6')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
@@ -405,59 +402,48 @@
             </div>
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/64JQUbItWiY?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/64JQUbItWiY?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
         </div>
     </div>
 
-    <!-- 8. Q7: 오늘 날짜 (지남력 강화: 날짜 + 계절) -->
+    <!-- Q7: 가로 배치 -->
     <div class="slide-container" id="page-q7">
         <button class="btn-prev" onclick="app.prev('q7')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
-        <div class="center-box">
-            <h2 style="margin-bottom: 15px; text-align: center;">Q7. 오늘은 며칠이며,<br>어떤 계절인가요?</h2>
-            
-            <div class="date-display">
-                <span id="display-month" class="date-part"></span>월
-                <span id="display-day" class="date-part"></span>일
+        <div class="q7-layout">
+            <div class="q7-left">
+                <h2 style="text-align: center; margin-bottom: 20px;">Q7. 오늘은 몇 월 며칠 인가요?</h2>
+                <div class="date-display">
+                    <span id="display-month" class="date-part"></span>월
+                    <span id="display-day" class="date-part"></span>일
+                </div>
+                <div class="numpad">
+                    <button class="num-btn btn-action" onclick="app.inputSmart(1)">1</button><button class="num-btn btn-action" onclick="app.inputSmart(2)">2</button><button class="num-btn btn-action" onclick="app.inputSmart(3)">3</button>
+                    <button class="num-btn btn-action" onclick="app.inputSmart(4)">4</button><button class="num-btn btn-action" onclick="app.inputSmart(5)">5</button><button class="num-btn btn-action" onclick="app.inputSmart(6)">6</button>
+                    <button class="num-btn btn-action" onclick="app.inputSmart(7)">7</button><button class="num-btn btn-action" onclick="app.inputSmart(8)">8</button><button class="num-btn btn-action" onclick="app.inputSmart(9)">9</button>
+                    <button class="num-btn btn-action" onclick="app.deleteSmart()"><i class="fa-solid fa-delete-left"></i></button><button class="num-btn btn-action" onclick="app.inputSmart(0)">0</button>
+                </div>
             </div>
-
-            <div class="numpad" style="margin-bottom: 20px;">
-                <button class="num-btn btn-action" onclick="app.inputDate(1)">1</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(2)">2</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(3)">3</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(4)">4</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(5)">5</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(6)">6</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(7)">7</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(8)">8</button>
-                <button class="num-btn btn-action" onclick="app.inputDate(9)">9</button>
-                <button class="num-btn btn-action" onclick="app.deleteDate()"><i class="fa-solid fa-delete-left"></i></button>
-                <button class="num-btn btn-action" onclick="app.inputDate(0)">0</button>
+            <div class="q7-right">
+                <h2 style="text-align: center; margin-bottom: 20px;">지금 계절은 무엇인가요?</h2>
+                <div class="season-grid">
+                    <button id="season-spring" class="season-btn btn-action" onclick="app.selectSeason('spring')">🌸 봄</button>
+                    <button id="season-summer" class="season-btn btn-action" onclick="app.selectSeason('summer')">☀️ 여름</button>
+                    <button id="season-autumn" class="season-btn btn-action" onclick="app.selectSeason('autumn')">🍁 가을</button>
+                    <button id="season-winter" class="season-btn btn-action" onclick="app.selectSeason('winter')">❄️ 겨울</button>
+                </div>
+                <button class="btn-start btn-action" style="margin-top: 30px; font-size: 32px; padding: 15px 50px;" onclick="app.submitDate()">확인</button>
             </div>
-
-            <h3 style="margin: 0 0 10px 0; color: #555;">현재 계절은?</h3>
-            <div style="display: flex; gap: 10px; width: 100%; max-width: 360px; justify-content: center;">
-                <button id="season-spring" class="btn-option btn-action" style="flex:1; justify-content:center; margin:0; padding: 10px;" onclick="app.selectSeason('spring')">봄</button>
-                <button id="season-summer" class="btn-option btn-action" style="flex:1; justify-content:center; margin:0; padding: 10px;" onclick="app.selectSeason('summer')">여름</button>
-                <button id="season-autumn" class="btn-option btn-action" style="flex:1; justify-content:center; margin:0; padding: 10px;" onclick="app.selectSeason('autumn')">가을</button>
-                <button id="season-winter" class="btn-option btn-action" style="flex:1; justify-content:center; margin:0; padding: 10px;" onclick="app.selectSeason('winter')">겨울</button>
-            </div>
-            
-            <button class="btn-start btn-action" style="margin-top: 20px; font-size: 24px; padding: 10px 40px;" onclick="app.submitDate()">확인</button>
         </div>
     </div>
 
-    <!-- 9. Q8: 인지안전 퀴즈 (집행기능/충동성) -->
+    <!-- Q8 -->
     <div class="slide-container" id="page-q8">
         <button class="btn-prev" onclick="app.prev('q8')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
             <div class="media-group">
                 <p class="video-guide-text"><i class="fa-solid fa-circle-play"></i> 영상을 보고 문제를 풀어주세요</p>
-                <div class="media-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/ZPMKuTK1pdQ?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                </div>
+                <div class="media-wrapper"><iframe data-src="https://www.youtube.com/embed/ZPMKuTK1pdQ?autoplay=1&enablejsapi=1&rel=0&playsinline=1" src="" allowfullscreen></iframe></div>
             </div>
             <div class="text-area">
                 <h2>Q8. 신호가 <span style="color:#e74c3c;">5초</span> 남았을 때<br>횡단보도 중간이라면?</h2>
@@ -468,16 +454,14 @@
         </div>
     </div>
 
-    <!-- 10. Q9: 언어 기능 (이름 대기 퀴즈) -->
+    <!-- Q9 -->
     <div class="slide-container" id="page-q9">
         <button class="btn-prev" onclick="app.prev('q9')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
             <h2 style="text-align: center;">Q9. 다음 그림의 물건 이름은<br>무엇인가요?</h2>
-            
             <div style="background: white; border: 3px solid #eee; border-radius: 20px; padding: 20px; margin-bottom: 20px;">
                 <i class="fa-solid fa-bullhorn" style="font-size: 80px; color: #e67e22;"></i>
             </div>
-
             <div style="width: 100%; max-width: 600px;">
                 <button class="btn-option btn-action" onclick="app.answer(9, 0)">① 소화기</button>
                 <button class="btn-option btn-action" onclick="app.answer(9, 0)">② 신호등</button>
@@ -487,7 +471,7 @@
         </div>
     </div>
 
-    <!-- [NEW] Q10: 운전자 - 딜레마 존 판단 (집행기능) -->
+    <!-- Q10 -->
     <div class="slide-container" id="page-q10">
         <button class="btn-prev" onclick="app.prev('q10')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -501,7 +485,7 @@
         </div>
     </div>
 
-    <!-- [NEW] Q11: 운전자 - 비보호 좌회전 (기억력/지식) -->
+    <!-- Q11 -->
     <div class="slide-container" id="page-q11">
         <button class="btn-prev" onclick="app.prev('q11')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -515,7 +499,7 @@
         </div>
     </div>
 
-    <!-- [NEW] Q12: 운전자 - 스쿨존 속도 (준법/주의) -->
+    <!-- Q12 -->
     <div class="slide-container" id="page-q12">
         <button class="btn-prev" onclick="app.prev('q12')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="center-box">
@@ -529,7 +513,7 @@
         </div>
     </div>
 
-    <!-- 13. 로딩 -->
+    <!-- Loading -->
     <div class="slide-container" id="page-loading">
         <div class="center-box">
             <i class="fa-solid fa-gear fa-spin" style="font-size: 80px; color: #ffaa00; margin-bottom: 30px;"></i>
@@ -537,17 +521,13 @@
         </div>
     </div>
 
-    <!-- 14. 결과 보고서 -->
+    <!-- Result -->
     <div class="slide-container" id="page-result">
-        <button class="admin-reset-btn" onclick="app.reset()" title="처음으로 돌아가기 (관리자용)">
-            <i class="fa-solid fa-rotate-right"></i>
-        </button>
-
+        <button class="admin-reset-btn" onclick="app.reset()"><i class="fa-solid fa-rotate-right"></i></button>
         <div style="height: 100%; display: flex; flex-direction: column;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1>진단 결과 보고서</h1>
             </div>
-            
             <div class="tab-menu">
                 <button class="tab-btn active" onclick="app.switchTab('safety')">🛡️ 안전 보고서</button>
                 <button class="tab-btn" onclick="app.switchTab('cognitive')">🧠 인지 보고서</button>
@@ -557,49 +537,55 @@
             <!-- 안전 보고서 -->
             <div id="report-safety" class="report-content show">
                 <div class="score-box">
-                    <span style="font-size: clamp(20px, 4vw, 28px); color:#555;">나의 교통안전 점수</span><br>
+                    <span style="font-size: 24px; color:#555; font-weight:bold;">나의 교통안전 점수</span><br>
                     <span class="score-num" id="safety-score">0점</span>
-                    <div id="safety-smoke-penalty" style="font-size: clamp(14px, 3vw, 18px); color: #c0392b; margin-top: 5px;"></div>
+                    <div id="safety-smoke-penalty" style="font-size: 20px; margin-top: 10px;"></div>
                 </div>
-                <h3 style="text-align: center; margin-bottom: 15px; color: #d35400;">👇 나를 위한 안전 피드백 👇</h3>
+                
+                <h3 style="text-align: center; margin-bottom: 20px; color: #d35400; font-size:28px;">👇 나를 위한 안전 피드백 👇</h3>
                 <div id="safety-visual-grid" class="safety-grid"></div>
+
+                <div class="analysis-box" style="background-color: #f1f8e9; border-left: 8px solid #27ae60; margin-bottom: 30px;">
+                    <div class="analysis-title" style="color: #2e7d32;"><i class="fa-solid fa-person-walking-luggage"></i> 🏃 안전을 위한 오늘의 실천</div>
+                    <div class="safety-grid" id="safety-recommend-grid" style="margin-top: 15px; margin-bottom: 0;"></div>
+                </div>
+
                 <div class="analysis-box">
-                    <div class="analysis-title"><i class="fa-solid fa-chart-line"></i> 데이터 분석 리포트</div>
+                    <div class="analysis-title"><i class="fa-solid fa-chart-line"></i> 종합 데이터 분석</div>
                     <div id="safety-analysis-text" class="analysis-text"></div>
+                </div>
+
+                <div id="cognitive-risk-box" class="analysis-box" style="background-color: #fff8e1; border-left: 8px solid #ffca28; margin-top: 20px; display: none;">
+                    <div class="analysis-title" style="color: #f57f17;"><i class="fa-solid fa-triangle-exclamation"></i> 인지 기능별 사고 위험 예측</div>
+                    <div id="cognitive-risk-text" class="analysis-text" style="font-size: 19px;"></div>
                 </div>
             </div>
 
-            <!-- 인지 보고서 (구조 변경) -->
+            <!-- 인지 보고서 -->
             <div id="report-cognitive" class="report-content">
-                <div style="text-align: center; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 25px;">
                     <h3>🧠 인지 기능 정밀 분석</h3>
-                    <p style="font-size: clamp(16px, 3vw, 22px); color: #666;">6대 영역별 분석 결과입니다.</p>
+                    <p style="font-size: 20px; color: #666;">6대 영역별 균형을 분석한 결과입니다.</p>
+                </div>
+                <div id="cognitive-warning"></div>
+                
+                <div class="chart-container">
+                    <canvas id="cognitiveRadarChart"></canvas>
                 </div>
 
-                <div id="cognitive-warning"></div>
-
-                <!-- [NEW] 카드형 인지 보고서 섹션 -->
                 <div id="cognitive-sections"></div>
-                
-                <h3 style="text-align: center; margin-top: 30px; margin-bottom: 15px; color: #27ae60;">👇 인지 건강을 위한 추천 활동 👇</h3>
+                <h3 style="text-align: center; margin-top: 35px; margin-bottom: 20px; color: #27ae60; font-size:28px;">👇 인지 건강을 위한 추천 활동 👇</h3>
                 <div id="cognitive-visual-grid" class="safety-grid"></div>
             </div>
 
             <!-- 행동 분석 보고서 -->
             <div id="report-behavior" class="report-content">
-                <div style="text-align: center; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 25px;">
                     <h3>🛑 무의식적 안전 위험 분석</h3>
-                    <p style="font-size: 16px; color: #666;">
-                        "점수는 높지만 실제로는 위험할 수 있습니다."<br>
-                        진단 과정에서 나타난 <strong>무의식적인 행동 패턴</strong>을 분석하여<br>
-                        실제 도로 위에서의 위험 요소를 예측합니다.
-                    </p>
+                    <p style="font-size: 20px; color: #666;">무의식적인 행동 패턴을 분석하여<br>실제 도로 위에서의 위험 요소를 예측합니다.</p>
                 </div>
-                <div id="behavior-stats" style="display: flex; flex-direction: column; gap: 10px;">
-                    <!-- JS로 동적 생성됨 -->
-                </div>
+                <div id="behavior-stats" style="display: flex; flex-direction: column; gap: 15px;"></div>
             </div>
-
         </div>
     </div>
 
@@ -607,7 +593,7 @@
         const BehaviorTracker = {
             data: {
                 missedTaps: 0, reactionTimes: [], multiTaps: 0, 
-                longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0, firstOptionClicks: 0
+                longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0
             },
             lastTapTime: 0,
             pressTimer: null,
@@ -619,6 +605,7 @@
                         this.data.missedTaps++;
                     }
                 });
+
                 document.body.addEventListener('click', (e) => {
                     if (e.target.closest('.btn-action')) {
                         const now = performance.now();
@@ -637,12 +624,10 @@
                         this.isPressing = false;
                     }, 1000); 
                 };
-                
                 const endPress = () => {
                     if (this.pressTimer) clearTimeout(this.pressTimer);
                     this.isPressing = false;
                 };
-
                 document.body.addEventListener('mousedown', startPress);
                 document.body.addEventListener('mouseup', endPress);
                 document.body.addEventListener('touchstart', startPress);
@@ -651,12 +636,9 @@
                 document.addEventListener('visibilitychange', () => {
                     if (document.hidden) this.data.visibilityHiddenCount++;
                 });
-                document.querySelectorAll('.media-wrapper').forEach(el => {
-                    el.addEventListener('click', () => this.data.videoInteractions++);
-                });
             },
             reset() {
-                this.data = { missedTaps: 0, reactionTimes: [], multiTaps: 0, longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0, firstOptionClicks: 0 };
+                this.data = { missedTaps: 0, reactionTimes: [], multiTaps: 0, longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0 };
             },
             startTimer() { this.data.startTime = performance.now(); },
             recordReaction() {
@@ -670,7 +652,8 @@
         const app = {
             answers: { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 },
             totalSlides: 12,
-            dateInput: "",
+            dateInput: { month: "", day: "" },
+            inputStep: 'month',
             selectedSeason: "",
 
             init() {
@@ -693,7 +676,8 @@
 
             resetVariables() {
                 this.answers = { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 };
-                this.dateInput = "";
+                this.dateInput = { month: "", day: "" };
+                this.inputStep = 'month';
                 this.selectedSeason = "";
                 
                 ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
@@ -709,6 +693,95 @@
                 document.getElementById('behavior-stats').innerHTML = "";
                 document.getElementById('cognitive-sections').innerHTML = "";
                 BehaviorTracker.reset();
+            },
+
+            inputSmart(num) {
+                const nStr = num.toString();
+                if (this.inputStep === 'month') {
+                    if (this.dateInput.month.length === 0) {
+                        if (num >= 2) {
+                            this.dateInput.month = "0" + nStr;
+                            this.inputStep = 'day';
+                        } else {
+                            this.dateInput.month = nStr;
+                        }
+                    } else if (this.dateInput.month.length === 1) {
+                        const temp = this.dateInput.month + nStr;
+                        const tempNum = parseInt(temp);
+                        if (tempNum > 12) {
+                            this.dateInput.month = "0" + this.dateInput.month; 
+                            this.inputStep = 'day';
+                            this.inputSmart(num); 
+                            return; 
+                        } else {
+                            this.dateInput.month = temp;
+                            this.inputStep = 'day';
+                        }
+                    }
+                } else {
+                    if (this.dateInput.day.length === 0) {
+                        if (num >= 4) {
+                            this.dateInput.day = "0" + nStr;
+                        } else {
+                            this.dateInput.day = nStr;
+                        }
+                    } else if (this.dateInput.day.length === 1) {
+                        const temp = this.dateInput.day + nStr;
+                        const tempNum = parseInt(temp);
+                        if (tempNum > 31) {
+                            this.dateInput.day = "0" + this.dateInput.day;
+                        } else {
+                            this.dateInput.day = temp;
+                        }
+                    }
+                }
+                this.updateDateDisplay();
+            },
+
+            deleteSmart() {
+                if (this.inputStep === 'day') {
+                    if (this.dateInput.day.length > 0) {
+                        this.dateInput.day = this.dateInput.day.slice(0, -1);
+                    } else {
+                        this.inputStep = 'month';
+                        this.dateInput.month = this.dateInput.month.slice(0, -1);
+                    }
+                } else {
+                    if (this.dateInput.month.length > 0) {
+                        this.dateInput.month = this.dateInput.month.slice(0, -1);
+                    }
+                }
+                this.updateDateDisplay();
+            },
+
+            updateDateDisplay() {
+                document.getElementById('display-month').innerText = this.dateInput.month;
+                document.getElementById('display-day').innerText = this.dateInput.day;
+            },
+
+            submitDate() {
+                BehaviorTracker.recordReaction();
+                const today = new Date();
+                const curM = today.getMonth() + 1;
+                const curD = today.getDate();
+                
+                let inputM = parseInt(this.dateInput.month || 0);
+                let inputD = parseInt(this.dateInput.day || 0);
+                let dateScore = 0;
+                
+                if (inputM === curM && inputD === curD) dateScore = 5;
+                else if (inputM === curM) dateScore = 2; 
+
+                let currentSeason = "";
+                if (curM >= 3 && curM <= 5) currentSeason = "spring";
+                else if (curM >= 6 && curM <= 8) currentSeason = "summer";
+                else if (curM >= 9 && curM <= 11) currentSeason = "autumn";
+                else currentSeason = "winter";
+                
+                let seasonScore = (this.selectedSeason === currentSeason) ? 5 : 0;
+                this.answers['q7'] = dateScore + seasonScore;
+                if (7 < this.totalSlides) this.goToSlide('q8');
+                else this.calcResult();
             },
 
             shuffleOptions() {
@@ -785,48 +858,6 @@
                 });
             },
 
-            inputDate(num) {
-                if (this.dateInput.length >= 4) return;
-                this.dateInput += num.toString();
-                this.updateDateDisplay();
-            },
-            deleteDate() {
-                this.dateInput = this.dateInput.slice(0, -1);
-                this.updateDateDisplay();
-            },
-            updateDateDisplay() {
-                let month = "", day = "";
-                if (this.dateInput.length >= 2) {
-                    month = this.dateInput.substring(0, 2);
-                    if (this.dateInput.length > 2) day = this.dateInput.substring(2);
-                } else { month = this.dateInput; }
-                document.getElementById('display-month').innerText = month;
-                document.getElementById('display-day').innerText = day;
-            },
-            submitDate() {
-                BehaviorTracker.recordReaction();
-                const today = new Date();
-                const curM = today.getMonth() + 1;
-                const curD = today.getDate();
-                
-                let inputM = parseInt(this.dateInput.substring(0, 2) || 0);
-                let inputD = parseInt(this.dateInput.substring(2) || 0);
-                let dateScore = 0;
-                if (inputM === curM && inputD === curD) dateScore = 5;
-                else if (inputM === curM) dateScore = 2; 
-
-                let currentSeason = "";
-                if (curM >= 3 && curM <= 5) currentSeason = "spring";
-                else if (curM >= 6 && curM <= 8) currentSeason = "summer";
-                else if (curM >= 9 && curM <= 11) currentSeason = "autumn";
-                else currentSeason = "winter";
-                
-                let seasonScore = (this.selectedSeason === currentSeason) ? 5 : 0;
-                this.answers['q7'] = dateScore + seasonScore;
-                if (7 < this.totalSlides) this.goToSlide('q8');
-                else this.calcResult();
-            },
-
             calcResult() {
                 this.goToSlide('result');
 
@@ -837,56 +868,134 @@
                 let finalSafetyScore = Math.round((safetyTotal / 90) * 100); 
                 
                 let smokeLevel = this.answers.q2;
-                finalSafetyScore -= (smokeLevel * 2);
+                let smokePenaltySafety = smokeLevel * 3;
+                finalSafetyScore -= smokePenaltySafety;
                 if(finalSafetyScore < 0) finalSafetyScore = 0;
 
                 // 2. 행동 데이터
                 const bd = BehaviorTracker.data;
-                const avgReaction = bd.reactionTimes.length > 0 
-                    ? bd.reactionTimes.reduce((a, b) => a + b) / bd.reactionTimes.length 
-                    : 0;
+                const avgReaction = bd.reactionTimes.length > 0 ? bd.reactionTimes.reduce((a, b) => a + b) / bd.reactionTimes.length : 0;
                 
                 const penaltyMissed = Math.min(20, bd.missedTaps * 2);
                 const penaltyMulti = Math.min(20, bd.multiTaps * 3);
                 const penaltyVisibility = bd.visibilityHiddenCount * 10;
                 const penaltySlow = avgReaction > 5000 ? 10 : 0;
+                const smokePenaltyCognitive = smokeLevel * 5;
 
                 // 3. 인지 점수
                 const cognitive = {
                     orientation: this.answers.q7 * 10, 
                     memory: Math.min(100, (this.answers.q1 + this.answers.q6 + this.answers.q11) * 3 + 10),
-                    attention: Math.max(0, Math.min(100, (this.answers.q4 * 5 + this.answers.q12 * 5) + 30 - penaltyVisibility - penaltySlow)),
+                    attention: Math.max(0, Math.min(100, (this.answers.q4 * 5 + this.answers.q12 * 5) + 30 - penaltyVisibility - penaltySlow - smokePenaltyCognitive)),
                     visuospatial: Math.max(0, Math.min(100, (this.answers.q3 * 5 + this.answers.q6 * 5) + 20 - penaltyMissed)),
-                    executive: Math.max(0, Math.min(100, (this.answers.q5 * 5 + this.answers.q8 * 5 + this.answers.q10 * 5) + 10 - penaltyMulti)),
+                    executive: Math.max(0, Math.min(100, (this.answers.q5 * 5 + this.answers.q8 * 5 + this.answers.q10 * 5) + 10 - penaltyMulti - smokePenaltyCognitive)),
                     language: Math.min(100, (this.answers.q9 * 7) + (this.answers.q1 * 3)) 
                 };
 
                 // --- UI: 안전 보고서 ---
                 document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
-                let safetyAnalysis = "";
-                if(finalSafetyScore >= 90) safetyAnalysis = "안전 지식이 매우 뛰어납니다.";
-                else if(finalSafetyScore >= 70) safetyAnalysis = "대체로 안전하지만, 일부 취약점이 발견되었습니다.";
-                else safetyAnalysis = "안전 사고 위험이 높습니다. 각별한 주의가 필요합니다.";
-                document.getElementById('safety-analysis-text').innerText = safetyAnalysis;
+                
+                const smokeMsgDiv = document.getElementById('safety-smoke-penalty');
+                if (smokeLevel > 0) {
+                    smokeMsgDiv.innerText = `(흡연 습관으로 -${smokePenaltySafety}점 감점되었습니다)`;
+                    smokeMsgDiv.style.color = "#c0392b";
+                } else {
+                    smokeMsgDiv.innerText = "(비흡연으로 인한 감점 없음)";
+                    smokeMsgDiv.style.color = "#27ae60";
+                }
+
+                // 1) 종합 등급 및 분석
+                let finalMessage = "";
+                if(finalSafetyScore >= 90) finalMessage += "<div style='color:#27ae60; font-size:22px; font-weight:bold; margin-bottom:10px;'>🌟 종합 평가: 매우 안전</div>안전 지식이 풍부하고 대처 능력이 뛰어납니다. 지금처럼 안전 수칙을 잘 지켜주세요.<br>";
+                else if(finalSafetyScore >= 70) finalMessage += "<div style='color:#f39c12; font-size:22px; font-weight:bold; margin-bottom:10px;'>⚠️ 종합 평가: 보통</div>대체로 안전하지만, 몇 가지 주의가 필요합니다. 아래 오답 풀이를 꼭 확인하세요.<br>";
+                else finalMessage += "<div style='color:#c0392b; font-size:22px; font-weight:bold; margin-bottom:10px;'>🚨 종합 평가: 위험</div>교통 안전 사고 위험이 높습니다. 각별한 주의가 필요합니다.<br>";
+                
+                document.getElementById('safety-analysis-text').innerHTML = finalMessage;
+
+                // 2) 인지 기능 기반 사고 예측 리포트
+                let riskAnalysis = [];
+                
+                if (cognitive.executive < 60) {
+                    let reasons = [];
+                    if (smokeLevel > 0) reasons.push("흡연으로 인한 전두엽 기능 저하");
+                    if (bd.multiTaps > 3) reasons.push("충동적인 버튼 연타(성급함)");
+                    if (reasons.length === 0) reasons.push("판단 속도 저하");
+                    riskAnalysis.push(`• <strong>[판단력(집행기능) 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.join(', ')})</span><br>돌발 상황 대처가 늦습니다. <u style='color:#c62828;'>횡단보도 중간에서 신호가 바뀌면 당황하여 멈칫거리거나 넘어질 위험</u>이 큽니다.`);
+                }
+
+                if (cognitive.attention < 60) {
+                    let reasons = [];
+                    if (bd.visibilityHiddenCount > 0) reasons.push("주의 산만(이탈)");
+                    if (avgReaction > 5000) reasons.push("반응 속도 지연");
+                    riskAnalysis.push(`• <strong>[주의력 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.length > 0 ? reasons.join(', ') : '집중력 부족'})</span><br>주변 상황을 놓치기 쉽습니다. <u style='color:#c62828;'>신호등이 바뀌는 것을 늦게 보거나, 골목에서 갑자기 튀어나오는 오토바이를 피하지 못할 위험</u>이 있습니다.`);
+                }
+
+                if (cognitive.visuospatial < 60) {
+                    riskAnalysis.push("• <strong>[시공간 능력 저하]</strong> 거리 감각이 둔해질 수 있습니다. <u style='color:#c62828;'>다가오는 차가 멀리 있다고 착각하여 무리하게 길을 건너다 사고</u>가 날 수 있습니다.");
+                }
+                
+                if (cognitive.memory < 60) {
+                    riskAnalysis.push("• <strong>[기억력 저하]</strong> 익숙한 길에서도 <u style='color:#c62828;'>순간적으로 방향을 잃어 차도로 잘못 들어서거나, 보행 신호를 깜빡하고 건널 위험</u>이 있습니다.");
+                }
+                
+                if (cognitive.orientation < 60) {
+                    riskAnalysis.push("• <strong>[지남력 저하]</strong> 날짜나 시간 감각이 무뎌지면, <u style='color:#c62828;'>새벽이나 한밤중에 외출하여 사고를 당할 위험</u>이 높아집니다.");
+                }
+
+                const riskBox = document.getElementById('cognitive-risk-box');
+                const riskText = document.getElementById('cognitive-risk-text');
+                
+                if (riskAnalysis.length > 0) {
+                    riskBox.style.display = "block";
+                    riskText.innerHTML = "현재 인지 검사 결과, 다음과 같은 상황이 우려되니 보호자의 각별한 관심이 필요합니다.<br><br>" + riskAnalysis.join("<br><br>");
+                } else {
+                    riskBox.style.display = "block";
+                    riskBox.style.backgroundColor = "#e8f5e9";
+                    riskBox.style.borderLeftColor = "#2e7d32";
+                    riskBox.querySelector('.analysis-title').innerHTML = "<i class='fa-solid fa-shield-heart'></i> 인지 안전 분석 결과";
+                    riskBox.querySelector('.analysis-title').style.color = "#2e7d32";
+                    riskText.innerHTML = "<strong>✅ 인지 기능 상태가 양호합니다.</strong><br>도로 위 돌발 상황이나 신호 체계를 인지하고 대처하는 능력이 충분하여 안전한 보행이 가능합니다.";
+                }
                 
                 const sGrid = document.getElementById('safety-visual-grid');
                 let sHtml = "";
                 
-                if(this.answers.q1 < 10) sHtml += this.createCard('correction', 'fa-traffic-light', '#e74c3c', '신호 준수', '신호가 깜빡일 땐 멈춰야 합니다.', '무리한 진입은 사고의 주범입니다.');
-                if(this.answers.q10 < 10) sHtml += this.createCard('correction', 'fa-car', '#e67e22', '딜레마 존', '황색 신호는 멈춤 신호입니다.', '무리하게 가속하면 안 됩니다.');
-                if(this.answers.q11 < 10) sHtml += this.createCard('correction', 'fa-arrow-turn-up', '#27ae60', '비보호 좌회전', '녹색(직진) 신호일 때만 가능합니다.', '적색 신호 진입은 신호위반입니다.');
-                if(this.answers.q12 < 10) sHtml += this.createCard('correction', 'fa-child', '#f1c40f', '스쿨존 속도', '시속 30km 이하로 서행하세요.', '어린이는 돌발 행동을 할 수 있습니다.');
-                if(this.answers.q3 < 10) sHtml += this.createCard('correction', 'fa-shirt', '#333', '야간 복장', '밤에는 밝은 옷을 입어야 합니다.', '운전자 눈에 잘 띄는 것이 생명입니다.');
-                if(this.answers.q6 < 10) sHtml += this.createCard('correction', 'fa-person-walking-arrow-right', '#3498db', '보행 방향', '차와 마주 보고 걸어야 합니다.', '뒤에서 오는 차는 피할 수 없습니다.');
-                if(this.answers.q5 < 10) sHtml += this.createCard('correction', 'fa-hand', '#c0392b', '무단 횡단', '반드시 횡단보도를 이용하세요.', '지름길이 저승길이 될 수 있습니다.');
+                if(this.answers.q1 < 10) sHtml += this.createCard('correction', 'fa-traffic-light', '#e74c3c', 'Q. 초록불이 깜빡이면?', '정답: 멈추고 다음 신호를 기다립니다.', '무리하게 진입하면 신호 위반 사고 위험이 큽니다.');
+                if(this.answers.q10 < 10) sHtml += this.createCard('correction', 'fa-car', '#e67e22', 'Q. 교차로 앞 황색 신호?', '정답: 정지선 앞에 멈춥니다.', '가속하면 딜레마 존 사고 위험이 있습니다.');
+                if(this.answers.q11 < 10) sHtml += this.createCard('correction', 'fa-arrow-turn-up', '#27ae60', 'Q. 비보호 좌회전은 언제?', '정답: 녹색(직진) 신호일 때만!', '적색 신호 진입은 신호위반입니다.');
+                if(this.answers.q12 < 10) sHtml += this.createCard('correction', 'fa-child', '#f1c40f', 'Q. 스쿨존 제한 속도는?', '정답: 시속 30km 이하입니다.', '어린이는 언제 튀어나올지 모릅니다.');
+                if(this.answers.q3 < 10) sHtml += this.createCard('correction', 'fa-shirt', '#333', 'Q. 밤에 안전한 옷은?', '정답: 밝은 색 옷을 입습니다.', '검은 옷은 운전자 눈에 안 보입니다.');
+                if(this.answers.q6 < 10) sHtml += this.createCard('correction', 'fa-person-walking-arrow-right', '#3498db', 'Q. 골목길 보행 방향은?', '정답: 차와 마주 보고 걷습니다.', '뒤에서 오는 차는 피할 수 없습니다.');
+                if(this.answers.q5 < 10) sHtml += this.createCard('correction', 'fa-hand', '#c0392b', 'Q. 무단횡단 해도 될까?', '정답: 꼭 횡단보도로 건너세요.', '조금 빠르려다 크게 다칠 수 있습니다.');
 
-                if(sHtml === "") sHtml = this.createCard('activity', 'fa-thumbs-up', '#27ae60', '완벽해요', '모든 안전 수칙을<br>정확히 알고 계시네요!', '');
+                if(smokeLevel > 0) {
+                    sHtml += this.createCard('correction', 'fa-smoking', '#7f8c8d', '흡연과 안전', '흡연은 반응 속도를<br>느리게 만듭니다.', '위급 상황 대처 능력이 떨어질 수 있습니다.');
+                } else if (finalSafetyScore === 100) { 
+                     sHtml += this.createCard('activity', 'fa-lungs', '#27ae60', '폐 건강 최고', '비흡연 습관 덕분에<br>반응 속도가 좋습니다.', '건강한 폐활량이 안전 보행을 돕습니다.');
+                }
+
+                if(sHtml === "" && smokeLevel === 0) sHtml = this.createCard('activity', 'fa-thumbs-up', '#27ae60', '완벽해요', '틀린 문제가 하나도 없네요.<br>정말 훌륭합니다!', '');
                 sGrid.innerHTML = sHtml;
+
+                const rGrid = document.getElementById('safety-recommend-grid');
+                let rHtml = "";
+                rHtml += this.createCard('activity', 'fa-person-walking', '#3498db', '바른 자세 보행', '주머니에서 손을 빼고<br>전방을 주시하며 걷기', '');
+                rHtml += this.createCard('activity', 'fa-mobile-screen-button', '#9b59b6', '스마트폰 멈춤', '걸을 때는 휴대폰을<br>보지 않는 습관 기르기', '');
+                if (cognitive.visuospatial < 70) {
+                    rHtml += this.createCard('activity', 'fa-glasses', '#f1c40f', '시야 확보', '모자나 우산으로<br>시야를 가리지 않기', '');
+                }
+                rGrid.innerHTML = rHtml;
 
                 // --- UI: 인지 보고서 ---
                 const cSections = document.getElementById('cognitive-sections');
                 const sortedDomains = Object.entries(cognitive).sort(([,a], [,b]) => a - b);
                 
+                // 1. 차트 그리기
+                setTimeout(() => {
+                    this.drawRadarChart(cognitive);
+                }, 100);
+
+                // 2. 카드 리스트 생성
                 let cHtmlBody = `<div class="cognitive-grid">`;
                 sortedDomains.forEach(([key, score]) => {
                     let status = 'good';
@@ -900,7 +1009,10 @@
                 const cGrid = document.getElementById('cognitive-visual-grid');
                 let cSolHtml = "";
                 
-                // [수정] 모든 인지 영역에 대한 추천 활동 로직 추가
+                if(smokeLevel > 0) {
+                    cSolHtml += this.createCard('habit', 'fa-ban', '#c0392b', '금연 처방', '담배 연기는 뇌혈관을<br>좁게 만듭니다.', '금연이 가장 좋은 치매 예방약입니다.');
+                }
+
                 if(cognitive.orientation < 60) cSolHtml += this.createCard('activity', 'fa-calendar-check', '#e67e22', '지남력 훈련', '매일 아침 달력을 보며<br>날짜를 확인하세요.', '');
                 if(cognitive.attention < 60) cSolHtml += this.createCard('activity', 'fa-eye', '#3498db', '집중력 강화', '한 번에 하나씩 하는<br>습관을 가져보세요.', '');
                 if(cognitive.executive < 60) cSolHtml += this.createCard('activity', 'fa-hand-paper', '#e74c3c', '충동 조절', '행동하기 전에<br>3초만 더 생각하세요.', '');
@@ -914,22 +1026,12 @@
                 // --- UI: 행동 분석 ---
                 const bStats = document.getElementById('behavior-stats');
                 let bHtml = "";
-                
-                // 1. 충동성
                 if (bd.multiTaps > 3) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '높은 충동성 (연타)', `버튼 연타 ${bd.multiTaps}회.<br><strong>[위험]</strong> 급발진, 신호 위반 위험`, 'high');
-                
-                // 2. 터치 지연 (꾹 누름)
                 if (bd.longPresses > 0) bHtml += this.createBehaviorCard('fa-hand-pointer', '#d35400', '터치 지연 (꾹 누름)', `화면을 길게 누르는 행동이 ${bd.longPresses}회 감지되었습니다.<br><strong>[위험]</strong> 운동 반응 속도 저하 또는 확신 부족`, 'high');
-                
-                // 3. 반응 속도
                 if (avgReaction > 5000) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '반응 지연', `평균 ${(avgReaction/1000).toFixed(1)}초 소요.<br><strong>[위험]</strong> 돌발 상황 대처 미흡`, 'high');
                 else if (avgReaction < 800) bHtml += this.createBehaviorCard('fa-person-running', '#e67e22', '성급한 판단', `너무 빠른 반응(${(avgReaction/1000).toFixed(1)}초).<br><strong>[위험]</strong> 예측 출발, 부주의`, 'high');
+                if (bd.missedTaps > 5) bHtml += this.createBehaviorCard('fa-bullseye', '#e74c3c', '터치 정확도 저하', `버튼이 아닌 빈 공간을 ${bd.missedTaps}회 터치하셨습니다.<br><strong>[위험]</strong> 시야가 좁아져 있거나 소근육 조절이 어려울 수 있습니다.`, 'high');
                 
-                // 4. [복구됨] 시공간/정확도 (빈 공간 터치)
-                if (bd.missedTaps > 5) {
-                    bHtml += this.createBehaviorCard('fa-bullseye', '#e74c3c', '터치 정확도 저하', `버튼이 아닌 빈 공간을 ${bd.missedTaps}회 터치하셨습니다.<br><strong>[위험]</strong> 시야가 좁아져 있거나 소근육 조절이 어려울 수 있습니다.`, 'high');
-                }
-
                 if(bHtml === "") bHtml = this.createBehaviorCard('fa-check-circle', '#27ae60', '안전한 행동 패턴', '반응 속도와 터치 정확도가<br>매우 안정적입니다.', 'low');
                 bStats.innerHTML = bHtml;
 
@@ -939,29 +1041,100 @@
                 if (lowScores >= 3) {
                     warningHTML = `
                     <div class="warning-box">
-                        <div class="warning-icon-wrapper">
-                            <i class="fa-solid fa-triangle-exclamation fa-beat-fade" style="color: #e74c3c;"></i>
-                        </div>
+                        <div class="warning-icon-wrapper"><i class="fa-solid fa-triangle-exclamation fa-beat-fade" style="color: #e74c3c;"></i></div>
                         <div class="warning-content">
                             <h3>🚨 정밀 검사가 필요합니다!</h3>
-                            <p>현재 <strong>3개 이상의 영역</strong>에서 인지 기능 저하 신호가 감지되었습니다.<br>
-                            전문가의 정확한 진단과 상담이 꼭 필요한 상태입니다.</p>
+                            <p>현재 <strong>3개 이상의 영역</strong>에서 인지 기능 저하 신호가 감지되었습니다.<br>전문가의 정확한 진단과 상담이 꼭 필요한 상태입니다.</p>
                         </div>
-                        <button class="btn-warning-action" onclick="app.openConsentModal()">
-                            <i class="fa-solid fa-paper-plane"></i> 결과 전송 및 상담 신청
-                        </button>
+                        <button class="btn-warning-action" onclick="app.openConsentModal()"><i class="fa-solid fa-paper-plane"></i> 결과 전송 및 상담 신청</button>
                     </div>`;
                 }
                 document.getElementById('cognitive-warning').innerHTML = warningHTML;
             },
 
-            // [NEW] 모달 관련 함수
-            openConsentModal() {
-                document.getElementById('consent-modal').classList.add('open');
+            drawRadarChart(data) {
+                const canvas = document.getElementById('cognitiveRadarChart');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = 500;
+                const height = canvas.height = 400; 
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = 140; 
+
+                const keys = ['orientation', 'memory', 'attention', 'visuospatial', 'executive', 'language'];
+                const labels = ['지남력', '기억력', '주의력', '시공간', '집행기능', '언어기능'];
+                const values = keys.map(k => data[k]);
+
+                ctx.clearRect(0, 0, width, height);
+                
+                for (let r = 20; r <= 100; r += 20) {
+                    ctx.beginPath();
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (Math.PI / 3) * i - Math.PI / 2;
+                        const x = centerX + (radius * r / 100) * Math.cos(angle);
+                        const y = centerY + (radius * r / 100) * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.strokeStyle = '#e0e0e0';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                ctx.font = 'bold 20px "Jua", sans-serif'; 
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#333';
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = '#ccc';
+                    ctx.stroke();
+
+                    const labelX = centerX + (radius + 40) * Math.cos(angle);
+                    const labelY = centerY + (radius + 40) * Math.sin(angle);
+                    ctx.fillText(labels[i], labelX, labelY);
+                }
+
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const score = values[i];
+                    const x = centerX + (radius * score / 100) * Math.cos(angle);
+                    const y = centerY + (radius * score / 100) * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.5)'; 
+                ctx.fill();
+                ctx.strokeStyle = '#2980b9';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const score = values[i];
+                    const x = centerX + (radius * score / 100) * Math.cos(angle);
+                    const y = centerY + (radius * score / 100) * Math.sin(angle);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = '#c0392b'; 
+                    ctx.fill();
+                }
             },
-            closeConsentModal() {
-                document.getElementById('consent-modal').classList.remove('open');
-            },
+
+            openConsentModal() { document.getElementById('consent-modal').classList.add('open'); },
+            closeConsentModal() { document.getElementById('consent-modal').classList.remove('open'); },
             toggleSubmitBtn() {
                 const chk = document.getElementById('privacy-agree');
                 const btn = document.getElementById('btn-submit-data');
@@ -969,11 +1142,7 @@
             },
             submitUserData() {
                 const phone = document.getElementById('user-phone').value;
-                if(phone.length < 10) {
-                    this.showToast('휴대폰 번호를 올바르게 입력해주세요.');
-                    return;
-                }
-                // 실제 전송 로직은 서버 API 연동 필요. 여기서는 시뮬레이션.
+                if(phone.length < 10) { this.showToast('휴대폰 번호를 올바르게 입력해주세요.'); return; }
                 this.closeConsentModal();
                 this.showToast('✅ 데이터가 안전하게 전송되었습니다. 곧 전문 상담원이 연락드릴 예정입니다.');
             },
@@ -987,23 +1156,19 @@
                     executive: { name: '집행기능', icon: 'fa-traffic-light' },
                     language: { name: '언어기능', icon: 'fa-comments' }
                 };
-                
                 const advice = this.getDomainAdvice(key, status === 'danger' ? 'bad' : (status === 'warning' ? 'mid' : 'good'));
-                
-                return `
-                <div class="cognitive-card ${status}">
-                    <div class="cognitive-icon"><i class="fa-solid ${info[key].icon}"></i></div>
-                    <div class="cognitive-title">${info[key].name}</div>
-                    <div class="cognitive-score">${score}점</div>
-                    <div class="cognitive-desc">${advice}</div>
-                </div>`;
+                return `<div class="cognitive-card ${status}"><div class="cognitive-icon"><i class="fa-solid ${info[key].icon}"></i></div><div class="cognitive-title">${info[key].name}</div><div class="cognitive-score">${score}점</div><div class="cognitive-desc">${advice}</div></div>`;
             },
 
             getDomainAdvice(key, status) {
                 const advice = {
                     orientation: { bad: "날짜와 계절 감각이 흐릿합니다. 매일 달력을 확인하세요.", mid: "조금 헷갈리셨네요. 달력을 자주 보는 습관이 필요합니다.", good: "시간과 계절을 정확히 인지하고 계십니다." },
                     memory: { bad: "방금 본 것도 잊어버리는 경향이 있습니다. 메모 습관이 필수입니다.", mid: "깜빡하는 경우가 있습니다. 중요한 건 기록하세요.", good: "기억력이 매우 좋으십니다." },
-                    attention: { bad: "집중 유지가 어렵습니다. 운전 시 딴생각을 조심하세요.", mid: "가끔 주의가 산만해집니다.", good: "집중력이 뛰어납니다." },
+                    attention: { 
+                        bad: "주의를 지속하는 힘이 부족합니다. 운전 시 딴생각을 조심하세요.", 
+                        mid: "가끔 주의가 산만해집니다. 한 번에 하나씩 처리하세요.", 
+                        good: "주의를 집중하고 유지하는 능력이 매우 뛰어납니다." 
+                    },
                     visuospatial: { bad: "거리 감각이나 위치 파악이 어렵습니다. 야간 운전을 피하세요.", mid: "공간 인지 능력이 보통입니다.", good: "시공간 감각이 명확합니다." },
                     executive: { bad: "순간적인 판단이 늦거나 충동적입니다. 돌발 상황에 매우 위험합니다.", mid: "판단력이 조금 느립니다. 여유 운전 하세요.", good: "상황 판단과 대처 능력이 훌륭합니다." },
                     language: { bad: "단어가 잘 떠오르지 않습니다. 대화를 많이 하세요.", mid: "가끔 단어가 막힙니다.", good: "언어 이해력과 표현력이 좋습니다." }
@@ -1012,29 +1177,35 @@
             },
 
             createCard(type, icon, color, title, desc, reason) {
-                const badgeClass = type === 'correction' ? 'correction' : 'activity';
-                const badgeText = type === 'correction' ? '주의' : '추천';
-                const reasonHtml = reason ? `<div class="safety-reason"><i class="fa-solid fa-circle-exclamation"></i> ${reason}</div>` : '';
+                let badgeClass = 'activity';
+                let badgeText = '추천';
+                let descStyle = '';
 
-                return `<div class="safety-card">
-                    <span class="card-badge ${badgeClass}">${badgeText}</span>
-                    <i class="fa-solid ${icon}" style="color:${color};"></i>
-                    <p>${title}</p>
-                    <div class="desc">${desc}</div>
-                    ${reasonHtml}
-                </div>`;
+                if (type === 'correction') {
+                    badgeClass = 'correction';
+                    badgeText = '오답 풀이';
+                    descStyle = 'color:#27ae60; font-weight:bold;'; 
+                } else if (type === 'habit') {
+                    badgeClass = 'habit';
+                    badgeText = '생활 습관';
+                }
+
+                let reasonHtml = '';
+                if (reason) {
+                    if (type === 'correction') {
+                        reasonHtml = `<div class="safety-reason"><i class="fa-solid fa-circle-exclamation"></i> ${reason}</div>`;
+                    } else {
+                        reasonHtml = `<div class="safety-reason" style="background:none; color:#666; font-weight:normal; border:none; padding:5px;">${reason}</div>`;
+                    }
+                }
+
+                return `<div class="safety-card"><span class="card-badge ${badgeClass}">${badgeText}</span><i class="fa-solid ${icon}" style="color:${color};"></i><p>${title}</p><div class="desc" style="${descStyle}">${desc}</div>${reasonHtml}</div>`;
             },
 
             createBehaviorCard(icon, color, title, desc, riskLevel) {
                 const riskClass = riskLevel === 'high' ? 'risk-high' : 'risk-low';
                 const riskText = riskLevel === 'high' ? '위험 신호' : '안전 신호';
                 return `<div class="behavior-card"><div class="behavior-icon" style="background-color:${color}20; color:${color};"><i class="fa-solid ${icon}"></i></div><div class="behavior-content"><span class="risk-tag ${riskClass}">${riskText}</span><h4>${title}</h4><p>${desc}</p></div></div>`;
-            },
-
-            updateChart(id, val) {
-                const bar = document.getElementById('bar-' + id);
-                const span = document.getElementById('val-' + id);
-                if(bar && span) { bar.style.width = val + '%'; span.innerText = val; }
             },
 
             switchTab(tab) {
