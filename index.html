@@ -604,24 +604,28 @@
         </div>
     </div>
 
-    <!-- Q9 [수정] 레이아웃 변경 (split-box로 그림을 왼쪽으로) -->
+    <!-- Q9 [수정] 외부 이미지 URL 사용 -->
     <div class="slide-container" id="page-q9">
         <button class="btn-prev" onclick="app.prev('q9')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="split-box">
-            <!-- 왼쪽: 이미지 영역 -->
+            <!-- 왼쪽: 표지판 이미지 영역 -->
             <div class="media-group" style="justify-content: center; align-items: center;">
-                <div style="background: white; border: 3px solid #eee; border-radius: 20px; padding: 40px; display: flex; justify-content: center; align-items: center; aspect-ratio: 1/1; width: 80%; max-width: 300px;">
-                    <i class="fa-solid fa-bullhorn" style="font-size: 100px; color: #e67e22;"></i>
+                <div style="width: 250px; height: 250px; display: flex; justify-content: center; align-items: center; margin: 20px;">
+                    <!-- [수정] 공유해 주신 외부 이미지 URL 적용 -->
+                    <img src="http://www.ibabynews.com/news/upimages/images/2014/06/20/20140620153041747000hjjl0.jpg" 
+                         style="max-width: 100%; max-height: 100%; object-fit: contain;" 
+                         alt="표지판"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB4PSI1IiB5PSI1IiB3aWR0aD0iOTAiIGhlaWdodD0iOTAiIGZpbGw9IiMwMDUwQjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIvPjx0cmlhbmdsZSBwb2ludHM9IjUwLDIwIDgwLDgwIDIwLDgwIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik01MCwzMCBMNjAsNzAgTDQwLDcwIFoiIGZpbGw9ImJsYWNrIi8+PC9zdmc+';">
                 </div>
             </div>
             <!-- 오른쪽: 문제 및 보기 -->
             <div class="text-area">
-                <h2>Q9. 다음 그림의 물건 이름은 무엇인가요?</h2>
+                <h2>Q9. 다음 표지판은 무엇을 의미하나요?</h2>
                 <div style="width: 100%; max-width: 600px;">
-                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">① 소화기</button>
-                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">② 신호등</button>
-                    <button class="btn-option btn-action" onclick="app.answer(9, 10)">③ 확성기 (스피커)</button>
-                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">④ 안전모</button>
+                    <button class="btn-option btn-action" onclick="app.answer(9, 10)">① 그림과 같이 신호등이 없는 횡단보도가 있음</button>
+                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">② 자전거 전용 도로</button>
+                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">③ 도로 공사중</button>
+                    <button class="btn-option btn-action" onclick="app.answer(9, 0)">④ 미끄러운 도로</button>
                 </div>
             </div>
         </div>
