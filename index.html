@@ -272,10 +272,21 @@
 
         /* 데이터 분석 박스 */
         .analysis-box { background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px; border-radius: 0 20px 20px 0; margin-top: 20px; }
+        
+        /* [수정] 보고서 제목 스타일 통일 (폰트, 크기, 정렬) */
         .analysis-title { 
             font-size: 24px; 
-            font-weight: 800; color: #2980b9; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; 
+            font-weight: 800; 
+            color: #333; /* 기본색 변경 */
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            /* 모든 제목 스타일 통일을 위해 추가 */
+            font-family: 'Jua', sans-serif;
         }
+        /* 개별 색상은 인라인 스타일로 적용됨 */
+
         .analysis-text { 
             font-size: 18px; 
             color: #333; line-height: 1.6; 
@@ -285,10 +296,29 @@
         .q7-layout { display: flex; flex-direction: row; gap: 30px; width: 100%; height: 100%; align-items: center; justify-content: center; }
         .q7-left { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 2px dashed #ddd; padding-right: 15px; }
         .q7-right { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        @media (max-width: 900px) {
-            .q7-layout { flex-direction: column; gap: 15px; overflow-y: auto; padding-top: 20px; justify-content: flex-start; }
-            .q7-left { border-right: none; border-bottom: 2px dashed #ddd; padding-right: 0; padding-bottom: 15px; flex: none; width: 100%; }
-            .q7-right { flex: none; width: 100%; }
+        
+        /* [수정] 태블릿 세로 및 모바일에서 Q7 레이아웃 중앙 정렬 */
+        @media (max-width: 1024px) {
+            .q7-layout { 
+                flex-direction: column; 
+                gap: 15px; 
+                overflow-y: auto; 
+                padding-top: 30px; 
+                justify-content: flex-start;
+                align-items: center;
+            }
+            .q7-left { 
+                border-right: none; 
+                border-bottom: 2px dashed #ddd; 
+                padding-right: 0; 
+                padding-bottom: 15px; 
+                flex: none; 
+                width: 100%; 
+            }
+            .q7-right { 
+                flex: none; 
+                width: 100%; 
+            }
         }
 
         .date-display { background: #fff; border: 3px solid #ccc; border-radius: 15px; padding: 10px; width: 100%; max-width: 360px; font-size: clamp(30px, 6vw, 42px); font-weight: bold; text-align: center; margin: 0 auto 20px auto; color: #333; display: flex; justify-content: center; gap: 15px; height: 80px; align-items: center; }
@@ -298,7 +328,7 @@
         .num-btn { background: #f8f9fa; border: 2px solid #ddd; border-radius: 12px; font-size: 28px; font-weight: bold; padding: 0; cursor: pointer; box-shadow: 0 4px 0 #ddd; transition: 0.1s; height: 60px; display: flex; align-items: center; justify-content: center; }
         .num-btn:active { transform: translateY(4px); box-shadow: none; background: #eee; }
         
-        .season-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; }
+        .season-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 360px; margin: 0 auto; /* 중앙 정렬 추가 */ }
         .season-btn { background: white; border: 3px solid #eee; border-radius: 15px; font-size: 24px; font-weight: bold; padding: 15px; color: #555; cursor: pointer; transition: 0.2s; font-family: 'Jua', sans-serif; }
         .season-btn.selected { background: #fff3e0; border-color: #ffaa00; color: #d35400; transform: scale(1.02); box-shadow: 0 4px 10px rgba(255, 170, 0, 0.2); }
 
@@ -677,38 +707,62 @@
 
             <!-- 안전 보고서 -->
             <div id="report-safety" class="report-content show">
+                <!-- [수정] 정밀 안전 진단 제목 추가 -->
+                <div class="analysis-title" style="color: #2980b9; justify-content: center; margin-bottom: 10px;">
+                    <i class="fa-solid fa-user-shield"></i> 정밀 안전 진단
+                </div>
+                <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 25px; line-height: 1.6;">
+                    교통 안전 수칙 준수 여부를 종합적으로 평가합니다.
+                </p>
+
                 <div class="score-box">
                     <span style="font-size: 24px; color:#555; font-weight:bold;">나의 교통안전 점수</span><br>
                     <span class="score-num" id="safety-score">0점</span>
                     <div id="safety-smoke-penalty" style="font-size: 20px; margin-top: 10px;"></div>
                 </div>
                 
-                <h3 style="text-align: center; margin-bottom: 20px; color: #d35400; font-size:28px;">👇 나를 위한 안전 피드백 👇</h3>
+                <!-- [수정] 제목 통일 (나를 위한 안전 피드백) -->
+                <div class="analysis-title" style="color: #d35400; margin-top: 20px;">
+                    <i class="fa-solid fa-clipboard-check"></i> 나를 위한 안전 피드백
+                </div>
                 <div id="safety-visual-grid" class="safety-grid"></div>
 
                 <!-- 안전 추천 활동 -->
                 <div class="analysis-box" style="background-color: #f1f8e9; border-left: 8px solid #27ae60; margin-bottom: 30px;">
-                    <div class="analysis-title" style="color: #2e7d32;"><i class="fa-solid fa-person-walking-luggage"></i> 🏃 안전을 위한 오늘의 실천</div>
+                    <!-- [수정] 제목 통일 (안전을 위한 오늘의 실천) -->
+                    <div class="analysis-title" style="color: #2e7d32;">
+                        <i class="fa-solid fa-person-walking-luggage"></i> 안전을 위한 오늘의 실천
+                    </div>
                     <div class="safety-grid" id="safety-recommend-grid" style="margin-top: 15px; margin-bottom: 0;"></div>
                 </div>
 
                 <div class="analysis-box">
-                    <div class="analysis-title"><i class="fa-solid fa-chart-line"></i> 종합 데이터 분석</div>
+                    <!-- [수정] 제목 통일 (종합 데이터 분석) -->
+                    <div class="analysis-title" style="color: #2980b9;">
+                        <i class="fa-solid fa-chart-line"></i> 종합 데이터 분석
+                    </div>
                     <div id="safety-analysis-text" class="analysis-text"></div>
                 </div>
 
                 <div id="cognitive-risk-box" class="analysis-box" style="background-color: #fff8e1; border-left: 8px solid #ffca28; margin-top: 20px; display: none;">
-                    <div class="analysis-title" style="color: #f57f17;"><i class="fa-solid fa-triangle-exclamation"></i> 인지 기능별 사고 위험 예측</div>
+                    <!-- [수정] 제목 통일 (인지 기능별 사고 위험 예측) -->
+                    <div class="analysis-title" style="color: #f57f17;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> 인지 기능별 사고 위험 예측
+                    </div>
                     <div id="cognitive-risk-text" class="analysis-text" style="font-size: 19px;"></div>
                 </div>
             </div>
 
             <!-- 인지 보고서 -->
             <div id="report-cognitive" class="report-content">
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <h3>🧠 인지 기능 정밀 분석</h3>
-                    <p style="font-size: 20px; color: #666;">6대 영역별 균형을 분석한 결과입니다.</p>
+                <!-- [수정] 인지 기능 정밀 분석 제목 스타일 통일 -->
+                <div class="analysis-title" style="color: #8e44ad; justify-content: center; margin-bottom: 10px;">
+                    <i class="fa-solid fa-brain"></i> 인지 기능 정밀 분석
                 </div>
+                <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 25px; line-height: 1.6;">
+                    6대 영역별 균형을 분석한 결과입니다.
+                </p>
+
                 <div id="cognitive-warning"></div>
                 
                 <div class="chart-container">
@@ -716,16 +770,23 @@
                 </div>
 
                 <div id="cognitive-sections"></div>
-                <h3 style="text-align: center; margin-top: 35px; margin-bottom: 20px; color: #27ae60; font-size:28px;">👇 인지 건강을 위한 추천 활동 👇</h3>
+                
+                <!-- [수정] 제목 통일 (인지 건강을 위한 추천 활동) -->
+                <div class="analysis-title" style="color: #27ae60; margin-top: 35px;">
+                    <i class="fa-solid fa-brain"></i> 인지 건강을 위한 추천 활동
+                </div>
                 <div id="cognitive-visual-grid" class="safety-grid"></div>
             </div>
 
             <!-- 행동 분석 보고서 -->
             <div id="report-behavior" class="report-content">
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <h3>🛑 무의식적 안전 위험 분석</h3>
-                    <p style="font-size: 20px; color: #666;">무의식적인 행동 패턴을 분석하여<br>실제 도로 위에서의 위험 요소를 예측합니다.</p>
+                <!-- [수정] 무의식 안전 위험 분석 제목 스타일 통일 -->
+                <div class="analysis-title" style="color: #c0392b; justify-content: center; margin-bottom: 10px;">
+                    <i class="fa-solid fa-video"></i> 무의식 안전 위험 분석
                 </div>
+                <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 25px; line-height: 1.6;">
+                    무의식적인 행동 패턴을 분석하여<br>실제 도로 위에서의 위험 요소를 예측합니다.
+                </p>
                 <div id="behavior-stats" style="display: flex; flex-direction: column; gap: 15px;"></div>
             </div>
         </div>
@@ -1163,11 +1224,14 @@
                 
                 if (riskAnalysis.length > 0) {
                     riskBox.style.display = "block";
+                    // [수정] 제목 통일 (인지 기능별 사고 위험 예측)
+                    riskBox.querySelector('.analysis-title').innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> 인지 기능별 사고 위험 예측";
                     riskText.innerHTML = "현재 인지 검사 결과, 다음과 같은 상황이 우려되니 보호자의 각별한 관심이 필요합니다.<br><br>" + riskAnalysis.join("<br><br>");
                 } else {
                     riskBox.style.display = "block";
                     riskBox.style.backgroundColor = "#e8f5e9";
                     riskBox.style.borderLeftColor = "#2e7d32";
+                    // [수정] 제목 통일 (인지 안전 분석 결과)
                     riskBox.querySelector('.analysis-title').innerHTML = "<i class='fa-solid fa-shield-heart'></i> 인지 안전 분석 결과";
                     riskBox.querySelector('.analysis-title').style.color = "#2e7d32";
                     riskText.innerHTML = "<strong>✅ 인지 기능 상태가 양호합니다.</strong><br>도로 위 돌발 상황이나 신호 체계를 인지하고 대처하는 능력이 충분하여 안전한 보행이 가능합니다.";
