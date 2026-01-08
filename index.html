@@ -41,9 +41,8 @@
         .slide-container {
             width: 95%; 
             max-width: 1280px; 
-            /* [수정] 높이를 화면에 꽉 차되 여유를 둠 */
-            height: 95%; 
-            height: 95dvh; 
+            /* [수정] 높이를 95dvh에서 90dvh로 줄여서 상하 여백 확보 */
+            height: 90dvh; 
             max-height: 900px;
             
             background-color: #ffffff;
@@ -65,12 +64,13 @@
         /* 모바일/태블릿 전체화면 대응 */
         @media (max-width: 1024px) {
             .slide-container {
-                width: 100%; 
-                height: 100%; 
-                height: 100dvh; /* 모바일에서는 꽉 채움 */
+                width: 96%; 
+                /* 모바일에서도 너무 꽉 차지 않게 약간의 여백 부여 */
+                height: 92dvh; 
                 max-height: none;
-                border-radius: 0; 
-                border: none; 
+                /* 테두리 및 둥근 모서리 유지 */
+                border-radius: 20px; 
+                border: 3px solid #ffaa00; 
                 padding: 20px;
             }
         }
@@ -157,6 +157,29 @@
         .btn-prev:active { transform: translateY(4px); box-shadow: none; }
         .admin-reset-btn { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background-color: #ecf0f1; color: #95a5a6; border: 2px solid #bdc3c7; font-size: 18px; cursor: pointer; transition: all 0.2s; z-index: 100; display: flex; justify-content: center; align-items: center; }
         
+        /* [NEW] 우측 상단 전체 화면 버튼 */
+        .btn-fullscreen {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #333;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 2000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background-color 0.2s;
+            color: #333;
+        }
+        .btn-fullscreen:hover { transform: scale(1.1); background-color: #fff; }
+        .btn-fullscreen:active { transform: scale(0.95); }
+
         /* 7. 탭 메뉴 & 리포트 */
         .tab-menu { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; width: 100%; }
         .tab-btn { 
@@ -332,6 +355,11 @@
     <!-- 토스트 메시지 (초기값 비움) -->
     <div id="toast-msg"></div>
 
+    <!-- [NEW] 전체화면 버튼 (우측 상단) -->
+    <button class="btn-fullscreen" onclick="app.toggleFullScreen()">
+        <i class="fa-solid fa-expand"></i>
+    </button>
+
     <!-- 모달 -->
     <div id="consent-modal" class="modal-overlay">
         <div class="modal-box">
@@ -466,7 +494,7 @@
         </div>
     </div>
 
-    <!-- Q7: 가로 배치 -->
+    <!-- Q7 -->
     <div class="slide-container" id="page-q7">
         <button class="btn-prev" onclick="app.prev('q7')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="q7-layout">
@@ -653,7 +681,8 @@
         const BehaviorTracker = {
             data: {
                 missedTaps: 0, reactionTimes: [], multiTaps: 0, 
-                longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0
+                longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0,
+                fullscreenExits: 0 // [NEW] 전체화면 이탈(축소) 횟수
             },
             lastTapTime: 0,
             pressTimer: null,
@@ -696,13 +725,26 @@
                 document.body.addEventListener('touchstart', startPress);
                 document.body.addEventListener('touchend', endPress);
 
-                // 이탈 감지
+                // 이탈 감지 (탭 전환, 앱 최소화 등)
                 document.addEventListener('visibilitychange', () => {
                     if (document.hidden) this.data.visibilityHiddenCount++;
                 });
+
+                // [NEW] 전체화면 상태 변경 감지 리스너
+                const onFsChange = () => {
+                     // 전체 화면 요소가 없으면(null) -> 전체 화면이 해제된 것
+                     const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+                     if (!isFs) {
+                         this.data.fullscreenExits++;
+                         console.log("Fullscreen exited. Count:", this.data.fullscreenExits);
+                     }
+                };
+                document.addEventListener('fullscreenchange', onFsChange);
+                document.addEventListener('webkitfullscreenchange', onFsChange);
+                document.addEventListener('msfullscreenchange', onFsChange);
             },
             reset() {
-                this.data = { missedTaps: 0, reactionTimes: [], multiTaps: 0, longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0 };
+                this.data = { missedTaps: 0, reactionTimes: [], multiTaps: 0, longPresses: 0, visibilityHiddenCount: 0, videoInteractions: 0, startTime: 0, fullscreenExits: 0 };
             },
             startTimer() { this.data.startTime = performance.now(); },
             recordReaction() {
@@ -712,17 +754,23 @@
                 return reactionTime;
             },
             
-            // [NEW] 강제 전체 화면 시도
-            requestFullScreen() {
+            // 전체 화면 버튼 기능
+            toggleFullScreen() {
                 try {
-                    const doc = document.documentElement;
-                    if (doc.requestFullscreen) {
-                        doc.requestFullscreen().catch(err => {
-                            console.log("Full screen mode denied or not supported in this context:", err);
-                        });
+                    if (!document.fullscreenElement) {
+                        const doc = document.documentElement;
+                        if (doc.requestFullscreen) {
+                             doc.requestFullscreen().catch((e) => {
+                                 console.log("Full screen denied:", e);
+                             });
+                        }
+                        else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+                        else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
+                    } else {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                        else if (document.msExitFullscreen) document.msExitFullscreen();
                     }
-                    else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-                    else if (doc.msRequestFullscreen) doc.msRequestFullscreen();
                 } catch(e) {
                     console.warn("Fullscreen request failed", e);
                 }
@@ -749,8 +797,9 @@
             },
 
             start() {
-                // 시작 시 전체화면 시도
-                BehaviorTracker.requestFullScreen();
+                // [수정] 시작 시 강제 전체 화면 코드 제거됨
+                // BehaviorTracker.toggleFullScreen(); <-- 삭제됨
+                
                 this.resetVariables();
                 this.shuffleOptions();
                 this.goToSlide('q1');
@@ -961,6 +1010,10 @@
                 const penaltyMissed = Math.min(20, bd.missedTaps * 2);
                 const penaltyMulti = Math.min(20, bd.multiTaps * 3);
                 const penaltyVisibility = bd.visibilityHiddenCount * 10;
+                
+                // [NEW] 전체화면 이탈(축소) 페널티 (회당 5점)
+                const penaltyFullscreenExit = bd.fullscreenExits * 5;
+
                 const penaltySlow = avgReaction > 5000 ? 10 : 0;
                 const smokePenaltyCognitive = smokeLevel * 5;
 
@@ -968,9 +1021,11 @@
                 const cognitive = {
                     orientation: this.answers.q7 * 10, 
                     memory: Math.min(100, (this.answers.q1 + this.answers.q6 + this.answers.q11) * 3 + 10),
-                    attention: Math.max(0, Math.min(100, (this.answers.q4 * 5 + this.answers.q12 * 5) + 30 - penaltyVisibility - penaltySlow - smokePenaltyCognitive)),
+                    // 주의력: 화면 이탈 및 전체화면 축소(회피) 반영
+                    attention: Math.max(0, Math.min(100, (this.answers.q4 * 5 + this.answers.q12 * 5) + 30 - penaltyVisibility - penaltyFullscreenExit - penaltySlow - smokePenaltyCognitive)),
                     visuospatial: Math.max(0, Math.min(100, (this.answers.q3 * 5 + this.answers.q6 * 5) + 20 - penaltyMissed)),
-                    executive: Math.max(0, Math.min(100, (this.answers.q5 * 5 + this.answers.q8 * 5 + this.answers.q10 * 5) + 10 - penaltyMulti - smokePenaltyCognitive)),
+                    // 집행기능(충동성): 전체화면 축소(참을성 부족) 반영
+                    executive: Math.max(0, Math.min(100, (this.answers.q5 * 5 + this.answers.q8 * 5 + this.answers.q10 * 5) + 10 - penaltyMulti - penaltyFullscreenExit - smokePenaltyCognitive)),
                     language: Math.min(100, (this.answers.q9 * 7) + (this.answers.q1 * 3)) 
                 };
 
@@ -1001,6 +1056,7 @@
                     let reasons = [];
                     if (smokeLevel > 0) reasons.push("흡연으로 인한 전두엽 기능 저하");
                     if (bd.multiTaps > 3) reasons.push("충동적인 버튼 연타(성급함)");
+                    if (bd.fullscreenExits > 1) reasons.push("화면 이탈 시도(집중 유지 어려움)");
                     if (reasons.length === 0) reasons.push("판단 속도 저하");
                     riskAnalysis.push(`• <strong>[판단력(집행기능) 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.join(', ')})</span><br>돌발 상황 대처가 늦습니다. <u style='color:#c62828;'>횡단보도 중간에서 신호가 바뀌면 당황하여 멈칫거리거나 넘어질 위험</u>이 큽니다.`);
                 }
@@ -1008,6 +1064,7 @@
                 if (cognitive.attention < 60) {
                     let reasons = [];
                     if (bd.visibilityHiddenCount > 0) reasons.push("주의 산만(이탈)");
+                    if (bd.fullscreenExits > 0) reasons.push("과제 회피 성향(화면 축소)");
                     if (avgReaction > 5000) reasons.push("반응 속도 지연");
                     riskAnalysis.push(`• <strong>[주의력 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.length > 0 ? reasons.join(', ') : '집중력 부족'})</span><br>주변 상황을 놓치기 쉽습니다. <u style='color:#c62828;'>신호등이 바뀌는 것을 늦게 보거나, 골목에서 갑자기 튀어나오는 오토바이를 피하지 못할 위험</u>이 있습니다.`);
                 }
@@ -1108,6 +1165,12 @@
                 // --- UI: 행동 분석 ---
                 const bStats = document.getElementById('behavior-stats');
                 let bHtml = "";
+                
+                // [NEW] 전체화면 이탈 행동 피드백 추가
+                if (bd.fullscreenExits > 0) {
+                    bHtml += this.createBehaviorCard('fa-compress', '#9b59b6', '화면 크기 조절 (이탈 시도)', `검사 중 화면을 ${bd.fullscreenExits}회 축소/이탈하셨습니다.<br><strong>[주의]</strong> 과제에 대한 집중력 유지 어려움 또는 회피 성향`, 'high');
+                }
+
                 if (bd.multiTaps > 3) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '높은 충동성 (연타)', `버튼 연타 ${bd.multiTaps}회.<br><strong>[위험]</strong> 급발진, 신호 위반 위험`, 'high');
                 if (bd.longPresses > 0) bHtml += this.createBehaviorCard('fa-hand-pointer', '#d35400', '터치 지연 (꾹 누름)', `화면을 길게 누르는 행동이 ${bd.longPresses}회 감지되었습니다.<br><strong>[위험]</strong> 운동 반응 속도 저하 또는 확신 부족`, 'high');
                 if (avgReaction > 5000) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '반응 지연', `평균 ${(avgReaction/1000).toFixed(1)}초 소요.<br><strong>[위험]</strong> 돌발 상황 대처 미흡`, 'high');
@@ -1231,15 +1294,15 @@
 
             createCognitiveCard(key, score, status) {
                 const info = {
-                    orientation: { name: '지남력', icon: 'fa-calendar-check' },
-                    memory: { name: '기억력', icon: 'fa-brain' },
-                    attention: { name: '주의력', icon: 'fa-eye' },
-                    visuospatial: { name: '시공간', icon: 'fa-map' },
-                    executive: { name: '집행기능', icon: 'fa-traffic-light' },
-                    language: { name: '언어기능', icon: 'fa-comments' }
+                    orientation: { name: '지남력', icon: 'fa-calendar-check', meaning: '시간과 장소를 정확히 아는 능력' },
+                    memory: { name: '기억력', icon: 'fa-brain', meaning: '새로운 정보를 저장하고 기억하는 능력' },
+                    attention: { name: '주의력', icon: 'fa-eye', meaning: '필요한 것에 집중을 유지하는 능력' },
+                    visuospatial: { name: '시공간', icon: 'fa-map', meaning: '방향, 거리, 위치를 파악하는 능력' },
+                    executive: { name: '집행기능', icon: 'fa-traffic-light', meaning: '상황을 판단하고 결정을 내리는 능력' },
+                    language: { name: '언어기능', icon: 'fa-comments', meaning: '말과 글을 이해하고 표현하는 능력' }
                 };
                 const advice = this.getDomainAdvice(key, status === 'danger' ? 'bad' : (status === 'warning' ? 'mid' : 'good'));
-                return `<div class="cognitive-card ${status}"><div class="cognitive-icon"><i class="fa-solid ${info[key].icon}"></i></div><div class="cognitive-title">${info[key].name}</div><div class="cognitive-score">${score}점</div><div class="cognitive-desc">${advice}</div></div>`;
+                return `<div class="cognitive-card ${status}"><div class="cognitive-icon"><i class="fa-solid ${info[key].icon}"></i></div><div class="cognitive-title">${info[key].name}</div><div style="font-size: 16px; color: #7f8c8d; margin-bottom: 10px; font-weight: normal;">${info[key].meaning}</div><div class="cognitive-score">${score}점</div><div class="cognitive-desc">${advice}</div></div>`;
             },
 
             getDomainAdvice(key, status) {
