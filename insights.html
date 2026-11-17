@@ -61,18 +61,19 @@
 
         /* ---------- 섹션 ---------- */
         .section { background: var(--surface); border-radius: 20px; margin-top: 20px; box-shadow: 0 6px 18px rgba(20, 30, 50, 0.06); overflow: hidden; }
-        .sec-head { display: flex; align-items: center; gap: 14px; padding: 16px 30px; background: var(--band); color: #fff; }
-        .sec-no { font-size: 13px; font-weight: 900; letter-spacing: 1px; background: rgba(255, 255, 255, 0.18); border-radius: 8px; padding: 4px 9px; }
+        .sec-head { display: flex; align-items: center; gap: 12px; padding: 15px 30px; background: var(--head); color: var(--band); border-bottom: 1px solid var(--edge); }
+        .sec-no { font-size: 13px; font-weight: 900; letter-spacing: 1px; background: var(--band); color: #fff; border-radius: 8px; padding: 4px 9px; }
         .sec-head h2 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.4px; }
         .sec-body { padding: 22px 30px 26px; background: var(--tint); }
         .sec-desc { margin: 0 0 16px; color: var(--text-secondary); font-size: 15px; line-height: 1.6; }
-        /* 섹션마다 다른 색 */
-        .theme-summary  { --band: #1d2b45; --tint: #f4f6fa; }
-        .theme-overview { --band: #2f5d8c; --tint: #f1f6fb; }
-        .theme-traffic  { --band: #b5541c; --tint: #fdf6ef; }
-        .theme-cog      { --band: #5b47c9; --tint: #f5f3fd; }
-        .theme-compare  { --band: #13786a; --tint: #eff7f5; }
-        .theme-admin    { --band: #6b7280; --tint: #f6f7f8; }
+        .section { border: 1px solid var(--edge); }
+        /* 섹션마다 옅은 관련 색으로 구분 (글자·번호는 진한 색, 바탕은 옅은 색) */
+        .theme-summary  { --band: #34495e; --head: #e3e8ef; --tint: #f1f4f8; --edge: #d3dae4; }
+        .theme-overview { --band: #1f5f9e; --head: #dbe9f7; --tint: #eef5fc; --edge: #c5dbf0; }
+        .theme-traffic  { --band: #a64a12; --head: #fbe3cf; --tint: #fef4ea; --edge: #f2cfae; }
+        .theme-cog      { --band: #4b3bb0; --head: #e6e1fb; --tint: #f4f2fe; --edge: #d5cdf5; }
+        .theme-compare  { --band: #0f6b5e; --head: #d5efe9; --tint: #ecf8f5; --edge: #bfe2da; }
+        .theme-admin    { --band: #555b65; --head: #e7e9ec; --tint: #f5f6f7; --edge: #d9dce0; }
         .panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
         .sub-head { font-size: 17px; font-weight: 900; margin: 26px 0 12px; display: flex; align-items: center; gap: 8px; }
         .sub-head:first-of-type { margin-top: 6px; }
@@ -203,11 +204,11 @@
         /* 기관 비교 */
         .cmp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 15px; background: #fff; border-radius: 12px; }
         .cmp-table th, .cmp-table td { padding: 13px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
-        .cmp-table thead th { font-size: 14px; color: #fff; background: var(--navy-2); font-weight: 700; }
-        .cmp-table thead th:first-child { border-radius: 12px 0 0 0; background: var(--navy); }
+        .cmp-table thead th { font-size: 14px; color: var(--band); background: var(--head); font-weight: 900; border-bottom: 2px solid var(--edge); }
+        .cmp-table thead th:first-child { border-radius: 12px 0 0 0; }
         .cmp-table thead th:last-child { border-radius: 0 12px 0 0; }
-        .cmp-table thead th.mine { background: var(--ours); }
-        .cmp-table thead th small { display: block; font-weight: 400; font-size: 12px; opacity: 0.85; margin-top: 2px; }
+        .cmp-table thead th.mine { background: #dbe9f7; color: #1f5f9e; border-bottom-color: #c5dbf0; }
+        .cmp-table thead th small { display: block; font-weight: 500; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
         .cmp-table tbody th { font-size: 14px; color: var(--text-secondary); font-weight: 700; width: 170px; background: #f8f9fb; }
         .cmp-table td.mine { background: #f3f8fe; }
         .mini { display: flex; align-items: center; gap: 10px; }
