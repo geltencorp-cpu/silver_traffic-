@@ -149,6 +149,20 @@
         .media-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .media-wrapper { width: 100%; aspect-ratio: 16/9; height: auto; border-radius: 20px; overflow: hidden; background: #000; border: 2px solid #ddd; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; }
         .media-wrapper iframe { width: 100%; height: 100%; border: none; }
+        /* [NEW] 소리 켜기 버튼 (자동으로 소리가 켜지지 않는 기기용) */
+        .btn-sound-on {
+            display: none; position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%);
+            z-index: 5; align-items: center; gap: 10px; white-space: nowrap;
+            padding: 14px 28px; border: 4px solid #fff; border-radius: 50px;
+            background: #e74c3c; color: #fff; font-family: 'Jua', sans-serif;
+            font-size: clamp(22px, 3vw, 30px); cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.45); animation: soundPulse 1.2s ease-in-out infinite;
+        }
+        .btn-sound-on.show { display: flex; }
+        @keyframes soundPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.07); }
+        }
         .video-guide-text { 
             text-align: center; 
             font-size: clamp(18px, 2.5vw, 24px);
@@ -885,6 +899,135 @@
             }
         };
 
+        // [NEW] 유튜브 영상 소리 제어
+        // 영상은 음소거 상태로 자동 재생을 시작한 뒤(모든 기기에서 재생 보장), 곧바로 소리를 켭니다.
+        // 브라우저가 소리 자동 재생을 막는 기기에서는 큰 '소리 켜기' 버튼을 보여줍니다.
+        const VideoSound = {
+            ORIGIN: 'https://www.youtube.com',
+            iframe: null, button: null,
+            muted: true, state: -1, connected: false, settled: false,
+            listenTimer: null, checkTimer: null,
+
+            init() {
+                window.addEventListener('message', (e) => this.onMessage(e));
+            },
+
+            attach(iframe) {
+                this.detach();
+                this.iframe = iframe;
+                this.muted = true; this.state = -1; this.connected = false; this.settled = false;
+
+                const wrapper = iframe.closest('.media-wrapper');
+                let btn = wrapper.querySelector('.btn-sound-on');
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn-sound-on';
+                    btn.addEventListener('click', () => this.unmute(true));
+                    wrapper.appendChild(btn);
+                }
+                btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> 소리 켜기';
+                this.button = btn;
+
+                // 플레이어가 준비될 때까지 연결 신호를 반복 전송
+                iframe.onload = () => {
+                    if (this.iframe !== iframe) return;
+                    clearInterval(this.listenTimer);
+                    this.listenTimer = setInterval(() => {
+                        if (this.connected) { clearInterval(this.listenTimer); return; }
+                        this.post({ event: 'listening', id: 1, channel: 'widget' });
+                    }, 250);
+                };
+            },
+
+            detach() {
+                clearInterval(this.listenTimer);
+                clearTimeout(this.checkTimer);
+                if (this.iframe) this.iframe.onload = null;
+                if (this.button) this.button.classList.remove('show');
+                this.iframe = null; this.button = null;
+            },
+
+            post(msg) {
+                try {
+                    if (this.iframe && this.iframe.contentWindow) {
+                        this.iframe.contentWindow.postMessage(JSON.stringify(msg), this.ORIGIN);
+                    }
+                } catch (e) { /* 플레이어가 아직 준비되지 않음 */ }
+            },
+
+            command(func, args) {
+                this.post({ event: 'command', func: func, args: args || [], id: 1, channel: 'widget' });
+            },
+
+            onMessage(e) {
+                if (e.origin !== this.ORIGIN || !this.iframe || e.source !== this.iframe.contentWindow) return;
+                let data;
+                try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (err) { return; }
+                if (!data) return;
+
+                const info = data.info;
+                if (info && typeof info === 'object') {
+                    if (typeof info.muted === 'boolean') this.muted = info.muted;
+                    if (typeof info.playerState === 'number') this.state = info.playerState;
+                }
+                if (!this.connected && (data.event === 'onReady' || data.event === 'initialDelivery' || data.event === 'infoDelivery')) {
+                    this.connected = true;
+                    this.unmute(false);
+                    return;
+                }
+                if (this.settled) this.refreshButton();
+            },
+
+            isPlayingWithSound() {
+                return !this.muted && (this.state === 1 || this.state === 3);
+            },
+
+            refreshButton() {
+                if (!this.button) return;
+                // 소리가 꺼진 채 재생 중일 때만 버튼 표시 (일시정지·재생 불가 상태는 제외)
+                this.button.classList.toggle('show', this.muted && (this.state === 1 || this.state === 3));
+            },
+
+            unmute(fromUser) {
+                if (!this.iframe) return;
+                const iframe = this.iframe;
+                this.settled = false;
+                if (this.button) this.button.classList.remove('show');
+                this.command('unMute');
+                this.command('setVolume', [100]);
+                this.command('playVideo');
+
+                clearTimeout(this.checkTimer);
+                let waited = 0;
+                const check = () => {
+                    if (this.iframe !== iframe) return;
+                    waited += 500;
+                    // 아직 로딩(버퍼링) 중이면 재생 여부가 확정될 때까지 조금 더 기다림 (최대 10초)
+                    if (this.state !== 1 && this.state !== 2 && waited < 10000) {
+                        this.checkTimer = setTimeout(check, 500);
+                        return;
+                    }
+                    this.settled = true;
+                    if (this.state === -1 || this.state === 5) { this.refreshButton(); return; } // 재생 자체가 시작되지 않음
+                    if (this.isPlayingWithSound()) { this.refreshButton(); return; }
+
+                    // 브라우저가 소리 재생을 막음 → 음소거로 계속 재생하고 버튼 안내
+                    this.command('mute');
+                    this.command('playVideo');
+                    this.muted = true;
+                    if (this.button) {
+                        this.button.innerHTML = fromUser
+                            ? '<i class="fa-solid fa-hand-pointer"></i> 영상 화면을 눌러 소리를 켜세요'
+                            : '<i class="fa-solid fa-volume-high"></i> 소리 켜기';
+                    }
+                    this.state = 1;
+                    this.refreshButton();
+                };
+                this.checkTimer = setTimeout(check, 1500);
+            }
+        };
+
         const app = {
             answers: { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 },
             totalSlides: 12,
@@ -898,6 +1041,7 @@
 
             init() {
                 BehaviorTracker.init();
+                VideoSound.init();
                 this.showToast("앱이 준비되었습니다.");
             },
             
@@ -1059,6 +1203,7 @@
             },
 
             goToSlide(id) {
+                VideoSound.detach();
                 document.querySelectorAll('.slide-container').forEach(el => {
                     el.classList.remove('active');
                     const iframe = el.querySelector('iframe');
@@ -1069,7 +1214,10 @@
                     target.classList.add('active');
                     BehaviorTracker.startTimer();
                     const iframe = target.querySelector('iframe');
-                    if (iframe && iframe.dataset.src) iframe.setAttribute('src', iframe.dataset.src);
+                    if (iframe && iframe.dataset.src) {
+                        VideoSound.attach(iframe);
+                        iframe.setAttribute('src', iframe.dataset.src);
+                    }
                 }
                 let progress = 0;
                 if(id.startsWith('q')) {
