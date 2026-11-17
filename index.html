@@ -337,6 +337,7 @@
         .risk-tag { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 800; margin-bottom: 5px; }
         .risk-high { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
         .risk-low { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .risk-info { background: #f1f3f5; color: #555; border: 1px solid #ced4da; }
 
         /* 경고 박스 */
         .warning-box { background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%); border: 3px solid #ef5350; border-radius: 20px; padding: 25px 20px; margin-bottom: 30px; text-align: center; box-shadow: 0 8px 20px rgba(239, 83, 80, 0.2); animation: pulse-border 2s infinite; position: relative; overflow: hidden; }
@@ -722,7 +723,6 @@
                 <div class="score-box">
                     <span style="font-size: 24px; color:#555; font-weight:bold;">나의 교통안전 점수</span><br>
                     <span class="score-num" id="safety-score">0점</span>
-                    <div id="safety-smoke-penalty" style="font-size: 20px; margin-top: 10px;"></div>
                 </div>
                 
                 <!-- [수정] 제목 통일 (나를 위한 안전 피드백) -->
@@ -761,16 +761,19 @@
             <div id="report-cognitive" class="report-content">
                 <!-- [수정] 인지 기능 정밀 분석 제목 스타일 통일 -->
                 <div class="analysis-title" style="color: #8e44ad; justify-content: center; margin-bottom: 10px;">
-                    <i class="fa-solid fa-brain"></i> 인지 기능 정밀 분석
+                    <i class="fa-solid fa-brain"></i> 인지 건강 점검
                 </div>
                 <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 25px; line-height: 1.6;">
-                    6대 영역별 균형을 분석한 결과입니다.
+                    날짜·계절 감각, 흡연 습관, 집중 유지를 살펴본 결과입니다.<br>
+                    <span style="font-size: 16px; color: #888;">※ 참고용 생활 점검이며 의학적 진단이 아닙니다.</span>
                 </p>
 
                 <div id="cognitive-warning"></div>
                 
-                <div class="chart-container">
-                    <canvas id="cognitiveRadarChart"></canvas>
+                <div class="score-box">
+                    <span style="font-size: 24px; color:#555; font-weight:bold;">나의 인지 건강 점수</span><br>
+                    <span class="score-num" id="cognitive-score">0점</span>
+                    <div id="cognitive-grade" style="font-size: 20px; margin-top: 10px; line-height: 1.5;"></div>
                 </div>
 
                 <div id="cognitive-sections"></div>
@@ -808,24 +811,6 @@
             isPressing: false,
             
             init() {
-                // 터치 좌표 감지 (빈 공간)
-                document.body.addEventListener('touchstart', (e) => {
-                    if (!e.target.closest('.btn-action') && !e.target.closest('.media-wrapper') && !e.target.closest('.num-btn')) {
-                        this.data.missedTaps++;
-                    }
-                });
-
-                // 다중 탭 감지
-                document.body.addEventListener('click', (e) => {
-                    if (e.target.closest('.btn-action')) {
-                        const now = performance.now();
-                        if (now - this.lastTapTime < 300) {
-                            this.data.multiTaps++;
-                        }
-                        this.lastTapTime = now;
-                    }
-                });
-
                 // 롱프레스 감지
                 const startPress = () => {
                     if (this.isPressing) return;
@@ -839,6 +824,38 @@
                     if (this.pressTimer) clearTimeout(this.pressTimer);
                     this.isPressing = false;
                 };
+
+                // 빈 곳 터치 감지: 버튼·입력칸·영상 터치와 스크롤(손가락 이동)은 제외
+                const INTERACTIVE = 'button, input, label, a, .media-wrapper, #consent-modal';
+                let touch = null;
+                document.body.addEventListener('touchstart', (e) => {
+                    const t = e.touches[0];
+                    touch = { x: t.clientX, y: t.clientY, moved: false, miss: !e.target.closest(INTERACTIVE) };
+                }, { passive: true });
+                document.body.addEventListener('touchmove', (e) => {
+                    if (!touch || touch.moved) return;
+                    const t = e.touches[0];
+                    if (Math.abs(t.clientX - touch.x) > 10 || Math.abs(t.clientY - touch.y) > 10) {
+                        touch.moved = true;
+                        endPress(); // 스크롤은 길게 누름으로 세지 않음
+                    }
+                }, { passive: true });
+                document.body.addEventListener('touchend', () => {
+                    if (touch && touch.miss && !touch.moved) this.data.missedTaps++;
+                    touch = null;
+                });
+
+                // 다중 탭 감지 (날짜 숫자판은 빠르게 누르는 것이 정상이므로 제외)
+                document.body.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-action') && !e.target.closest('.num-btn')) {
+                        const now = performance.now();
+                        if (now - this.lastTapTime < 300) {
+                            this.data.multiTaps++;
+                        }
+                        this.lastTapTime = now;
+                    }
+                });
+
                 document.body.addEventListener('mousedown', startPress);
                 document.body.addEventListener('mouseup', endPress);
                 document.body.addEventListener('touchstart', startPress);
@@ -1031,6 +1048,8 @@
             dateInput: { month: "", day: "" },
             inputStep: 'month',
             selectedSeason: "",
+            // 날짜·계절 문제(Q7) 채점 결과
+            orientation: { monthScore: 0, dayScore: 0, seasonScore: 0 },
             // [NEW] 결과 데이터 저장용
             reportData: null,
             // [NEW] 구글 Apps Script Web App URL (여기에 복사한 URL을 넣으세요!)
@@ -1076,6 +1095,7 @@
                 this.dateInput = { month: "", day: "" };
                 this.inputStep = 'month';
                 this.selectedSeason = "";
+                this.orientation = { monthScore: 0, dayScore: 0, seasonScore: 0 };
                 this.reportData = null; // 초기화
                 
                 ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
@@ -1086,6 +1106,8 @@
                 document.getElementById('display-month').innerText = "";
                 document.getElementById('display-day').innerText = "";
                 document.getElementById('cognitive-warning').innerHTML = "";
+                document.getElementById('cognitive-score').innerText = "0점";
+                document.getElementById('cognitive-grade').innerHTML = "";
                 document.getElementById('safety-visual-grid').innerHTML = "";
                 document.getElementById('cognitive-visual-grid').innerHTML = "";
                 document.getElementById('behavior-stats').innerHTML = "";
@@ -1158,26 +1180,37 @@
             },
 
             submitDate() {
-                BehaviorTracker.recordReaction();
                 const today = new Date();
                 const curM = today.getMonth() + 1;
                 const curD = today.getDate();
                 
-                let inputM = parseInt(this.dateInput.month || 0);
-                let inputD = parseInt(this.dateInput.day || 0);
-                let dateScore = 0;
-                
-                if (inputM === curM && inputD === curD) dateScore = 5;
-                else if (inputM === curM) dateScore = 2; 
+                const inputM = parseInt(this.dateInput.month || 0);
+                const inputD = parseInt(this.dateInput.day || 0);
 
-                let currentSeason = "";
-                if (curM >= 3 && curM <= 5) currentSeason = "spring";
-                else if (curM >= 6 && curM <= 8) currentSeason = "summer";
-                else if (curM >= 9 && curM <= 11) currentSeason = "autumn";
-                else currentSeason = "winter";
-                
-                let seasonScore = (this.selectedSeason === currentSeason) ? 5 : 0;
-                this.answers['q7'] = dateScore + seasonScore;
+                // 날짜 (40점): 월 20점 + 일 20점
+                let monthScore = (inputM === curM) ? 20 : 0;
+                let dayScore = (inputD === curD) ? 20 : 0;
+
+                // 하루 차이는 월 20점 + 일 10점 (월말·월초, 연말·연초 포함)
+                if (inputM >= 1 && inputM <= 12 && inputD >= 1 && !(inputM === curM && inputD === curD)) {
+                    const typed = new Date(today.getFullYear(), inputM - 1, inputD);
+                    if (typed.getMonth() === inputM - 1) {
+                        const base = new Date(today.getFullYear(), today.getMonth(), curD);
+                        let diff = Math.round(Math.abs(typed - base) / 86400000);
+                        if (diff > 300) diff = Math.abs(diff - 365); // 12월 31일 ↔ 1월 1일
+                        if (diff <= 1) { monthScore = 20; dayScore = 10; }
+                    }
+                }
+
+                // 계절 (20점): 계절이 바뀌는 앞뒤 열흘은 양쪽 계절 모두 정답
+                const seasonOf = (m) => (m >= 3 && m <= 5) ? "spring" : (m >= 6 && m <= 8) ? "summer" : (m >= 9 && m <= 11) ? "autumn" : "winter";
+                const okSeasons = [seasonOf(curM)];
+                if (curD <= 10) okSeasons.push(seasonOf(curM === 1 ? 12 : curM - 1));
+                if (curD >= 21) okSeasons.push(seasonOf(curM === 12 ? 1 : curM + 1));
+                const seasonScore = okSeasons.includes(this.selectedSeason) ? 20 : 0;
+
+                this.orientation = { monthScore, dayScore, seasonScore };
+                this.answers['q7'] = monthScore + dayScore + seasonScore;
                 if (7 < this.totalSlides) this.goToSlide('q8');
                 else this.calcResult();
             },
@@ -1233,7 +1266,8 @@
             },
 
             answer(qNum, score) {
-                BehaviorTracker.recordReaction();
+                // 반응 시간은 영상이 없는 문제(Q9~Q12)에서만 측정 (영상 시청 시간이 섞이지 않도록)
+                if (qNum >= 9) BehaviorTracker.recordReaction();
                 this.answers['q' + qNum] = score;
                 if (qNum < this.totalSlides) this.goToSlide('q' + (qNum + 1));
                 else {
@@ -1263,306 +1297,175 @@
             calcResult() {
                 this.goToSlide('result');
 
-                // 1. 안전 점수
-                const safetyQ = ['q1','q3','q4','q5','q6','q8','q10','q11','q12'];
-                let safetyTotal = 0;
-                safetyQ.forEach(q => safetyTotal += this.answers[q]);
-                let finalSafetyScore = Math.round((safetyTotal / 90) * 100); 
-                
-                let smokeLevel = this.answers.q2;
-                let smokePenaltySafety = smokeLevel * 3;
-                finalSafetyScore -= smokePenaltySafety;
-                if(finalSafetyScore < 0) finalSafetyScore = 0;
+                // ===== 1. 안전 점수: 교통 문제 10개 × 10점 = 100점 =====
+                const safetyQ = ['q1','q3','q4','q5','q6','q8','q9','q10','q11','q12'];
+                let finalSafetyScore = 0;
+                safetyQ.forEach(q => finalSafetyScore += this.answers[q]);
 
-                // 2. 행동 데이터
+                // ===== 2. 행동 데이터 =====
                 const bd = BehaviorTracker.data;
                 const avgReaction = bd.reactionTimes.length > 0 ? bd.reactionTimes.reduce((a, b) => a + b) / bd.reactionTimes.length : 0;
-                
-                const penaltyMissed = Math.min(20, bd.missedTaps * 2);
-                const penaltyMulti = Math.min(20, bd.multiTaps * 3);
-                const penaltyVisibility = bd.visibilityHiddenCount * 10;
-                
-                // [NEW] 전체화면 이탈(축소) 페널티 (회당 5점)
-                const penaltyFullscreenExit = bd.fullscreenExits * 5;
+                const focusLoss = bd.visibilityHiddenCount + bd.fullscreenExits;
+                const SLOW_MS = 20000; // 글 문제를 읽고 답하는 데 평균 20초 초과
+                const FAST_MS = 800;
 
-                const penaltySlow = avgReaction > 5000 ? 10 : 0;
-                const smokePenaltyCognitive = smokeLevel * 5;
-
-                // 3. 인지 점수
+                // ===== 3. 인지 건강 점수: 날짜 40 + 계절 20 + 흡연 20 + 집중 유지 20 = 100점 =====
+                const smokeLevel = this.answers.q2;
+                const o = this.orientation;
                 const cognitive = {
-                    orientation: this.answers.q7 * 10, 
-                    memory: Math.min(100, (this.answers.q1 + this.answers.q6 + this.answers.q11) * 3 + 10),
-                    // 주의력: 화면 이탈 및 전체화면 축소(회피) 반영
-                    attention: Math.max(0, Math.min(100, (this.answers.q4 * 5 + this.answers.q12 * 5) + 30 - penaltyVisibility - penaltyFullscreenExit - penaltySlow - smokePenaltyCognitive)),
-                    visuospatial: Math.max(0, Math.min(100, (this.answers.q3 * 5 + this.answers.q6 * 5) + 20 - penaltyMissed)),
-                    // 집행기능(충동성): 전체화면 축소(참을성 부족) 반영
-                    executive: Math.max(0, Math.min(100, (this.answers.q5 * 5 + this.answers.q8 * 5 + this.answers.q10 * 5) + 10 - penaltyMulti - penaltyFullscreenExit - smokePenaltyCognitive)),
-                    language: Math.min(100, (this.answers.q9 * 7) + (this.answers.q1 * 3)) 
+                    date: o.monthScore + o.dayScore,
+                    season: o.seasonScore,
+                    smoking: Math.max(0, 20 - smokeLevel * 5),
+                    focus: Math.max(0, 20 - focusLoss * 5 - (bd.multiTaps >= 4 ? 5 : 0))
                 };
+                const cognitiveScore = cognitive.date + cognitive.season + cognitive.smoking + cognitive.focus;
+                const monthWrong = o.monthScore < 20;
+                const seasonWrong = o.seasonScore < 20;
 
                 // [NEW] 데이터 저장용 객체 생성
                 this.reportData = {
                     safetyScore: finalSafetyScore,
+                    cognitiveScore: cognitiveScore,
                     cognitive: cognitive,
                     behavior: {
                         avgReaction: Math.round(avgReaction),
                         missedTaps: bd.missedTaps,
                         multiTaps: bd.multiTaps,
                         longPresses: bd.longPresses,
-                        focusLoss: bd.visibilityHiddenCount + bd.fullscreenExits
+                        focusLoss: focusLoss
                     }
                 };
 
                 // --- UI: 안전 보고서 ---
                 document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
-                
-                const smokeMsgDiv = document.getElementById('safety-smoke-penalty');
-                if (smokeLevel > 0) {
-                    smokeMsgDiv.innerText = `(흡연 습관으로 -${smokePenaltySafety}점 감점되었습니다)`;
-                    smokeMsgDiv.style.color = "#c0392b";
-                } else {
-                    smokeMsgDiv.innerText = "(비흡연으로 인한 감점 없음)";
-                    smokeMsgDiv.style.color = "#27ae60";
-                }
 
                 // 1) 종합 등급 및 분석
                 let finalMessage = "";
                 if(finalSafetyScore >= 90) finalMessage += "<div style='color:#27ae60; font-size:22px; font-weight:bold; margin-bottom:10px;'>🌟 종합 평가: 매우 안전</div>안전 지식이 풍부하고 대처 능력이 뛰어납니다. 지금처럼 안전 수칙을 잘 지켜주세요.<br>";
-                else if(finalSafetyScore >= 70) finalMessage += "<div style='color:#f39c12; font-size:22px; font-weight:bold; margin-bottom:10px;'>⚠️ 종합 평가: 보통</div>대체로 안전하지만, 몇 가지 주의가 필요합니다. 아래 오답 풀이를 꼭 확인하세요.<br>";
-                else finalMessage += "<div style='color:#c0392b; font-size:22px; font-weight:bold; margin-bottom:10px;'>🚨 종합 평가: 위험</div>교통 안전 사고 위험이 높습니다. 각별한 주의가 필요합니다.<br>";
+                else if(finalSafetyScore >= 70) finalMessage += "<div style='color:#f39c12; font-size:22px; font-weight:bold; margin-bottom:10px;'>⚠️ 종합 평가: 보통</div>대체로 안전하지만, 몇 가지 주의가 필요합니다. 위의 오답 풀이를 꼭 확인하세요.<br>";
+                else finalMessage += "<div style='color:#c0392b; font-size:22px; font-weight:bold; margin-bottom:10px;'>🚨 종합 평가: 위험</div>교통 안전 사고 위험이 높습니다. 위의 오답 풀이를 하나씩 꼭 확인하세요.<br>";
                 
                 document.getElementById('safety-analysis-text').innerHTML = finalMessage;
 
-                // 2) 인지 기능 기반 사고 예측 리포트
+                // 2) 인지 건강과 보행 안전
                 let riskAnalysis = [];
-                
-                if (cognitive.executive < 60) {
-                    let reasons = [];
-                    if (smokeLevel > 0) reasons.push("흡연으로 인한 전두엽 기능 저하");
-                    if (bd.multiTaps > 3) reasons.push("충동적인 버튼 연타(성급함)");
-                    if (bd.fullscreenExits > 1) reasons.push("화면 이탈 시도(집중 유지 어려움)");
-                    if (reasons.length === 0) reasons.push("판단 속도 저하");
-                    riskAnalysis.push(`• <strong>[판단력(집행기능) 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.join(', ')})</span><br>돌발 상황 대처가 늦습니다. <u style='color:#c62828;'>횡단보도 중간에서 신호가 바뀌면 당황하여 멈칫거리거나 넘어질 위험</u>이 큽니다.`);
-                }
 
-                if (cognitive.attention < 60) {
+                if (monthWrong || seasonWrong) {
+                    riskAnalysis.push("• <strong>[날짜·계절 감각]</strong> 날짜나 계절이 헷갈리면 <u style='color:#c62828;'>해가 지는 시간이나 길이 어는 때를 놓치기 쉽습니다.</u> 외출 전에 달력과 날씨를 확인하세요.");
+                }
+                if (cognitive.focus < 15) {
                     let reasons = [];
-                    if (bd.visibilityHiddenCount > 0) reasons.push("주의 산만(이탈)");
-                    if (bd.fullscreenExits > 0) reasons.push("과제 회피 성향(화면 축소)");
-                    if (avgReaction > 5000) reasons.push("반응 속도 지연");
-                    riskAnalysis.push(`• <strong>[주의력 저하]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.length > 0 ? reasons.join(', ') : '집중력 부족'})</span><br>주변 상황을 놓치기 쉽습니다. <u style='color:#c62828;'>신호등이 바뀌는 것을 늦게 보거나, 골목에서 갑자기 튀어나오는 오토바이를 피하지 못할 위험</u>이 있습니다.`);
+                    if (focusLoss > 0) reasons.push(`검사 중 화면 이탈 ${focusLoss}회`);
+                    if (bd.multiTaps >= 4) reasons.push(`버튼 연타 ${bd.multiTaps}회`);
+                    riskAnalysis.push(`• <strong>[집중 유지]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.join(', ')})</span><br>주변 상황을 놓치기 쉽습니다. <u style='color:#c62828;'>길을 건널 때는 멈춰 서서 좌우를 끝까지 살핀 뒤</u> 건너세요.`);
                 }
-
-                if (cognitive.visuospatial < 60) {
-                    riskAnalysis.push("• <strong>[시공간 능력 저하]</strong> 거리 감각이 둔해질 수 있습니다. <u style='color:#c62828;'>다가오는 차가 멀리 있다고 착각하여 무리하게 길을 건너다 사고</u>가 날 수 있습니다.");
-                }
-                
-                if (cognitive.memory < 60) {
-                    riskAnalysis.push("• <strong>[기억력 저하]</strong> 익숙한 길에서도 <u style='color:#c62828;'>순간적으로 방향을 잃어 차도로 잘못 들어서거나, 보행 신호를 깜빡하고 건널 위험</u>이 있습니다.");
-                }
-                
-                if (cognitive.orientation < 60) {
-                    riskAnalysis.push("• <strong>[지남력 저하]</strong> 날짜나 시간 감각이 무뎌지면, <u style='color:#c62828;'>새벽이나 한밤중에 외출하여 사고를 당할 위험</u>이 높아집니다.");
+                if (smokeLevel > 0) {
+                    riskAnalysis.push("• <strong>[흡연 습관]</strong> 흡연은 뇌혈관 건강에 부담을 주어 인지 건강에 좋지 않습니다. <u style='color:#c62828;'>걸으면서 담배를 피우면 주변을 살피기 어려우니</u> 길에서는 삼가세요.");
                 }
 
                 const riskBox = document.getElementById('cognitive-risk-box');
+                const riskTitle = riskBox.querySelector('.analysis-title');
                 const riskText = document.getElementById('cognitive-risk-text');
+                riskBox.style.display = "block";
                 
                 if (riskAnalysis.length > 0) {
-                    riskBox.style.display = "block";
-                    // [수정] 제목 통일 (인지 기능별 사고 위험 예측)
-                    riskBox.querySelector('.analysis-title').innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> 인지 기능별 사고 위험 예측";
-                    riskText.innerHTML = "현재 인지 검사 결과, 다음과 같은 상황이 우려되니 보호자의 각별한 관심이 필요합니다.<br><br>" + riskAnalysis.join("<br><br>");
+                    riskBox.style.backgroundColor = "#fff8e1";
+                    riskBox.style.borderLeftColor = "#ffca28";
+                    riskTitle.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> 인지 건강과 보행 안전";
+                    riskTitle.style.color = "#f57f17";
+                    riskText.innerHTML = "오늘 점검 결과, 길을 다니실 때 다음 사항을 참고해 주세요.<br><br>" + riskAnalysis.join("<br><br>");
                 } else {
-                    riskBox.style.display = "block";
                     riskBox.style.backgroundColor = "#e8f5e9";
                     riskBox.style.borderLeftColor = "#2e7d32";
-                    // [수정] 제목 통일 (인지 안전 분석 결과)
-                    riskBox.querySelector('.analysis-title').innerHTML = "<i class='fa-solid fa-shield-heart'></i> 인지 안전 분석 결과";
-                    riskBox.querySelector('.analysis-title').style.color = "#2e7d32";
-                    riskText.innerHTML = "<strong>✅ 인지 기능 상태가 양호합니다.</strong><br>도로 위 돌발 상황이나 신호 체계를 인지하고 대처하는 능력이 충분하여 안전한 보행이 가능합니다.";
+                    riskTitle.innerHTML = "<i class='fa-solid fa-shield-heart'></i> 인지 건강과 보행 안전";
+                    riskTitle.style.color = "#2e7d32";
+                    riskText.innerHTML = "<strong>✅ 날짜·계절 감각과 집중 상태가 양호합니다.</strong><br>지금처럼 주변을 잘 살피며 안전하게 다니세요.";
                 }
                 
+                // 3) 오답 풀이
                 const sGrid = document.getElementById('safety-visual-grid');
                 let sHtml = "";
                 
                 if(this.answers.q1 < 10) sHtml += this.createCard('correction', 'fa-traffic-light', '#e74c3c', 'Q. 초록불이 깜빡이면?', '정답: 멈추고 다음 신호를 기다립니다.', '무리하게 진입하면 신호 위반 사고 위험이 큽니다.');
+                if(this.answers.q3 < 10) sHtml += this.createCard('correction', 'fa-shirt', '#333', 'Q. 밤에 안전한 옷은?', '정답: 밝은 색 옷을 입습니다.', '검은 옷은 운전자 눈에 안 보입니다.');
+                if(this.answers.q4 < 10) sHtml += this.createCard('correction', 'fa-bus', '#16a085', 'Q. 버스에서 내릴 때는?', '정답: 차가 완전히 멈춘 뒤 일어납니다.', '움직이는 버스 안에서 일어나면 넘어져 크게 다칠 수 있습니다.');
+                if(this.answers.q5 < 10) sHtml += this.createCard('correction', 'fa-hand', '#c0392b', 'Q. 무단횡단 해도 될까?', '정답: 꼭 횡단보도로 건너세요.', '조금 빠르려다 크게 다칠 수 있습니다.');
+                if(this.answers.q6 < 10) sHtml += this.createCard('correction', 'fa-person-walking-arrow-right', '#3498db', 'Q. 골목길 보행 방향은?', '정답: 차와 마주 보고 걷습니다.', '뒤에서 오는 차는 피할 수 없습니다.');
+                if(this.answers.q8 < 10) sHtml += this.createCard('correction', 'fa-person-walking', '#8e44ad', 'Q. 신호가 5초 남았을 때는?', '정답: 다음 신호를 기다립니다.', '시간이 모자란 신호에 서두르면 넘어지거나 차와 부딪힐 수 있습니다.');
+                if(this.answers.q9 < 10) sHtml += this.createCard('correction', 'fa-signs-post', '#0d6efd', 'Q. 파란 표지판의 뜻은?', '정답: 횡단보도가 있다는 표지입니다.', '이 표지판이 있는 곳에서 길을 건너야 안전합니다.');
                 if(this.answers.q10 < 10) sHtml += this.createCard('correction', 'fa-car', '#e67e22', 'Q. 교차로 앞 황색 신호?', '정답: 정지선 앞에 멈춥니다.', '가속하면 딜레마 존 사고 위험이 있습니다.');
                 if(this.answers.q11 < 10) sHtml += this.createCard('correction', 'fa-arrow-turn-up', '#27ae60', 'Q. 비보호 좌회전은 언제?', '정답: 녹색(직진) 신호일 때만!', '적색 신호 진입은 신호위반입니다.');
                 if(this.answers.q12 < 10) sHtml += this.createCard('correction', 'fa-child', '#f1c40f', 'Q. 스쿨존 제한 속도는?', '정답: 시속 30km 이하입니다.', '어린이는 언제 튀어나올지 모릅니다.');
-                if(this.answers.q3 < 10) sHtml += this.createCard('correction', 'fa-shirt', '#333', 'Q. 밤에 안전한 옷은?', '정답: 밝은 색 옷을 입습니다.', '검은 옷은 운전자 눈에 안 보입니다.');
-                if(this.answers.q6 < 10) sHtml += this.createCard('correction', 'fa-person-walking-arrow-right', '#3498db', 'Q. 골목길 보행 방향은?', '정답: 차와 마주 보고 걷습니다.', '뒤에서 오는 차는 피할 수 없습니다.');
-                if(this.answers.q5 < 10) sHtml += this.createCard('correction', 'fa-hand', '#c0392b', 'Q. 무단횡단 해도 될까?', '정답: 꼭 횡단보도로 건너세요.', '조금 빠르려다 크게 다칠 수 있습니다.');
 
-                if(smokeLevel > 0) {
-                    sHtml += this.createCard('correction', 'fa-smoking', '#7f8c8d', '흡연과 안전', '흡연은 반응 속도를<br>느리게 만듭니다.', '위급 상황 대처 능력이 떨어질 수 있습니다.');
-                } else if (finalSafetyScore === 100) { 
-                     sHtml += this.createCard('activity', 'fa-lungs', '#27ae60', '폐 건강 최고', '비흡연 습관 덕분에<br>반응 속도가 좋습니다.', '건강한 폐활량이 안전 보행을 돕습니다.');
-                }
-
-                if(sHtml === "" && smokeLevel === 0) sHtml = this.createCard('activity', 'fa-thumbs-up', '#27ae60', '완벽해요', '틀린 문제가 하나도 없네요.<br>정말 훌륭합니다!', '');
+                if(sHtml === "") sHtml = this.createCard('activity', 'fa-thumbs-up', '#27ae60', '완벽해요', '틀린 문제가 하나도 없네요.<br>정말 훌륭합니다!', '');
                 sGrid.innerHTML = sHtml;
 
                 const rGrid = document.getElementById('safety-recommend-grid');
                 let rHtml = "";
                 rHtml += this.createCard('activity', 'fa-person-walking', '#3498db', '바른 자세 보행', '주머니에서 손을 빼고<br>전방을 주시하며 걷기', '');
                 rHtml += this.createCard('activity', 'fa-mobile-screen-button', '#9b59b6', '스마트폰 멈춤', '걸을 때는 휴대폰을<br>보지 않는 습관 기르기', '');
-                if (cognitive.visuospatial < 70) {
+                if (bd.missedTaps > 5) {
                     rHtml += this.createCard('activity', 'fa-glasses', '#f1c40f', '시야 확보', '모자나 우산으로<br>시야를 가리지 않기', '');
                 }
                 rGrid.innerHTML = rHtml;
 
                 // --- UI: 인지 보고서 ---
-                const cSections = document.getElementById('cognitive-sections');
-                const sortedDomains = Object.entries(cognitive).sort(([,a], [,b]) => a - b);
-                
-                // 1. 차트 그리기
-                setTimeout(() => {
-                    this.drawRadarChart(cognitive);
-                }, 100);
+                document.getElementById('cognitive-score').innerText = cognitiveScore + "점 / 100점";
+                let gradeHtml = "";
+                if (cognitiveScore >= 80) gradeHtml = "<span style='color:#27ae60; font-weight:bold;'>🌟 양호</span><br>지금의 생활 습관을 잘 유지해 주세요.";
+                else if (cognitiveScore >= 60) gradeHtml = "<span style='color:#f39c12; font-weight:bold;'>⚠️ 주의</span><br>아래에서 점수가 낮은 항목을 확인해 보세요.";
+                else gradeHtml = "<span style='color:#c0392b; font-weight:bold;'>🔔 점검 권장</span><br>아래 항목을 확인하고 생활 습관을 점검해 보세요.";
+                document.getElementById('cognitive-grade').innerHTML = gradeHtml;
 
-                // 2. 카드 리스트 생성
+                const order = ['date', 'season', 'smoking', 'focus'];
                 let cHtmlBody = `<div class="cognitive-grid">`;
-                sortedDomains.forEach(([key, score]) => {
-                    let status = 'good';
-                    if(score < 60) status = 'danger';
-                    else if(score < 90) status = 'warning';
-                    cHtmlBody += this.createCognitiveCard(key, score, status);
-                });
+                order.forEach(key => cHtmlBody += this.createCognitiveCard(key, cognitive[key]));
                 cHtmlBody += `</div>`;
-                cSections.innerHTML = cHtmlBody;
+                document.getElementById('cognitive-sections').innerHTML = cHtmlBody;
 
                 const cGrid = document.getElementById('cognitive-visual-grid');
                 let cSolHtml = "";
                 
                 if(smokeLevel > 0) {
-                    cSolHtml += this.createCard('habit', 'fa-ban', '#c0392b', '금연 처방', '담배 연기는 뇌혈관을<br>좁게 만듭니다.', '금연이 가장 좋은 치매 예방약입니다.');
+                    cSolHtml += this.createCard('habit', 'fa-ban-smoking', '#c0392b', '금연 실천', '담배 연기는 뇌혈관을<br>좁게 만듭니다.', '금연은 인지 건강을 지키는 좋은 습관입니다.');
                 }
+                if(cognitive.date < 40 || seasonWrong) cSolHtml += this.createCard('activity', 'fa-calendar-check', '#e67e22', '달력 보기', '매일 아침 달력을 보며<br>날짜와 계절을 확인하세요.', '');
+                if(cognitive.focus < 15) cSolHtml += this.createCard('activity', 'fa-eye', '#3498db', '집중력 기르기', '한 번에 하나씩 하는<br>습관을 가져보세요.', '');
 
-                if(cognitive.orientation < 60) cSolHtml += this.createCard('activity', 'fa-calendar-check', '#e67e22', '지남력 훈련', '매일 아침 달력을 보며<br>날짜를 확인하세요.', '');
-                if(cognitive.attention < 60) cSolHtml += this.createCard('activity', 'fa-eye', '#3498db', '집중력 강화', '한 번에 하나씩 하는<br>습관을 가져보세요.', '');
-                if(cognitive.executive < 60) cSolHtml += this.createCard('activity', 'fa-hand-paper', '#e74c3c', '충동 조절', '행동하기 전에<br>3초만 더 생각하세요.', '');
-                if(cognitive.memory < 60) cSolHtml += this.createCard('activity', 'fa-note-sticky', '#f1c40f', '메모 습관', '중요한 것은 적어두고<br>자주 확인하세요.', '');
-                if(cognitive.visuospatial < 60) cSolHtml += this.createCard('activity', 'fa-map-location-dot', '#9b59b6', '길 찾기', '익숙한 길로 다니고<br>주변 지형지물을 익히세요.', '');
-                if(cognitive.language < 60) cSolHtml += this.createCard('activity', 'fa-comments', '#1abc9c', '대화하기', '가족, 친구들과 자주<br>대화를 나누세요.', '');
-
-                if(cSolHtml === "") cSolHtml = this.createCard('activity', 'fa-brain', '#27ae60', '뇌 건강', '인지 기능이<br>매우 건강합니다!', '');
+                if(cSolHtml === "") cSolHtml = this.createCard('activity', 'fa-brain', '#27ae60', '뇌 건강', '지금처럼 규칙적인<br>생활을 이어가세요!', '');
                 cGrid.innerHTML = cSolHtml;
 
                 // --- UI: 행동 분석 ---
                 const bStats = document.getElementById('behavior-stats');
                 let bHtml = "";
                 
-                // [NEW] 전체화면 이탈 행동 피드백 추가
-                if (bd.fullscreenExits > 0) {
-                    bHtml += this.createBehaviorCard('fa-compress', '#9b59b6', '화면 크기 조절 (이탈 시도)', `검사 중 화면을 ${bd.fullscreenExits}회 축소/이탈하셨습니다.<br><strong>[주의]</strong> 과제에 대한 집중력 유지 어려움 또는 회피 성향`, 'high');
+                if (focusLoss > 0) {
+                    bHtml += this.createBehaviorCard('fa-compress', '#9b59b6', '화면 이탈', `검사 중 화면을 ${focusLoss}회 벗어나거나 축소하셨습니다.<br><strong>[주의]</strong> 길을 건널 때는 한 가지에만 집중하세요.`, 'high');
                 }
-
-                if (bd.multiTaps > 3) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '높은 충동성 (연타)', `버튼 연타 ${bd.multiTaps}회.<br><strong>[위험]</strong> 급발진, 신호 위반 위험`, 'high');
-                if (bd.longPresses > 0) bHtml += this.createBehaviorCard('fa-hand-pointer', '#d35400', '터치 지연 (꾹 누름)', `화면을 길게 누르는 행동이 ${bd.longPresses}회 감지되었습니다.<br><strong>[위험]</strong> 운동 반응 속도 저하 또는 확신 부족`, 'high');
-                if (avgReaction > 5000) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '반응 지연', `평균 ${(avgReaction/1000).toFixed(1)}초 소요.<br><strong>[위험]</strong> 돌발 상황 대처 미흡`, 'high');
-                else if (avgReaction < 800) bHtml += this.createBehaviorCard('fa-person-running', '#e67e22', '성급한 판단', `너무 빠른 반응(${(avgReaction/1000).toFixed(1)}초).<br><strong>[위험]</strong> 예측 출발, 부주의`, 'high');
-                if (bd.missedTaps > 5) bHtml += this.createBehaviorCard('fa-bullseye', '#e74c3c', '터치 정확도 저하', `버튼이 아닌 빈 공간을 ${bd.missedTaps}회 터치하셨습니다.<br><strong>[위험]</strong> 시야가 좁아져 있거나 소근육 조절이 어려울 수 있습니다.`, 'high');
+                if (bd.multiTaps >= 4) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '서두르는 습관 (연타)', `버튼을 연달아 ${bd.multiTaps}회 누르셨습니다.<br><strong>[주의]</strong> 신호가 바뀌기 전에 서둘러 건너려는 행동으로 이어질 수 있습니다.`, 'high');
+                if (avgReaction > SLOW_MS) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '답하는 데 걸린 시간', `문제당 평균 ${(avgReaction/1000).toFixed(0)}초가 걸렸습니다.<br><strong>[주의]</strong> 길을 건널 때는 신호가 넉넉히 남았을 때 출발하세요.`, 'high');
+                else if (avgReaction > 0 && avgReaction < FAST_MS) bHtml += this.createBehaviorCard('fa-person-running', '#e67e22', '성급한 판단', `문제를 매우 빠르게(${(avgReaction/1000).toFixed(1)}초) 답하셨습니다.<br><strong>[주의]</strong> 좌우를 살피지 않고 길을 건널 위험이 있습니다.`, 'high');
+                if (bd.missedTaps > 5) bHtml += this.createBehaviorCard('fa-bullseye', '#e74c3c', '터치 정확도', `버튼이 아닌 빈 공간을 ${bd.missedTaps}회 누르셨습니다.<br><strong>[주의]</strong> 시야가 좁아져 있거나 손끝 조절이 어려울 수 있습니다.`, 'high');
+                if (bd.longPresses > 0) bHtml += this.createBehaviorCard('fa-hand-pointer', '#7f8c8d', '길게 누르는 습관', `화면을 길게 누른 경우가 ${bd.longPresses}회 있었습니다.<br>버튼은 가볍게 톡 눌러도 됩니다.`, 'info');
                 
-                if(bHtml === "") bHtml = this.createBehaviorCard('fa-check-circle', '#27ae60', '안전한 행동 패턴', '반응 속도와 터치 정확도가<br>매우 안정적입니다.', 'low');
+                if(bHtml === "") bHtml = this.createBehaviorCard('fa-check-circle', '#27ae60', '안전한 행동 패턴', '집중 상태와 터치 정확도가<br>매우 안정적입니다.', 'low');
                 bStats.innerHTML = bHtml;
 
-                // 경고 메시지
-                const lowScores = Object.values(cognitive).filter(s => s < 60).length;
+                // 검진 안내: 오늘의 '월'이나 '계절'을 맞히지 못한 경우
                 let warningHTML = "";
-                if (lowScores >= 3) {
+                if (monthWrong || seasonWrong) {
+                    const missed = [monthWrong ? "월" : "", seasonWrong ? "계절" : ""].filter(Boolean).join("과 ");
                     warningHTML = `
                     <div class="warning-box">
-                        <div class="warning-icon-wrapper"><i class="fa-solid fa-triangle-exclamation fa-beat-fade" style="color: #e74c3c;"></i></div>
+                        <div class="warning-icon-wrapper"><i class="fa-solid fa-bell" style="color: #e74c3c;"></i></div>
                         <div class="warning-content">
-                            <h3>🚨 정밀 검사가 필요합니다!</h3>
-                            <p>현재 <strong>3개 이상의 영역</strong>에서 인지 기능 저하 신호가 감지되었습니다.<br>전문가의 정확한 진단과 상담이 꼭 필요한 상태입니다.</p>
+                            <h3>🔔 인지 건강 검진을 권해드립니다</h3>
+                            <p>오늘의 <strong>${missed}</strong>을 맞히지 못하셨습니다.<br>가까운 보건소 치매안심센터에서 무료 검진을 받아보시길 권합니다.</p>
                         </div>
                         <button class="btn-warning-action" onclick="app.openConsentModal()"><i class="fa-solid fa-paper-plane"></i> 결과 전송 및 상담 신청</button>
                     </div>`;
                 }
                 document.getElementById('cognitive-warning').innerHTML = warningHTML;
-            },
-
-            drawRadarChart(data) {
-                const canvas = document.getElementById('cognitiveRadarChart');
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width = 500;
-                const height = canvas.height = 400; 
-                const centerX = width / 2;
-                const centerY = height / 2;
-                const radius = 140; 
-
-                const keys = ['orientation', 'memory', 'attention', 'visuospatial', 'executive', 'language'];
-                const labels = ['지남력', '기억력', '주의력', '시공간', '집행기능', '언어기능'];
-                const values = keys.map(k => data[k]);
-
-                ctx.clearRect(0, 0, width, height);
-                
-                for (let r = 20; r <= 100; r += 20) {
-                    ctx.beginPath();
-                    for (let i = 0; i < 6; i++) {
-                        const angle = (Math.PI / 3) * i - Math.PI / 2;
-                        const x = centerX + (radius * r / 100) * Math.cos(angle);
-                        const y = centerY + (radius * r / 100) * Math.sin(angle);
-                        if (i === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    }
-                    ctx.closePath();
-                    ctx.strokeStyle = '#e0e0e0';
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                }
-
-                ctx.font = 'bold 20px "Jua", sans-serif'; 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#333';
-
-                for (let i = 0; i < 6; i++) {
-                    const angle = (Math.PI / 3) * i - Math.PI / 2;
-                    const x = centerX + radius * Math.cos(angle);
-                    const y = centerY + radius * Math.sin(angle);
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(centerX, centerY);
-                    ctx.lineTo(x, y);
-                    ctx.strokeStyle = '#ccc';
-                    ctx.stroke();
-
-                    const labelX = centerX + (radius + 40) * Math.cos(angle);
-                    const labelY = centerY + (radius + 40) * Math.sin(angle);
-                    ctx.fillText(labels[i], labelX, labelY);
-                }
-
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                    const angle = (Math.PI / 3) * i - Math.PI / 2;
-                    const score = values[i];
-                    const x = centerX + (radius * score / 100) * Math.cos(angle);
-                    const y = centerY + (radius * score / 100) * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(52, 152, 219, 0.5)'; 
-                ctx.fill();
-                ctx.strokeStyle = '#2980b9';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-
-                for (let i = 0; i < 6; i++) {
-                    const angle = (Math.PI / 3) * i - Math.PI / 2;
-                    const score = values[i];
-                    const x = centerX + (radius * score / 100) * Math.cos(angle);
-                    const y = centerY + (radius * score / 100) * Math.sin(angle);
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 6, 0, Math.PI * 2);
-                    ctx.fillStyle = '#c0392b'; 
-                    ctx.fill();
-                }
             },
 
             openConsentModal() { document.getElementById('consent-modal').classList.add('open'); },
@@ -1584,13 +1487,19 @@
                     phone: phone,
                     // 안전 점수
                     safetyScore: this.reportData.safetyScore,
-                    // 인지 점수들
-                    cog_orientation: this.reportData.cognitive.orientation,
-                    cog_memory: this.reportData.cognitive.memory,
-                    cog_attention: this.reportData.cognitive.attention,
-                    cog_visuospatial: this.reportData.cognitive.visuospatial,
-                    cog_executive: this.reportData.cognitive.executive,
-                    cog_language: this.reportData.cognitive.language,
+                    // 인지 건강 점수 (합계 100: 날짜 40 + 계절 20 + 흡연 20 + 집중 20)
+                    cognitiveScore: this.reportData.cognitiveScore,
+                    cog_date: this.reportData.cognitive.date,
+                    cog_season: this.reportData.cognitive.season,
+                    cog_smoking: this.reportData.cognitive.smoking,
+                    cog_focus: this.reportData.cognitive.focus,
+                    // 기존 시트 열과의 호환용 (100점 환산). 더 이상 계산하지 않는 영역은 빈 값
+                    cog_orientation: Math.round((this.reportData.cognitive.date + this.reportData.cognitive.season) / 60 * 100),
+                    cog_attention: this.reportData.cognitive.focus * 5,
+                    cog_memory: "",
+                    cog_visuospatial: "",
+                    cog_executive: "",
+                    cog_language: "",
                     // 행동 패턴
                     beh_avgReaction: this.reportData.behavior.avgReaction,
                     beh_missedTaps: this.reportData.behavior.missedTaps,
@@ -1629,33 +1538,22 @@
                 });
             },
 
-            createCognitiveCard(key, score, status) {
+            createCognitiveCard(key, score) {
                 const info = {
-                    orientation: { name: '지남력', icon: 'fa-calendar-check', meaning: '시간과 장소를 정확히 아는 능력' },
-                    memory: { name: '기억력', icon: 'fa-brain', meaning: '새로운 정보를 저장하고 기억하는 능력' },
-                    attention: { name: '주의력', icon: 'fa-eye', meaning: '필요한 것에 집중을 유지하는 능력' },
-                    visuospatial: { name: '시공간', icon: 'fa-map', meaning: '방향, 거리, 위치를 파악하는 능력' },
-                    executive: { name: '집행기능', icon: 'fa-traffic-light', meaning: '상황을 판단하고 결정을 내리는 능력' },
-                    language: { name: '언어기능', icon: 'fa-comments', meaning: '말과 글을 이해하고 표현하는 능력' }
+                    date: { name: '날짜 알기', icon: 'fa-calendar-day', max: 40, meaning: '오늘이 몇 월 며칠인지 아는 능력',
+                        good: "오늘 날짜를 정확히 알고 계십니다.", mid: "날짜가 조금 헷갈리셨네요. 달력을 자주 보는 습관이 도움이 됩니다.", bad: "날짜 감각이 흐릿합니다. 매일 아침 달력을 확인하세요." },
+                    season: { name: '계절 알기', icon: 'fa-leaf', max: 20, meaning: '지금이 어느 계절인지 아는 능력',
+                        good: "계절을 정확히 알고 계십니다.", mid: "", bad: "계절이 헷갈리셨네요. 창밖 풍경과 달력을 함께 확인해 보세요." },
+                    smoking: { name: '흡연 습관', icon: 'fa-smoking', max: 20, meaning: '흡연은 인지 저하의 위험 요인입니다',
+                        good: "비흡연은 뇌 건강을 지키는 좋은 습관입니다.", mid: "조금만 더 줄여 금연에 도전해 보세요.", bad: "흡연량이 많습니다. 하루 한 개비씩 줄여 보세요." },
+                    focus: { name: '집중 유지', icon: 'fa-eye', max: 20, meaning: '한 가지 일에 끝까지 집중하는 능력',
+                        good: "끝까지 집중해서 잘 마치셨습니다.", mid: "가끔 주의가 흐트러졌습니다. 한 번에 하나씩 해 보세요.", bad: "집중을 이어가기 어려우셨네요. 길에서는 걷는 데만 집중하세요." }
                 };
-                const advice = this.getDomainAdvice(key, status === 'danger' ? 'bad' : (status === 'warning' ? 'mid' : 'good'));
-                return `<div class="cognitive-card ${status}"><div class="cognitive-icon"><i class="fa-solid ${info[key].icon}"></i></div><div class="cognitive-title">${info[key].name}</div><div style="font-size: 16px; color: #7f8c8d; margin-bottom: 10px; font-weight: normal;">${info[key].meaning}</div><div class="cognitive-score">${score}점</div><div class="cognitive-desc">${advice}</div></div>`;
-            },
-
-            getDomainAdvice(key, status) {
-                const advice = {
-                    orientation: { bad: "날짜와 계절 감각이 흐릿합니다. 매일 달력을 확인하세요.", mid: "조금 헷갈리셨네요. 달력을 자주 보는 습관이 필요합니다.", good: "시간과 계절을 정확히 인지하고 계십니다." },
-                    memory: { bad: "방금 본 것도 잊어버리는 경향이 있습니다. 메모 습관이 필수입니다.", mid: "깜빡하는 경우가 있습니다. 중요한 건 기록하세요.", good: "기억력이 매우 좋으십니다." },
-                    attention: { 
-                        bad: "주의를 지속하는 힘이 부족합니다. 운전 시 딴생각을 조심하세요.", 
-                        mid: "가끔 주의가 산만해집니다. 한 번에 하나씩 처리하세요.", 
-                        good: "주의를 집중하고 유지하는 능력이 매우 뛰어납니다." 
-                    },
-                    visuospatial: { bad: "거리 감각이나 위치 파악이 어렵습니다. 야간 운전을 피하세요.", mid: "공간 인지 능력이 보통입니다.", good: "시공간 감각이 명확합니다." },
-                    executive: { bad: "순간적인 판단이 늦거나 충동적입니다. 돌발 상황에 매우 위험합니다.", mid: "판단력이 조금 느립니다. 여유 운전 하세요.", good: "상황 판단과 대처 능력이 훌륭합니다." },
-                    language: { bad: "단어가 잘 떠오르지 않습니다. 대화를 많이 하세요.", mid: "가끔 단어가 막힙니다.", good: "언어 이해력과 표현력이 좋습니다." }
-                };
-                return advice[key][status];
+                const d = info[key];
+                const ratio = score / d.max;
+                const status = ratio >= 0.8 ? 'good' : (ratio >= 0.6 ? 'warning' : 'danger');
+                const advice = status === 'good' ? d.good : (status === 'warning' ? d.mid : d.bad);
+                return `<div class="cognitive-card ${status}"><div class="cognitive-icon"><i class="fa-solid ${d.icon}"></i></div><div class="cognitive-title">${d.name}</div><div style="font-size: 16px; color: #7f8c8d; margin-bottom: 10px; font-weight: normal;">${d.meaning}</div><div class="cognitive-score">${score}점 / ${d.max}점</div><div class="cognitive-desc">${advice}</div></div>`;
             },
 
             createCard(type, icon, color, title, desc, reason) {
@@ -1685,8 +1583,8 @@
             },
 
             createBehaviorCard(icon, color, title, desc, riskLevel) {
-                const riskClass = riskLevel === 'high' ? 'risk-high' : 'risk-low';
-                const riskText = riskLevel === 'high' ? '위험 신호' : '안전 신호';
+                const riskClass = riskLevel === 'high' ? 'risk-high' : (riskLevel === 'info' ? 'risk-info' : 'risk-low');
+                const riskText = riskLevel === 'high' ? '주의 신호' : (riskLevel === 'info' ? '참고' : '안전 신호');
                 return `<div class="behavior-card"><div class="behavior-icon" style="background-color:${color}20; color:${color};"><i class="fa-solid ${icon}"></i></div><div class="behavior-content"><span class="risk-tag ${riskClass}">${riskText}</span><h4>${title}</h4><p>${desc}</p></div></div>`;
             },
 
