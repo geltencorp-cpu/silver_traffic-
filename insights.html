@@ -101,6 +101,25 @@
         .notice { background: #fff8e1; border-left: 6px solid var(--accent); border-radius: 10px; padding: 12px 14px; font-size: 15px; color: #6b5200; margin-top: 14px; line-height: 1.5; }
         .empty { text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 17px; }
         .hidden { display: none !important; }
+        .print-only { display: none; }
+        @media print {
+            @page { size: A4; margin: 12mm; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: #fff; }
+            .wrap { max-width: none; padding: 0; }
+            .card { box-shadow: none; border: 1px solid var(--line); padding: 14px; margin-top: 10px; break-inside: avoid; }
+            .head-card { border: 2px solid var(--accent); }
+            .no-print, .filters, #unreg-card, #gate, .bar-row .tip { display: none !important; }
+            .print-only { display: block; }
+            table.print-only { display: table; }
+            h1 { font-size: 26px; } h2 { font-size: 19px; }
+            .tile .value { font-size: 28px; } .tile.hero .value { font-size: 36px; }
+            .bar-row { padding: 5px 6px; }
+            .tiles { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .tile { padding: 10px; }
+            #inst-print { font-size: 13px; }
+            #inst-print td:first-child { white-space: nowrap; }
+        }
         @media (max-width: 560px) {
             .bar-row, .axis { grid-template-columns: 1fr 56px; }
             .bar-row .name { grid-column: 1 / -1; }
@@ -141,8 +160,10 @@
                     </select>
                 </label>
                 <button class="link-btn" id="reload"><i class="fa-solid fa-rotate-right"></i> 새로 불러오기</button>
+                <button class="link-btn" id="print"><i class="fa-solid fa-file-pdf"></i> PDF로 저장</button>
                 <button class="link-btn" id="logout"><i class="fa-solid fa-lock"></i> 잠그기</button>
             </div>
+            <p class="sub print-only" id="print-scope" style="margin: 10px 0 0;"></p>
             <div id="small-n" class="notice hidden"></div>
         </div>
 
@@ -180,8 +201,11 @@
 
             <div class="card" id="inst-card">
                 <h2><i class="fa-solid fa-building" style="color:#16a085;"></i> 기관별 비교</h2>
-                <p class="sub">위치가 같은 검사를 한 기관으로 묶었습니다.</p>
-                <div class="table-wrap"><table id="inst-table"></table></div>
+                <p class="sub no-print">위치가 같은 검사를 한 기관으로 묶었습니다.</p>
+                <div class="table-wrap no-print"><table id="inst-table"></table></div>
+                <!-- PDF(인쇄)용: 전국 평균 · 가장 우수한 기관(이름 가림) · 우리 기관 -->
+                <table id="inst-print" class="print-only"></table>
+                <p class="sub print-only" id="inst-print-note" style="margin: 8px 0 0; font-size: 13px;"></p>
             </div>
 
             <div class="card hidden" id="unreg-card">
@@ -383,6 +407,26 @@
         $('inst-table').innerHTML = '<tr><th>기관</th><th class="n">참여자</th><th class="n">평균 안전 점수</th><th class="n">평균 인지 점수</th><th>가장 많이 틀린 문제 (정답률)</th><th>가장 잘 맞힌 문제 (정답률)</th></tr>' +
             instRows.map(i => `<tr><td><b>${esc(i.name)}</b></td><td class="n">${i.n}명</td><td class="n">${fmt1(i.safety)}</td><td class="n">${fmt1(i.cog)}</td><td>${esc(i.worst)}</td><td>${esc(i.best)}</td></tr>`).join('');
 
+        // PDF(인쇄)용 비교표: 다른 기관 이름은 별표로 가리고, 고른 기관(우리 기관)만 이름을 보여줌
+        const MIN_N = 5; // 참여자가 너무 적은 기관은 '가장 우수한 기관' 후보에서 제외
+        const summary = (g) => {
+            const q = questionStats(g).sort((a, b) => a.rate - b.rate);
+            return { n: g.length, safety: avg(g.map(r => num(r.safetyScore)).filter(v => v !== null)), cog: avg(g.map(r => num(r.cognitiveScore)).filter(v => v !== null)),
+                worst: q.length ? `${q[0].no}. ${q[0].title} (${q[0].rate}%)` : '-', best: q.length ? `${q[q.length - 1].no}. ${q[q.length - 1].title} (${q[q.length - 1].rate}%)` : '-' };
+        };
+        const real = instRows.filter(i => i.name !== '위치 없음');
+        const pool = real.filter(i => i.n >= MIN_N).length ? real.filter(i => i.n >= MIN_N) : real;
+        const top = pool.slice().sort((a, b) => (b.safety || 0) - (a.safety || 0))[0];
+        const mine = instSel.value ? instRows.find(i => i.name === instSel.value) : null;
+        const line = (label, d) => `<tr><td><b>${esc(label)}</b></td><td class="n">${d.n}명</td><td class="n">${fmt1(d.safety)}</td><td class="n">${fmt1(d.cog)}</td><td>${esc(d.worst)}</td><td>${esc(d.best)}</td></tr>`;
+        let printRows = line('전국 평균', summary(scope));
+        if (top) printRows += line(mine && top.name === mine.name ? '가장 우수한 기관 (우리 기관)' : '가장 우수한 기관 (***)', top);
+        if (mine) printRows += line('우리 기관: ' + mine.name, mine);
+        $('inst-print').innerHTML = '<tr><th>구분</th><th class="n">참여자</th><th class="n">평균 안전 점수</th><th class="n">평균 인지 점수</th><th>가장 많이 틀린 문제 (정답률)</th><th>가장 잘 맞힌 문제 (정답률)</th></tr>' + printRows;
+        $('inst-print-note').innerText = '가장 우수한 기관은 평균 교통안전 점수가 가장 높은 기관입니다' + (pool.length !== real.length || real.some(i => i.n < MIN_N) ? ` (참여자 ${MIN_N}명 이상인 기관 중).` : '.') + ' 다른 기관의 이름은 표시하지 않습니다.';
+        const periodText = $('f-period').options[$('f-period').selectedIndex].text;
+        $('print-scope').innerText = `대상: ${instSel.value || '전체 기관'} · 기간: ${periodText} · 참여자 ${n}명`;
+
         // 이름 없는 장소
         $('unreg-card').classList.toggle('hidden', clusters.length === 0);
         $('unreg-table').innerHTML = '<tr><th>표시 이름</th><th class="n">검사 수</th><th>위도</th><th>경도</th><th>지도</th></tr>' +
@@ -420,6 +464,7 @@
     $('f-inst').addEventListener('change', render);
     $('f-period').addEventListener('change', render);
     $('reload').addEventListener('click', () => { const pw = sessionStorage.getItem('insight-pw'); if (pw) open(pw, true); });
+    $('print').addEventListener('click', () => window.print());
     $('logout').addEventListener('click', () => { sessionStorage.removeItem('insight-pw'); DATA = { rows: [], institutions: [] }; $('pw').value = ''; $('app').classList.add('hidden'); $('gate').classList.remove('hidden'); });
 
     const saved = sessionStorage.getItem('insight-pw');
