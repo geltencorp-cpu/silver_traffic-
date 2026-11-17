@@ -1623,13 +1623,18 @@
         // 고른 이름은 이 기기에 기억되어 다음 검사에도 그대로 쓰이며, '변경'으로 바꿀 수 있음.
         const InstPicker = {
             KEY: 'silver-inst',
+            // 카카오맵 JavaScript 키 (카카오 개발자 사이트에 등록한 웹 주소에서만 동작)
+            KAKAO_JS_KEY: 'de4e56afa3092c1a0f3ef9f49fe86313',
+            // 주변에서 찾을 기관 종류
+            KAKAO_KEYWORDS: ['경로당', '노인복지관', '복지관', '행정복지센터', '치매안심센터'],
             name: '',
             pos: null,
-            places: null,
+            places: null,   // 시트 '기관' 탭에 등록된 기관
+            kakao: [],      // 카카오맵에서 찾은 주변 기관
             init() {
                 try { this.name = localStorage.getItem(this.KEY) || ''; } catch (e) { this.name = ''; }
                 this.show();
-                this.locate().then(() => this.loadPlaces()).then(() => {
+                this.locate().then(() => Promise.all([this.loadPlaces(), this.searchKakao()])).then(() => {
                     if (!this.name) this.open(); // 아직 고른 적이 없으면 처음 한 번 선택 창을 띄움
                     else if (document.getElementById('inst-modal').classList.contains('open')) this.render();
                 });
@@ -1654,6 +1659,46 @@
                     .then(d => { this.places = (d && d.ok && Array.isArray(d.places)) ? d.places : []; })
                     .catch(() => { this.places = []; });
             },
+            // 카카오맵 장소 검색으로 주변 기관 찾기. 실패하면 조용히 넘어가고 시트 목록만 씀
+            loadKakaoSdk() {
+                if (window.kakao && window.kakao.maps && window.kakao.maps.services) return Promise.resolve(true);
+                if (this.sdkPromise) return this.sdkPromise;
+                this.sdkPromise = new Promise(resolve => {
+                    if (!this.KAKAO_JS_KEY) return resolve(false);
+                    const sc = document.createElement('script');
+                    sc.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + this.KAKAO_JS_KEY + '&libraries=services&autoload=false';
+                    const timer = setTimeout(() => resolve(false), 8000);
+                    sc.onload = () => {
+                        try { window.kakao.maps.load(() => { clearTimeout(timer); resolve(!!(window.kakao.maps.services)); }); }
+                        catch (e) { clearTimeout(timer); resolve(false); }
+                    };
+                    sc.onerror = () => { clearTimeout(timer); resolve(false); };
+                    document.head.appendChild(sc);
+                });
+                return this.sdkPromise;
+            },
+            searchKakao() {
+                if (!this.pos) return Promise.resolve();
+                return this.loadKakaoSdk().then(ok => {
+                    if (!ok) return;
+                    const svc = window.kakao.maps.services;
+                    const ps = new svc.Places();
+                    const center = new window.kakao.maps.LatLng(this.pos.lat, this.pos.lng);
+                    const one = (kw) => new Promise(res => {
+                        try {
+                            ps.keywordSearch(kw, (data, status) => res(status === svc.Status.OK ? data : []),
+                                { location: center, radius: 5000, sort: svc.SortBy.DISTANCE, size: 5 });
+                        } catch (e) { res([]); }
+                        setTimeout(() => res([]), 6000);
+                    });
+                    return Promise.all(this.KAKAO_KEYWORDS.map(one)).then(lists => {
+                        const seen = {};
+                        this.kakao = [].concat.apply([], lists)
+                            .filter(d => d && d.place_name && !seen[d.place_name] && (seen[d.place_name] = true))
+                            .map(d => ({ name: d.place_name, lat: Number(d.y), lng: Number(d.x) }));
+                    });
+                }).catch(() => {});
+            },
             distance(a, b) {
                 const R = 6371000, rad = Math.PI / 180;
                 const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
@@ -1661,11 +1706,13 @@
                 return 2 * R * Math.asin(Math.sqrt(h));
             },
             nearest() {
-                if (!this.pos || !this.places) return [];
-                return this.places
+                if (!this.pos) return [];
+                const seen = {};
+                return [].concat(this.places || [], this.kakao || [])
                     .filter(p => p && p.name && isFinite(Number(p.lat)) && isFinite(Number(p.lng)) && String(p.lat) !== '' && String(p.lng) !== '')
-                    .map(p => ({ name: String(p.name), d: this.distance(this.pos, { lat: Number(p.lat), lng: Number(p.lng) }) }))
+                    .map(p => ({ name: String(p.name).trim(), d: this.distance(this.pos, { lat: Number(p.lat), lng: Number(p.lng) }) }))
                     .sort((a, b) => a.d - b.d)
+                    .filter(p => !seen[p.name] && (seen[p.name] = true)) // 시트와 카카오에 같은 이름이 있으면 한 번만
                     .slice(0, 3);
             },
             render() {
@@ -1687,7 +1734,7 @@
             open() {
                 document.getElementById('inst-modal').classList.add('open');
                 this.render();
-                if (this.places === null) this.loadPlaces().then(() => this.render());
+                if (this.places === null) Promise.all([this.loadPlaces(), this.searchKakao()]).then(() => this.render());
             },
             close() { document.getElementById('inst-modal').classList.remove('open'); },
             choose(name) {
