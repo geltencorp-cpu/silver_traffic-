@@ -1694,10 +1694,17 @@
                     return Promise.all(this.KAKAO_KEYWORDS.map(one)).then(lists => {
                         const seen = {};
                         this.kakao = [].concat.apply([], lists)
-                            .filter(d => d && d.place_name && !seen[d.place_name] && (seen[d.place_name] = true))
+                            .filter(d => d && d.place_name && this.isRelevant(d) && !seen[d.place_name] && (seen[d.place_name] = true))
                             .map(d => ({ name: d.place_name, lat: Number(d.y), lng: Number(d.x) }));
                     });
                 }).catch(() => {});
+            },
+            // 이름에 '복지관'이 들어간 가게 등은 빼고, 어르신 관련 기관 종류만 남김
+            isRelevant(d) {
+                const cat = String(d.category_name || ''), name = String(d.place_name || '');
+                if (cat.indexOf('아동복지') !== -1) return false;
+                return cat.indexOf('노인정') !== -1 || cat.indexOf('노인복지시설') !== -1 || cat.indexOf('행정복지센터') !== -1
+                    || (cat.indexOf('사회복지시설') !== -1 && /복지관|경로당|센터/.test(name));
             },
             distance(a, b) {
                 const R = 6371000, rad = Math.PI / 180;
