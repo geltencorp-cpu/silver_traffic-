@@ -2106,6 +2106,7 @@
                     recordId: this.recordId,   // 같은 검사의 재전송은 시트에서 같은 줄을 고쳐 씀
                     location: this.location,   // 검사 장소 (위도, 경도)
                     timestamp: new Date().toLocaleString(),
+                    isoTime: new Date().toISOString(),   // 기간별 통계용 (형식이 기기마다 달라지지 않는 시각)
                     phone: phone,
                     // 안전 점수
                     safetyScore: r.safetyScore,
