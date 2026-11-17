@@ -60,11 +60,21 @@
         .notice { background: #fff8e6; border: 1px solid #f5d48a; border-radius: 12px; padding: 12px 16px; font-size: 15px; color: #6b4e00; margin-top: 16px; line-height: 1.5; }
 
         /* ---------- 섹션 ---------- */
-        .section { background: var(--surface); border-radius: 20px; padding: 26px 30px; margin-top: 18px; box-shadow: 0 6px 18px rgba(20, 30, 50, 0.06); }
-        .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
-        .sec-no { font-size: 14px; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
-        .sec-head h2 { margin: 0; font-size: 23px; font-weight: 900; letter-spacing: -0.4px; }
-        .sec-desc { margin: 0 0 18px; color: var(--text-secondary); font-size: 15px; line-height: 1.6; }
+        .section { background: var(--surface); border-radius: 20px; margin-top: 20px; box-shadow: 0 6px 18px rgba(20, 30, 50, 0.06); overflow: hidden; }
+        .sec-head { display: flex; align-items: center; gap: 12px; padding: 15px 30px; background: var(--head); color: var(--band); border-bottom: 1px solid var(--edge); }
+        .sec-no { font-size: 13px; font-weight: 900; letter-spacing: 1px; background: var(--band); color: #fff; border-radius: 8px; padding: 4px 9px; }
+        .sec-head h2 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.4px; }
+        .sec-body { padding: 22px 30px 26px; background: var(--tint); }
+        .sec-desc { margin: 0 0 16px; color: var(--text-secondary); font-size: 15px; line-height: 1.6; }
+        .section { border: 1px solid var(--edge); }
+        /* 섹션마다 옅은 관련 색으로 구분 (글자·번호는 진한 색, 바탕은 옅은 색) */
+        .theme-summary  { --band: #34495e; --head: #e3e8ef; --tint: #f1f4f8; --edge: #d3dae4; }
+        .theme-overview { --band: #1f5f9e; --head: #dbe9f7; --tint: #eef5fc; --edge: #c5dbf0; }
+        .theme-traffic  { --band: #a64a12; --head: #fbe3cf; --tint: #fef4ea; --edge: #f2cfae; }
+        .theme-cog      { --band: #4b3bb0; --head: #e6e1fb; --tint: #f4f2fe; --edge: #d5cdf5; }
+        .theme-compare  { --band: #0f6b5e; --head: #d5efe9; --tint: #ecf8f5; --edge: #bfe2da; }
+        .theme-admin    { --band: #555b65; --head: #e7e9ec; --tint: #f5f6f7; --edge: #d9dce0; }
+        .panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
         .sub-head { font-size: 17px; font-weight: 900; margin: 26px 0 12px; display: flex; align-items: center; gap: 8px; }
         .sub-head:first-of-type { margin-top: 6px; }
         .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--text-secondary); margin: 0 0 12px; }
@@ -72,16 +82,17 @@
         .key-ours { width: 14px; height: 14px; border-radius: 3px; background: var(--ours); display: inline-block; }
         .key-avg { width: 3px; height: 16px; display: inline-block; background: linear-gradient(var(--avg) 0 35%, transparent 35% 65%, var(--avg) 65%); border-radius: 2px; }
         .key-avg-line { width: 18px; height: 0; border-top: 3px solid var(--avg); display: inline-block; }
+        .key-avg-dash { width: 22px; height: 0; border-top: 3px dashed var(--avg); display: inline-block; }
 
         /* 핵심 요약 */
         .summary { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-        .summary li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: #f7f9fc; border: 1px solid var(--line); font-size: 16px; line-height: 1.6; }
+        .summary li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 14px; background: #fff; border: 1px solid var(--line); font-size: 16px; line-height: 1.6; }
         .summary li i { width: 34px; height: 34px; flex: none; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; margin-top: 1px; }
         .summary b { font-weight: 900; }
 
         /* 숫자 타일 */
         .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-        .kpi { border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+        .kpi { border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; background: #fff; }
         .kpi .label { font-size: 14px; color: var(--text-secondary); font-weight: 700; }
         .kpi .value { font-size: 38px; font-weight: 900; line-height: 1.15; margin-top: 6px; letter-spacing: -1px; }
         .kpi .value small { font-size: 16px; font-weight: 700; color: var(--text-muted); letter-spacing: 0; margin-left: 2px; }
@@ -94,7 +105,8 @@
         .diff.same { background: #eef0f3; color: var(--text-secondary); }
 
         /* 등급 분포 (한 줄 나눔 막대) */
-        .grades { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 22px; }
+        .grades { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+        .grades > div { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
         .grade-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; display: flex; justify-content: space-between; }
         .seg { display: flex; gap: 2px; height: 28px; }
         .seg div { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: visible; }
@@ -106,6 +118,7 @@
 
         /* TOP 3 문제 카드 */
         .top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .top-col { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px 4px; }
         .top-col h3 { margin: 0 0 12px; font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 3px solid; }
         .top-col.bad h3 { border-color: var(--bad-fill); } .top-col.bad h3 i { color: var(--bad); }
         .top-col.good h3 { border-color: var(--good-fill); } .top-col.good h3 i { color: var(--good); }
@@ -157,11 +170,12 @@
 
         /* 인지 건강 */
         .cog-layout { display: grid; grid-template-columns: minmax(300px, 0.9fr) 1.1fr; gap: 26px; align-items: start; }
-        .radar-box { border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px 10px; }
+        .radar-box { border: 1px solid var(--line); border-radius: 16px; padding: 14px 12px 12px; background: #fff; }
+        .radar-note { font-size: 13px; color: var(--text-secondary); background: #f4f5f7; border-radius: 10px; padding: 8px 12px; margin: 8px 6px 0; line-height: 1.5; }
         .radar-box svg { width: 100%; display: block; overflow: visible; }
         .radar-box .legend { justify-content: center; margin: 6px 0 2px; }
         .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .dcard { border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; break-inside: avoid; }
+        .dcard { border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; break-inside: avoid; background: #fff; }
         .dtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
         .dname { font-size: 16px; font-weight: 900; }
         .chip { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -176,7 +190,7 @@
         .dbar .f { height: 100%; border-radius: 0 4px 4px 0; }
         .dbar .v { text-align: right; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
         .factors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
-        .factor { border: 1px solid #f1d2d0; background: #fffafa; border-radius: 14px; padding: 15px 16px; }
+        .factor { border: 1px solid #f1d2d0; background: #fff; border-radius: 14px; padding: 15px 16px; }
         .factor .fl { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 6px; }
         .factor .fl > i { color: var(--bad); }
         .factor .fv { font-size: 32px; font-weight: 900; margin-top: 4px; letter-spacing: -0.5px; }
@@ -188,13 +202,13 @@
         .help:hover .help-tip, .help:focus .help-tip { display: block; }
 
         /* 기관 비교 */
-        .cmp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 15px; }
+        .cmp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 15px; background: #fff; border-radius: 12px; }
         .cmp-table th, .cmp-table td { padding: 13px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
-        .cmp-table thead th { font-size: 14px; color: #fff; background: var(--navy-2); font-weight: 700; }
-        .cmp-table thead th:first-child { border-radius: 12px 0 0 0; background: var(--navy); }
+        .cmp-table thead th { font-size: 14px; color: var(--band); background: var(--head); font-weight: 900; border-bottom: 2px solid var(--edge); }
+        .cmp-table thead th:first-child { border-radius: 12px 0 0 0; }
         .cmp-table thead th:last-child { border-radius: 0 12px 0 0; }
-        .cmp-table thead th.mine { background: var(--ours); }
-        .cmp-table thead th small { display: block; font-weight: 400; font-size: 12px; opacity: 0.85; margin-top: 2px; }
+        .cmp-table thead th.mine { background: #dbe9f7; color: #1f5f9e; border-bottom-color: #c5dbf0; }
+        .cmp-table thead th small { display: block; font-weight: 500; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
         .cmp-table tbody th { font-size: 14px; color: var(--text-secondary); font-weight: 700; width: 170px; background: #f8f9fb; }
         .cmp-table td.mine { background: #f3f8fe; }
         .mini { display: flex; align-items: center; gap: 10px; }
@@ -214,6 +228,7 @@
         td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
         td a { color: var(--ours); }
         .empty { text-align: center; color: var(--text-muted); padding: 26px 0; font-size: 16px; }
+        #empty { padding: 30px; }
         .print-only { display: none; }
         .report-foot { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 18px; }
 
@@ -235,13 +250,16 @@
             @page { size: A4; margin: 11mm; }
             * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             body { background: #fff; }
-            .wrap { max-width: none; padding: 0; }
+            .wrap { max-width: none; padding: 0; zoom: 0.8; }
             .toolbar, .no-print, details.admin, #unreg-section, .help, .qrow .tip { display: none !important; }
             .print-only { display: block; }
             .report-head { border-radius: 14px; }
-            .section { box-shadow: none; border: 1px solid var(--line); padding: 16px 18px; margin-top: 10px; break-inside: avoid; }
-            .section.allow-break { break-inside: auto; }
-            .page-break { break-before: page; }
+            .section { box-shadow: none; border: 1px solid var(--line); margin-top: 10px; break-inside: auto; }
+            .sec-head { break-after: avoid; }
+            .panel, .top-col, .qcard, .radar-box, .dcard, .qrow { break-inside: avoid; }
+            .sec-head { padding: 10px 18px; } .sec-body { padding: 14px 18px 16px; }
+            .page-break { break-before: auto; }
+            .theme-traffic, .theme-cog { break-before: page; }
             .kpis { grid-template-columns: repeat(4, 1fr); }
             .grades, .top-grid, .factors { grid-template-columns: 1fr 1fr; }
             .cog-layout { grid-template-columns: 1fr; gap: 12px; }
@@ -252,8 +270,9 @@
             .axis > div:nth-child(2) { display: block; }
             .summary li { font-size: 14px; padding: 10px 12px; }
             .kpi .value { font-size: 30px; }
-            .sec-head h2 { font-size: 20px; }
+            .sec-head h2 { font-size: 18px; }
             .qtext { font-size: 14px; } .opt { font-size: 12px; }
+            .theme-summary, .theme-overview, .theme-compare, .rank-wrap { break-inside: avoid; }
             .factor-wrap, .factors, .factor, .kpis, .grades, .cmp-table, .summary li { break-inside: avoid; }
             .factors { break-before: auto; }
         }
@@ -311,23 +330,26 @@
 
         <div id="content">
             <!-- 핵심 요약 -->
-            <section class="section">
+            <section class="section theme-summary">
                 <div class="sec-head"><span class="sec-no">SUMMARY</span><h2>핵심 요약</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc">이번 결과에서 꼭 알아야 할 내용을 정리했습니다.</p>
                 <ul class="summary" id="summary"></ul>
-            </section>
+            </div></section>
 
             <!-- 01 한눈에 보기 -->
-            <section class="section">
+            <section class="section theme-overview">
                 <div class="sec-head"><span class="sec-no">01</span><h2>한눈에 보기</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc" id="kpi-desc"></p>
                 <div class="kpis" id="kpis"></div>
                 <div class="grades" id="grades"></div>
-            </section>
+            </div></section>
 
             <!-- 02 교통안전 문제 분석 -->
-            <section class="section allow-break page-break">
+            <section class="section allow-break page-break theme-traffic">
                 <div class="sec-head"><span class="sec-no">02</span><h2>교통안전 문제 분석</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc">10개 교통안전 문제를 정답률로 살펴봅니다. 막대 길이와 숫자는 그 문제를 맞힌 어르신의 비율입니다.</p>
                 <div id="q-empty" class="empty hidden">문항별 기록이 있는 검사가 아직 없습니다.</div>
                 <div id="q-body">
@@ -335,16 +357,21 @@
                         <div class="top-col bad"><h3><i class="fa-solid fa-circle-xmark"></i> 가장 많이 틀린 문제 TOP 3</h3><div id="top-bad"></div></div>
                         <div class="top-col good"><h3><i class="fa-solid fa-circle-check"></i> 가장 잘 맞힌 문제 TOP 3</h3><div id="top-good"></div></div>
                     </div>
+                    <div class="rank-wrap">
                     <div class="sub-head"><i class="fa-solid fa-ranking-star" style="color: var(--accent);"></i> 문제별 정답률 순위 <span class="muted" style="font-size: 13px; font-weight: 500;">(정답률이 낮은 문제부터)</span></div>
-                    <div class="legend" id="q-legend"></div>
-                    <div class="qlist" id="q-list"></div>
-                    <div class="axis"><div></div><div></div><div class="ticks"><span>0%</span><span>50%</span><span>100%</span></div><div></div></div>
+                    <div class="panel">
+                        <div class="legend" id="q-legend"></div>
+                        <div class="qlist" id="q-list"></div>
+                        <div class="axis"><div></div><div></div><div class="ticks"><span>0%</span><span>50%</span><span>100%</span></div><div></div></div>
+                    </div>
+                    </div>
                 </div>
-            </section>
+            </div></section>
 
             <!-- 03 인지 건강 분석 -->
-            <section class="section allow-break page-break">
+            <section class="section allow-break page-break theme-cog">
                 <div class="sec-head"><span class="sec-no">03</span><h2>인지 건강 분석</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc" id="cog-desc"></p>
                 <div id="cog-empty" class="empty hidden">인지 과제 기록이 있는 검사가 아직 없습니다.</div>
                 <div id="cog-body">
@@ -352,6 +379,7 @@
                         <div class="radar-box">
                             <svg id="radar" viewBox="0 0 460 390" role="img" aria-label="인지 건강 6개 영역 평균 점수"></svg>
                             <div class="legend" id="radar-legend"></div>
+                            <div class="radar-note hidden" id="radar-note"></div>
                         </div>
                         <div class="dgrid" id="dgrid"></div>
                     </div>
@@ -360,11 +388,12 @@
                         <div class="factors" id="factors"></div>
                     </div>
                 </div>
-            </section>
+            </div></section>
 
             <!-- 04 기관 비교 -->
-            <section class="section">
+            <section class="section theme-compare">
                 <div class="sec-head"><span class="sec-no">04</span><h2>기관 비교</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc">전체 평균, 참여 기관, 가장 성적이 좋은 기관을 나란히 비교합니다. 다른 기관의 이름은 표시하지 않습니다.</p>
                 <div class="table-wrap"><table class="cmp-table" id="cmp"></table></div>
                 <div class="cmp-note" id="cmp-note"></div>
@@ -373,13 +402,14 @@
                     <summary>전체 기관 목록 보기 (관리자용 · 인쇄되지 않음)</summary>
                     <div class="table-wrap"><table class="plain" id="inst-table"></table></div>
                 </details>
-            </section>
+            </div></section>
 
-            <section class="section no-print hidden" id="unreg-section">
+            <section class="section no-print hidden theme-admin" id="unreg-section">
                 <div class="sec-head"><span class="sec-no">관리</span><h2>이름이 없는 검사 장소</h2></div>
+                <div class="sec-body">
                 <p class="sec-desc">검사 화면에서 기관을 고르지 않은 검사입니다. 아래 좌표를 시트의 <b>'기관'</b> 탭에 기관명과 함께 적으면 다음부터 그 이름으로 묶여 나옵니다. (반경은 비워 두면 300m)</p>
                 <div class="table-wrap"><table class="plain" id="unreg-table"></table></div>
-            </section>
+            </div></section>
 
             <div class="report-foot">※ 이 리포트는 교통안전 교육 결과를 바탕으로 한 참고 자료이며 의학적 진단이 아닙니다.</div>
         </div>
@@ -601,29 +631,36 @@
             g += `<polygon points="${DOMAINS.map((d, i) => pt(i, R * level / 100).join(',')).join(' ')}" fill="${level === 100 ? '#fafbfc' : 'none'}" stroke="#e3e6ea" stroke-width="1"/>`;
         });
         DOMAINS.forEach((d, i) => { const [x, y] = pt(i, R); g += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e3e6ea" stroke-width="1"/>`; });
-        [50, 100].forEach(v => { g += `<text x="${cx + 4}" y="${cy - R * v / 100 - 3}" font-size="11" fill="#9aa0a6">${v}</text>`; });
-        // 전체 평균(회색 선)을 먼저, 선택 기관(파란 면)을 위에
-        series.slice().reverse().forEach(s => {
-            const vals = s.values.map(v => v === null ? 0 : v);
-            const pts = vals.map((v, i) => pt(i, R * v / 100).join(',')).join(' ');
-            if (s.isAvg) g += `<polygon points="${pts}" fill="none" stroke="${AVG}" stroke-width="2" stroke-linejoin="round"/>`;
-            else g += `<polygon points="${pts}" fill="${OURS}" fill-opacity="0.16" stroke="${OURS}" stroke-width="2.5" stroke-linejoin="round"/>`;
-            vals.forEach((v, i) => {
-                const [x, y] = pt(i, R * v / 100);
-                g += `<circle cx="${x}" cy="${y}" r="${s.isAvg ? 4 : 5}" fill="${s.isAvg ? AVG : OURS}" stroke="#fff" stroke-width="2"><title>${esc(s.name)} · ${DOMAINS[i][0]} ${Math.round(v)}점</title></circle>`;
-            });
-        });
-        const main = series.find(s => !s.isAvg);
+        g += `<text x="${cx + 4}" y="${cy - R * 0.5 - 3}" font-size="11" fill="#9aa0a6">50</text>`;
+        // 선택 기관(파란 면)을 먼저 그리고, 전체 평균(회색 선)을 위에 올려 겹쳐도 보이게 함
+        const main = series.find(s => !s.isAvg), ref = series.find(s => s.isAvg);
+        const ptsOf = (s) => s.values.map((v, i) => pt(i, R * (v === null ? 0 : v) / 100).join(',')).join(' ');
+        g += `<polygon points="${ptsOf(main)}" fill="${OURS}" fill-opacity="0.18" stroke="${OURS}" stroke-width="2.5" stroke-linejoin="round"/>`;
+        main.values.forEach((v, i) => { const [x, y] = pt(i, R * (v || 0) / 100); g += `<circle cx="${x}" cy="${y}" r="5.5" fill="${OURS}" stroke="#fff" stroke-width="2"><title>${esc(main.name)} · ${DOMAINS[i][0]} ${Math.round(v || 0)}점</title></circle>`; });
+        if (ref) {
+            g += `<polygon points="${ptsOf(ref)}" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round" stroke-opacity="0.9"/>`;
+            g += `<polygon points="${ptsOf(ref)}" fill="none" stroke="${AVG}" stroke-width="2" stroke-dasharray="6 4" stroke-linejoin="round"/>`;
+            ref.values.forEach((v, i) => { const [x, y] = pt(i, R * (v || 0) / 100); g += `<circle cx="${x}" cy="${y}" r="4" fill="#fff" stroke="${AVG}" stroke-width="2"><title>${esc(ref.name)} · ${DOMAINS[i][0]} ${Math.round(v || 0)}점</title></circle>`; });
+        }
         DOMAINS.forEach((d, i) => {
-            const [x, y] = pt(i, R + 32);
+            const [x, y] = pt(i, R + 34);
             const anchor = Math.abs(x - cx) < 5 ? 'middle' : (x > cx ? 'start' : 'end');
-            const v = main.values[i];
-            g += `<text x="${x}" y="${y - 8}" text-anchor="${anchor}" font-size="15" font-weight="700" fill="#1f2329">${d[0]}</text>`;
-            g += `<text x="${x}" y="${y + 11}" text-anchor="${anchor}" font-size="15" font-weight="900" fill="${OURS}">${v === null ? '-' : Math.round(v) + '점'}</text>`;
+            const v = main.values[i], o = ref ? ref.values[i] : null;
+            const top = ref ? y - 16 : y - 8;
+            g += `<text x="${x}" y="${top}" text-anchor="${anchor}" font-size="15" font-weight="700" fill="#1f2329">${d[0]}</text>`;
+            g += `<text x="${x}" y="${top + 19}" text-anchor="${anchor}" font-size="15" font-weight="900" fill="${OURS}">${v === null ? '-' : Math.round(v) + '점'}</text>`;
+            if (ref) g += `<text x="${x}" y="${top + 36}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="${AVG}">전체 ${o === null ? '-' : Math.round(o)}</text>`;
         });
+        // 두 그래프가 거의 같으면 이유를 알려 줌
+        const note = $('radar-note');
+        if (ref) {
+            const maxGap = Math.max.apply(null, main.values.map((v, i) => Math.abs((v || 0) - (ref.values[i] || 0))));
+            note.classList.toggle('hidden', maxGap >= 3);
+            note.innerHTML = `<i class="fa-solid fa-circle-info"></i> 두 그래프가 거의 겹칩니다. ${ref.n && main.n / ref.n >= 0.6 ? `전체 검사 ${ref.n}명 중 ${main.n}명이 이 기관의 검사라 전체 평균과 비슷하게 나옵니다.` : '이 기관의 결과가 전체 평균과 비슷합니다.'}`;
+        } else note.classList.add('hidden');
         $('radar').innerHTML = g;
         $('radar-legend').innerHTML = series.map(s => s.isAvg
-            ? `<span><i class="key-avg-line"></i>${esc(s.name)} (${s.n}명)</span>`
+            ? `<span><i class="key-avg-dash"></i>${esc(s.name)} (${s.n}명)</span>`
             : `<span><i class="key-ours"></i>${esc(s.name)} (${s.n}명)</span>`).join('');
     }
 
