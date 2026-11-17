@@ -92,6 +92,10 @@
         .factor .fval { font-size: 34px; font-weight: 900; line-height: 1.2; }
         .factor .fval small { font-size: 16px; font-weight: 700; color: var(--text-muted); }
         .factor .fnote { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        .help { position: relative; display: inline-block; color: var(--text-muted); cursor: help; margin-left: 4px; outline: none; }
+        .help:focus i, .help:hover i { color: var(--text-secondary); }
+        .help-tip { display: none; position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); background: #222; color: #fff; font-size: 14px; font-weight: 500; padding: 8px 12px; border-radius: 10px; white-space: nowrap; z-index: 5; pointer-events: none; }
+        .help:hover .help-tip, .help:focus .help-tip { display: block; }
         @media (max-width: 760px) { .cog-grid { grid-template-columns: 1fr; } }
 
         /* 가로 막대 */
@@ -138,7 +142,7 @@
             .wrap { max-width: none; padding: 0; }
             .card { box-shadow: none; border: 1px solid var(--line); padding: 14px; margin-top: 10px; break-inside: avoid; }
             .head-card { border: 2px solid var(--accent); }
-            .no-print, .filters, #unreg-card, #gate, .bar-row .tip { display: none !important; }
+            .no-print, .filters, #unreg-card, #gate, .bar-row .tip, .help { display: none !important; }
             .print-only { display: block; }
             table.print-only { display: table; }
             h1 { font-size: 26px; } h2 { font-size: 19px; }
@@ -279,6 +283,7 @@
         ['집중 유지', 'cog_attention']
     ];
     const SERIES = ['#2a78d6', '#eb6834']; // 우리 기관(또는 전체), 전체 평균
+    const OBSERVE_TIP = '성정이 급하시거나, 주의집중이 어려운 어르신';
     const DEFAULT_RADIUS = 300; // m
 
     const $ = (id) => document.getElementById(id);
@@ -506,7 +511,8 @@
         $('factors').innerHTML =
             `<div class="factor"><div class="flabel">흡연 비율</div>` +
             (smokeVals.length ? `<div class="fval">${pct(smokers, smokeVals.length)}<small>%</small></div><div class="fnote">응답 ${smokeVals.length}명 중 ${smokers}명이 하루 한 개비 이상 피웁니다.</div>` : `<div class="fnote">기록이 없습니다.</div>`) + `</div>` +
-            `<div class="factor"><div class="flabel">공격적 성향이 있는 어르신</div>` +
+            `<div class="factor"><div class="flabel">관찰요함 어르신 <span class="help" tabindex="0" role="button" aria-label="설명: ${OBSERVE_TIP}"><i class="fa-solid fa-circle-question"></i><span class="help-tip" role="tooltip">${OBSERVE_TIP}</span></span></div>` +
+            `<div class="fnote print-only">(${OBSERVE_TIP})</div>` +
             (behRows.length ? `<div class="fval">${either}<small>명 (${pct(either, behRows.length)}%)</small></div><div class="fnote">검사 중 화면을 벗어난 분 ${left}명 · 건너기를 계속 누른 분 ${mashed}명<br>(두 가지에 모두 해당하는 분은 한 번만 셉니다)</div>` : `<div class="fnote">기록이 없습니다.</div>`) + `</div>`;
 
         // 기관별 비교 (선택한 기간 안에서, 기관 필터와 무관하게 전체 기관을 보여줌)
