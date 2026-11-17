@@ -62,7 +62,9 @@ var COLUMNS = [
   ['Q9 고른 보기', 'q9_choice'],
   ['Q10 고른 보기', 'q10_choice'],
   ['Q11 고른 보기', 'q11_choice'],
-  ['Q12 고른 보기', 'q12_choice']
+  ['Q12 고른 보기', 'q12_choice'],
+  ['상담 안내', 'consultLevel'],
+  ['부족 영역', 'weakDomains']
 ];
 
 function keyIndex(key) {

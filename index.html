@@ -385,6 +385,18 @@
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 83, 80, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0); } }
         .warning-icon-wrapper { font-size: 40px; margin-bottom: 10px; display: inline-block; animation: fa-beat-fade 2s infinite; }
         .date-compare { display: inline-block; margin: -8px 0 18px; padding: 6px 14px; border-radius: 999px; background: #fff; border: 1px solid #f3b6b4; color: #7a1513; font-size: 16px; }
+        .warning-box .warning-icon-wrapper i { color: #e74c3c; }
+        .warning-box.soft { background: linear-gradient(135deg, #fffaf0 0%, #fff3df 100%); border-color: #f0b24a; box-shadow: 0 8px 20px rgba(240, 178, 74, 0.2); animation: none; }
+        .warning-box.soft .warning-icon-wrapper i { color: #e09a1a; }
+        .warning-box.soft h3 { color: #8a5300 !important; } .warning-box.soft p { color: #6b4300 !important; }
+        .warning-box.soft .btn-warning-action { background-color: #d9822b; box-shadow: 0 4px 10px rgba(217, 130, 43, 0.4); }
+        .warning-box.mid { animation: none; }
+        .weak-list { list-style: none; margin: 0 auto 16px; padding: 0; max-width: 560px; text-align: left; display: grid; gap: 6px; }
+        .weak-list li { background: #fff; border-radius: 12px; padding: 9px 14px; font-size: 16px; color: #333; border: 1px solid rgba(0,0,0,0.08); }
+        .weak-list li span { color: #777; font-size: 14px; margin-left: 4px; }
+        .weak-list li em { display: block; font-style: normal; color: #c62828; font-weight: 700; font-size: 14px; margin-top: 2px; }
+        .warning-box.soft .weak-list li em { color: #9a5b00; }
+        .warning-note { font-size: 13px; color: #888; margin-top: 12px; }
         .warning-box h3 { color: #c62828; font-size: 24px; margin: 0 0 10px 0; font-weight: 800; }
         .warning-box p { color: #b71c1c; font-size: 18px; margin: 0 0 20px 0; line-height: 1.5; font-weight: 600; }
         
@@ -1859,6 +1871,8 @@
                 this.orientation = { monthScore: 0, dayScore: 0, seasonScore: 0 };
                 this.choices = {};
                 this.lastOpt = '';
+                this.consultLevel = '';
+                this.weakDomains = '';
                 this.taskScores = { memory: 0, clock: 0, signal: 0, match: 0 };
                 this.signalStats = { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 };
                 this.reportData = null; // 초기화
@@ -2124,12 +2138,6 @@
                     }
                 };
 
-                // 검사를 마치면 전화번호 없이 결과를 시트에 자동 저장
-                if (!this.autoSaved && this.googleScriptURL) {
-                    this.autoSaved = true;
-                    this.sendToSheet(this.buildSendData("")).catch(err => console.error("자동 저장 실패", err));
-                }
-
                 // --- UI: 안전 보고서 ---
                 document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
 
@@ -2258,26 +2266,66 @@
                 if(bHtml === "") bHtml = this.createBehaviorCard('fa-check-circle', '#27ae60', '안전한 행동 패턴', '집중 상태와 터치 정확도가<br>매우 안정적입니다.', 'low');
                 bStats.innerHTML = bHtml;
 
-                // 검진 안내: 오늘의 '월'이나 '계절'을 맞히지 못한 경우
+                // ===== 상담 안내 =====
+                // 6개 영역을 각각 100점으로 환산해 60점 미만이면 '부족'으로 봄.
+                // 오늘의 월·계절을 틀리면 지남력은 점수와 상관없이 '부족'.
+                // 부족 1개 → 상담 권유 / 2개 → 상담 권장 / 3개 이상 → 상담을 꼭 권함
+                const DOMAIN_INFO = [
+                    ['orientation', '지남력', 25, '오늘 날짜와 계절을 아는 능력'],
+                    ['memory', '기억력', 20, '처음 본 표지판을 기억하는 능력'],
+                    ['executive', '집행기능', 15, '신호에 맞춰 누르고 참는 능력'],
+                    ['visuospatial', '시공간', 10, '시곗바늘 위치를 그리는 능력'],
+                    ['language', '언어', 10, '그림을 보고 이름을 아는 능력'],
+                    ['focus', '집중 유지', 10, '검사에 끝까지 집중하는 능력']
+                ];
+                const weak = DOMAIN_INFO.map(([key, name, max, desc]) => ({ key, name, desc, score: Math.round(cognitive[key] / max * 100) }))
+                    .filter(d => d.score < 60 || (d.key === 'orientation' && (monthWrong || seasonWrong)))
+                    .sort((a, b) => a.score - b.score);
                 let warningHTML = "";
-                if (monthWrong || seasonWrong) {
-                    const missed = [monthWrong ? "월" : "", seasonWrong ? "계절" : ""].filter(Boolean).join("과 ");
-                    // 기기에 설정된 오늘 날짜와 입력한 날짜를 함께 보여줌
-                    const now = new Date();
-                    const SEASON_KO = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
-                    const typedM = parseInt(this.dateInput.month || 0), typedD = parseInt(this.dateInput.day || 0);
-                    const typed = (typedM ? typedM + '월 ' : '') + (typedD ? typedD + '일' : '') || '입력 안 함';
-                    const compare = `<div class="date-compare">오늘: <b>${now.getMonth() + 1}월 ${now.getDate()}일</b> · 입력: <b>${typed}${this.selectedSeason ? ', ' + SEASON_KO[this.selectedSeason] : ''}</b></div>`;
+                if (weak.length) {
+                    let compare = '';
+                    if (monthWrong || seasonWrong) {
+                        // 기기에 설정된 오늘 날짜와 입력한 날짜를 함께 보여줌
+                        const now = new Date();
+                        const SEASON_KO = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
+                        const typedM = parseInt(this.dateInput.month || 0), typedD = parseInt(this.dateInput.day || 0);
+                        const typed = (typedM ? typedM + '월 ' : '') + (typedD ? typedD + '일' : '') || '입력 안 함';
+                        compare = `<div class="date-compare">오늘: <b>${now.getMonth() + 1}월 ${now.getDate()}일</b> · 입력: <b>${typed}${this.selectedSeason ? ', ' + SEASON_KO[this.selectedSeason] : ''}</b></div>`;
+                    }
+                    const level = weak.length >= 3 ? 'strong' : (weak.length === 2 ? 'mid' : 'soft');
+                    const title = { strong: '🚨 상담을 꼭 받아보시길 권합니다', mid: '🔔 상담을 권해드립니다', soft: '💡 상담을 받아보시면 좋겠습니다' }[level];
+                    const names = weak.map(d => d.name).join(', ');
+                    const lead = {
+                        strong: `<strong>${weak.length}개 영역(${names})</strong>에서 점수가 낮게 나왔습니다.<br>여러 영역이 함께 낮을 때는 전문가의 확인이 꼭 필요합니다.`,
+                        mid: `<strong>${names}</strong> 영역이 부족하게 나왔습니다.<br>가까운 보건소 치매안심센터에서 무료 검진을 받아보시길 권합니다.`,
+                        soft: `<strong>${names}</strong> 영역이 조금 부족하게 나왔습니다.<br>걱정되시면 가까운 보건소 치매안심센터에서 무료 검진을 받아보세요.`
+                    }[level];
+                    const list = weak.map(d => {
+                        const extra = d.key === 'orientation' && (monthWrong || seasonWrong)
+                            ? `오늘의 ${[monthWrong ? '월' : '', seasonWrong ? '계절' : ''].filter(Boolean).join('과 ')}을 맞히지 못하셨습니다`
+                            : `${d.score}점 / 100점`;
+                        return `<li><b>${d.name}</b> <span>${d.desc}</span> <em>${extra}</em></li>`;
+                    }).join('');
                     warningHTML = `
-                    <div class="warning-box">
-                        <div class="warning-icon-wrapper"><i class="fa-solid fa-bell" style="color: #e74c3c;"></i></div>
+                    <div class="warning-box ${level}">
+                        <div class="warning-icon-wrapper"><i class="fa-solid fa-bell"></i></div>
                         <div class="warning-content">
-                            <h3>🔔 인지 건강 검진을 권해드립니다</h3>
-                            <p>오늘의 <strong>${missed}</strong>을 맞히지 못하셨습니다.<br>가까운 보건소 치매안심센터에서 무료 검진을 받아보시길 권합니다.</p>
+                            <h3>${title}</h3>
+                            <p>${lead}</p>
+                            <ul class="weak-list">${list}</ul>
                             ${compare}
                         </div>
                         <button class="btn-warning-action" onclick="app.openConsentModal()"><i class="fa-solid fa-paper-plane"></i> 결과 전송 및 상담 신청</button>
+                        <div class="warning-note">※ 참고용 생활 점검이며 의학적 진단이 아닙니다.</div>
                     </div>`;
+                }
+                this.consultLevel = weak.length >= 3 ? '꼭 권함' : (weak.length === 2 ? '권장' : (weak.length === 1 ? '권유' : ''));
+                this.weakDomains = weak.map(d => d.name).join(', ');
+
+                // (상담 안내 단계까지 정해진 뒤) 검사를 마치면 전화번호 없이 결과를 시트에 자동 저장
+                if (!this.autoSaved && this.googleScriptURL) {
+                    this.autoSaved = true;
+                    this.sendToSheet(this.buildSendData("")).catch(err => console.error("자동 저장 실패", err));
                 }
                 document.getElementById('cognitive-warning').innerHTML = warningHTML;
             },
@@ -2298,6 +2346,8 @@
                     recordId: this.recordId,   // 같은 검사의 재전송은 시트에서 같은 줄을 고쳐 씀
                     location: this.location,   // 검사 장소 (위도, 경도)
                     institution: InstPicker.name || '',   // 검사 장소로 고른 기관 이름
+                    consultLevel: this.consultLevel || '',  // 상담 안내 단계 (권유 / 권장 / 꼭 권함)
+                    weakDomains: this.weakDomains || '',    // 부족하게 나온 영역
                     timestamp: new Date().toLocaleString(),
                     isoTime: new Date().toISOString(),   // 기간별 통계용 (형식이 기기마다 달라지지 않는 시각)
                     phone: phone,
