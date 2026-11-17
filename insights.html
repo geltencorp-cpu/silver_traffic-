@@ -214,7 +214,7 @@
         .mini { display: flex; align-items: center; gap: 10px; }
         .mini .t { flex: 1; height: 12px; background: var(--track); border-radius: 0 4px 4px 0; min-width: 60px; }
         .mini .f { height: 100%; border-radius: 0 4px 4px 0; }
-        .mini b { font-size: 18px; font-weight: 900; min-width: 44px; text-align: right; }
+        .mini b { font-size: 18px; font-weight: 900; min-width: 48px; text-align: left; font-variant-numeric: tabular-nums; }
         .empty-cell { color: var(--text-muted); font-size: 14px; }
         .cmp-note { font-size: 13px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
 
@@ -801,7 +801,7 @@
             { head: '가장 우수한 기관', small: top1 ? (mine && top1.name === mine.name ? '★ 참여 기관이 1위입니다' : '★★★ (기관명 비공개)') : '비교할 기관이 없습니다', s: top1 ? top1.s : null, cls: '' }
         ];
         const scoreCell = (v, color) => v === null || v === undefined ? '<span class="empty-cell">-</span>'
-            : `<div class="mini"><div class="t"><div class="f" style="width:${Math.max(0, Math.min(100, v))}%;background:${color}"></div></div><b>${fmt1(v)}</b></div>`;
+            : `<div class="mini"><b>${fmt1(v)}</b><div class="t"><div class="f" style="width:${Math.max(0, Math.min(100, v))}%;background:${color}"></div></div></div>`;
         const qCell = (q) => q ? `${esc(q.no)}. ${esc(q.title)} <span class="muted">(${q.rate}%)</span>` : '<span class="empty-cell">-</span>';
         const rowsDef = [
             ['참여자 수', c => c.s ? `<b style="font-size:18px">${c.s.n}</b>명` : '<span class="empty-cell">-</span>'],
@@ -813,7 +813,12 @@
         ];
         $('cmp').innerHTML = `<thead><tr><th>구분</th>${cols.map(c => `<th class="${c.cls}">${c.head}<small>${esc(c.small)}</small></th>`).join('')}</tr></thead><tbody>` +
             rowsDef.map(([label, f]) => `<tr><th>${label}</th>${cols.map(c => `<td class="${c.cls}">${f(c)}</td>`).join('')}</tr>`).join('') + '</tbody>';
-        $('cmp-note').innerText = `가장 우수한 기관은 선택한 기간에 평균 교통안전 점수가 가장 높은 기관입니다${named.some(i => i.s.n < MIN_N) ? ` (참여자 ${MIN_N}명 이상인 기관 중)` : ''}.`;
+        let why = '';
+        if (mine && top1 && mine.name !== top1.name && (mine.s.safety || 0) > (top1.s.safety || 0)) {
+            why = mine.unnamed ? ' 참여 기관은 이름이 정해지지 않은 장소라 순위 비교에서 빠졌습니다.'
+                : (mine.s.n < MIN_N && pool.length !== named.length ? ` 참여 기관은 참여자가 ${MIN_N}명 미만이라 순위 비교에서 빠졌습니다.` : '');
+        }
+        $('cmp-note').innerText = `가장 우수한 기관은 선택한 기간에 평균 교통안전 점수가 가장 높은 기관입니다${named.some(i => i.s.n < MIN_N) ? ` (참여자 ${MIN_N}명 이상인 기관 중)` : ''}.` + why;
 
         $('inst-table').innerHTML = '<tr><th>기관</th><th class="n">참여자</th><th class="n">평균 안전 점수</th><th class="n">평균 인지 점수</th><th>가장 많이 틀린 문제</th><th>가장 잘 맞힌 문제</th></tr>' +
             instList.map(i => `<tr><td><b>${esc(i.name)}</b></td><td class="n">${i.s.n}명</td><td class="n">${fmt1(i.s.safety)}</td><td class="n">${fmt1(i.s.cog)}</td><td>${qCell(i.s.worst)}</td><td>${qCell(i.s.best)}</td></tr>`).join('');
