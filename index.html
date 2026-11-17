@@ -214,11 +214,11 @@
 
         .match-area { position: relative; display: flex; flex-direction: column; gap: clamp(70px, 13vh, 130px); width: 100%; max-width: 900px; }
         .match-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 2vw, 24px); position: relative; z-index: 2; }
-        .match-item { width: 100%; height: clamp(70px, 13vh, 110px); padding: 0 2px; border: 4px solid #ddd; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Jua', sans-serif; font-size: clamp(19px, 4.6vw, 44px); color: #333; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+        .match-item { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; width: 100%; height: clamp(70px, 13vh, 110px); padding: 0 2px; border: 4px solid #ddd; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Jua', sans-serif; font-size: clamp(19px, 4.6vw, 44px); color: #333; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
         .match-item.pic { height: clamp(90px, 18vh, 160px); font-size: clamp(50px, 10vw, 100px); }
         .match-item.linked { border-color: #3498db; }
         .match-item.selected { border-color: #ffaa00; background: #fff3e0; }
-        #match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        #match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; overflow: visible; }
         
         .btn-option { 
             background: white; border: 3px solid #eee; 
@@ -515,6 +515,7 @@
             <h1>어르신 교통안전 <span class="highlight">및 인지능력 진단</span></h1>
             <p>문제를 풀면 <strong>6대 인지 영역 분석</strong>과<br><strong>무의식적 행동 패턴</strong>을 분석해드립니다.</p>
             <button class="btn-start btn-action" onclick="app.start()">시작하기</button>
+            <p style="font-size: clamp(14px, 1.8vw, 17px); color: #888; margin-top: 2.5vh; font-weight: normal;">※ 검사 결과와 검사 장소(위치)는 이름 없이 저장되어 교육 개선에 활용됩니다.</p>
         </div>
     </div>
 
@@ -784,13 +785,16 @@
         <button class="btn-prev" onclick="app.prev('q15')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="task-box">
             <h2>Q15. 그림과 이름을 선으로 이어주세요</h2>
-            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 위의 그림을 누른 다음, 아래에서 맞는 이름을 누르세요</p>
+            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 그림에서 맞는 이름까지 손가락으로 선을 그어주세요</p>
             <div class="match-area" id="match-area">
                 <svg id="match-lines"></svg>
                 <div class="match-col" id="match-pics"></div>
                 <div class="match-col" id="match-words"></div>
             </div>
-            <button id="match-done" class="btn-start btn-action task-btn" onclick="MatchTask.submit()" disabled>다 이었어요</button>
+            <div class="task-btn-row">
+                <button class="task-btn-sub" onclick="MatchTask.clear()"><i class="fa-solid fa-eraser"></i> 다시 그리기</button>
+                <button id="match-done" class="btn-start btn-action task-btn" onclick="MatchTask.submit()" disabled>다 이었어요</button>
+            </div>
         </div>
     </div>
 
@@ -929,7 +933,7 @@
                 // 롱프레스 감지
                 const startPress = (e) => {
                     if (this.isPressing) return;
-                    if (e && e.target.closest && e.target.closest('canvas')) return; // 시계 그리기는 제외
+                    if (e && e.target.closest && e.target.closest('canvas, .match-area')) return; // 그리기 문제는 제외
                     this.isPressing = true;
                     this.pressTimer = setTimeout(() => {
                         this.data.longPresses++;
@@ -1452,47 +1456,126 @@
                 { key: 'motorcycle', pic: '🏍️', word: '오토바이' },
                 { key: 'kickboard', pic: '🛴', word: '킥보드' }
             ],
-            links: {}, selected: null,
+            links: {}, selected: null, drag: null, bound: false,
             enter() {
-                this.links = {}; this.selected = null;
+                this.links = {}; this.selected = null; this.drag = null;
+                if (this.resetInput) this.resetInput();
                 const make = (side, list) => list.map(it =>
                     `<button type="button" class="match-item ${side}" data-side="${side}" data-key="${it.key}">${side === 'pic' ? it.pic : it.word}</button>`).join('');
                 document.getElementById('match-pics').innerHTML = make('pic', shuffled(this.ITEMS));
                 document.getElementById('match-words').innerHTML = make('word', shuffled(this.ITEMS));
-                document.querySelectorAll('#match-area .match-item').forEach(btn => btn.addEventListener('click', () => this.tap(btn)));
+                this.bind();
                 this.refresh();
             },
-            tap(btn) {
-                const side = btn.dataset.side, key = btn.dataset.key;
+            clear() { this.links = {}; this.selected = null; this.drag = null; if (this.resetInput) this.resetInput(); this.refresh(); },
+            // 손가락(또는 마우스)으로 그림에서 이름까지 끌어서 선을 긋는 입력 처리
+            bind() {
+                if (this.bound) return;
+                this.bound = true;
+                const area = document.getElementById('match-area');
+                // 손을 뗀 위치에서 가장 가까운 칸 (칸 바깥으로 조금 벗어나도 인정)
+                const itemAt = (x, y, side) => {
+                    let best = null, bestD = Infinity;
+                    area.querySelectorAll('.match-item.' + side).forEach(btn => {
+                        const r = btn.getBoundingClientRect(), pad = 26;
+                        if (x < r.left - pad || x > r.right + pad || y < r.top - pad || y > r.bottom + pad) return;
+                        const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+                        if (d < bestD) { bestD = d; best = btn; }
+                    });
+                    return best;
+                };
+                const begin = (pt, target) => {
+                    const btn = target && target.closest ? target.closest('.match-item') : null;
+                    if (!btn || !area.contains(btn)) return false;
+                    this.drag = { side: btn.dataset.side, key: btn.dataset.key, sx: pt.clientX, sy: pt.clientY, x: pt.clientX, y: pt.clientY, moved: false };
+                    this.refresh();
+                    return true;
+                };
+                const move = (pt) => {
+                    const d = this.drag; if (!d) return;
+                    d.x = pt.clientX; d.y = pt.clientY;
+                    if (Math.hypot(d.x - d.sx, d.y - d.sy) > 12) d.moved = true;
+                    this.refresh();
+                };
+                const end = () => {
+                    const d = this.drag; if (!d) return;
+                    this.drag = null;
+                    if (d.moved) {
+                        const hit = itemAt(d.x, d.y, d.side === 'pic' ? 'word' : 'pic');
+                        if (hit) this.link(d.side, d.key, hit.dataset.key);
+                        this.selected = null;
+                    } else {
+                        this.tap(d.side, d.key); // 끌지 않고 누르기만 한 경우: 그림 누르고 이름 누르기로도 이어짐
+                    }
+                    this.refresh();
+                };
+
+                let touchId = null;
+                const findTouch = (list) => { for (let i = 0; i < list.length; i++) if (list[i].identifier === touchId) return list[i]; return null; };
+                area.addEventListener('touchstart', (e) => {
+                    if (touchId !== null) { e.preventDefault(); return; }
+                    const t = e.changedTouches[0];
+                    if (begin(t, e.target)) { e.preventDefault(); touchId = t.identifier; }
+                }, { passive: false });
+                area.addEventListener('touchmove', (e) => {
+                    if (touchId === null) return;
+                    e.preventDefault();
+                    const t = findTouch(e.changedTouches);
+                    if (t) move(t);
+                }, { passive: false });
+                const touchEnd = (e) => {
+                    if (touchId === null) return;
+                    if (findTouch(e.changedTouches) || e.touches.length === 0) { touchId = null; end(); }
+                };
+                area.addEventListener('touchend', touchEnd);
+                area.addEventListener('touchcancel', touchEnd);
+
+                let mouseDown = false;
+                area.addEventListener('mousedown', (e) => { if (e.button === 0 && begin(e, e.target)) { e.preventDefault(); mouseDown = true; } });
+                window.addEventListener('mousemove', (e) => { if (mouseDown) move(e); });
+                window.addEventListener('mouseup', () => { if (mouseDown) { mouseDown = false; end(); } });
+                this.resetInput = () => { touchId = null; mouseDown = false; };
+            },
+            link(side, key, otherKey) {
+                const picKey = side === 'pic' ? key : otherKey;
+                const wordKey = side === 'word' ? key : otherKey;
+                // 이미 다른 그림과 이어진 이름이면 그 선은 지움
+                Object.keys(this.links).forEach(p => { if (this.links[p] === wordKey) delete this.links[p]; });
+                this.links[picKey] = wordKey;
+            },
+            tap(side, key) {
                 if (this.selected && this.selected.side !== side) {
-                    const picKey = side === 'pic' ? key : this.selected.key;
-                    const wordKey = side === 'word' ? key : this.selected.key;
-                    // 이미 다른 그림과 이어진 이름이면 그 선은 지움
-                    Object.keys(this.links).forEach(p => { if (this.links[p] === wordKey) delete this.links[p]; });
-                    this.links[picKey] = wordKey;
+                    this.link(side, key, this.selected.key);
                     this.selected = null;
                 } else if (this.selected && this.selected.key === key) {
                     this.selected = null;
                 } else {
                     this.selected = { side, key };
                 }
-                this.refresh();
             },
             refresh() {
                 const area = document.getElementById('match-area');
                 if (!area) return;
                 const linkedWords = Object.values(this.links);
+                const active = this.drag || this.selected;
                 area.querySelectorAll('.match-item').forEach(btn => {
                     const side = btn.dataset.side, key = btn.dataset.key;
-                    btn.classList.toggle('selected', !!this.selected && this.selected.side === side && this.selected.key === key);
+                    btn.classList.toggle('selected', !!active && active.side === side && active.key === key);
                     btn.classList.toggle('linked', side === 'pic' ? key in this.links : linkedWords.includes(key));
                 });
                 const box = area.getBoundingClientRect();
                 const find = (side, key) => area.querySelector(`.match-item[data-side="${side}"][data-key="${key}"]`).getBoundingClientRect();
-                document.getElementById('match-lines').innerHTML = Object.keys(this.links).map(p => {
-                    const a = find('pic', p), b = find('word', this.links[p]);
-                    return `<line x1="${a.left + a.width / 2 - box.left}" y1="${a.bottom - box.top}" x2="${b.left + b.width / 2 - box.left}" y2="${b.top - box.top}" stroke="#3498db" stroke-width="7" stroke-linecap="round"/>`;
+                // 그림은 아래쪽 가운데, 이름은 위쪽 가운데가 선의 끝점
+                const anchor = (side, key) => { const r = find(side, key); return { x: r.left + r.width / 2 - box.left, y: (side === 'pic' ? r.bottom : r.top) - box.top }; };
+                let html = Object.keys(this.links).map(p => {
+                    const a = anchor('pic', p), b = anchor('word', this.links[p]);
+                    return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#3498db" stroke-width="7" stroke-linecap="round"/>`;
                 }).join('');
+                if (this.drag && this.drag.moved) {
+                    const a = anchor(this.drag.side, this.drag.key);
+                    html += `<line x1="${a.x}" y1="${a.y}" x2="${this.drag.x - box.left}" y2="${this.drag.y - box.top}" stroke="#ffaa00" stroke-width="7" stroke-linecap="round"/>`;
+                }
+                document.getElementById('match-lines').innerHTML = html;
                 document.getElementById('match-done').disabled = Object.keys(this.links).length !== this.ITEMS.length;
             },
             submit() {
@@ -1518,10 +1601,14 @@
             // 인지 과제 결과 (memory·signal·match 는 0~1 비율, clock 은 0~10점)
             taskScores: { memory: 0, clock: 0, signal: 0, match: 0 },
             signalStats: { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 },
+            // 시트 저장용: 검사 한 번마다 새로 만드는 기록 번호, 검사 장소(위치), 자동 저장 여부
+            recordId: "",
+            location: "",
+            autoSaved: false,
             // [NEW] 결과 데이터 저장용
             reportData: null,
             // [NEW] 구글 Apps Script Web App URL (여기에 복사한 URL을 넣으세요!)
-            googleScriptURL: "https://script.google.com/macros/s/AKfycbzx7d2IwQFBc5NcBuqfQXDMj-zH2xPJMeReyHQ5hHILrppEGooEGrMZHTUlwJ9v_8DdBA/exec", 
+            googleScriptURL: "https://script.google.com/macros/s/AKfycbyZH5-1D0jagii1xk-PXb5LqirXRmgmtdHYvMY9nSpe2xVQZ3jzKmQ4Z3NfHtsyuV5rhw/exec", 
 
             init() {
                 BehaviorTracker.init();
@@ -1554,8 +1641,33 @@
                 // BehaviorTracker.toggleFullScreen(); <-- 삭제됨
                 
                 this.resetVariables();
+                this.recordId = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+                this.autoSaved = false;
+                this.requestLocation();
                 this.shuffleOptions();
                 this.goToSlide('memo'); // 표지판 3개를 먼저 보여준 뒤 Q1 시작
+            },
+
+            // 검사 장소(기관) 구분용 위치. 브라우저가 위치 사용 허락을 한 번 묻습니다.
+            requestLocation() {
+                if (!navigator.geolocation) { this.location = "위치 확인 불가"; return; }
+                const runId = this.recordId;
+                this.location = "위치 확인 중";
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        if (this.recordId !== runId) return;
+                        const c = pos.coords;
+                        this.location = `${c.latitude.toFixed(5)}, ${c.longitude.toFixed(5)} (±${Math.round(c.accuracy)}m)`;
+                        // 결과가 이미 저장된 뒤에 위치가 잡혔다면 같은 줄을 다시 저장해 위치를 채움
+                        if (this.autoSaved) this.sendToSheet(this.buildSendData("")).catch(() => {});
+                    },
+                    (err) => {
+                        if (this.recordId !== runId) return;
+                        this.location = (err && err.code === 1) ? "위치 권한 거부" : "위치 확인 불가";
+                        if (this.autoSaved) this.sendToSheet(this.buildSendData("")).catch(() => {});
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 600000 }
+                );
             },
 
             resetVariables() {
@@ -1827,6 +1939,12 @@
                     }
                 };
 
+                // 검사를 마치면 전화번호 없이 결과를 시트에 자동 저장
+                if (!this.autoSaved && this.googleScriptURL) {
+                    this.autoSaved = true;
+                    this.sendToSheet(this.buildSendData("")).catch(err => console.error("자동 저장 실패", err));
+                }
+
                 // --- UI: 안전 보고서 ---
                 document.getElementById('safety-score').innerText = finalSafetyScore + "점 / 100점";
 
@@ -1981,43 +2099,57 @@
             },
             
             // [NEW] 데이터 전송 로직 수정 (Google Apps Script 연동)
-            submitUserData() {
-                const phone = document.getElementById('user-phone').value;
-                if(phone.length < 10) { this.showToast('휴대폰 번호를 올바르게 입력해주세요.'); return; }
-                
-                // 1. 전송할 데이터 구성
-                const sendData = {
+            // 시트로 보낼 한 줄 데이터
+            buildSendData(phone) {
+                const r = this.reportData;
+                return {
+                    recordId: this.recordId,   // 같은 검사의 재전송은 시트에서 같은 줄을 고쳐 씀
+                    location: this.location,   // 검사 장소 (위도, 경도)
                     timestamp: new Date().toLocaleString(),
                     phone: phone,
                     // 안전 점수
-                    safetyScore: this.reportData.safetyScore,
+                    safetyScore: r.safetyScore,
                     // 인지 건강 점수 (합계 100)
-                    cognitiveScore: this.reportData.cognitiveScore,
+                    cognitiveScore: r.cognitiveScore,
                     // 시트의 기존 열 제목(날짜 40·계절 20·흡연 20·집중 20)에 맞춰 환산해서 전송
-                    cog_date: Math.round(this.reportData.orientationParts.date / 15 * 40),
-                    cog_season: this.reportData.orientationParts.season * 2,
-                    cog_smoking: this.reportData.cognitive.smoking * 2,
-                    cog_focus: this.reportData.cognitive.focus * 2,
+                    cog_date: Math.round(r.orientationParts.date / 15 * 40),
+                    cog_season: r.orientationParts.season * 2,
+                    cog_smoking: r.cognitive.smoking * 2,
+                    cog_focus: r.cognitive.focus * 2,
                     // 6개 영역은 100점 환산
-                    cog_orientation: this.reportData.cognitive.orientation * 4,
-                    cog_memory: this.reportData.cognitive.memory * 5,
-                    cog_attention: this.reportData.cognitive.focus * 10,
-                    cog_visuospatial: this.reportData.cognitive.visuospatial * 10,
-                    cog_executive: Math.round(this.reportData.cognitive.executive / 15 * 100),
-                    cog_language: this.reportData.cognitive.language * 10,
+                    cog_orientation: r.cognitive.orientation * 4,
+                    cog_memory: r.cognitive.memory * 5,
+                    cog_attention: r.cognitive.focus * 10,
+                    cog_visuospatial: r.cognitive.visuospatial * 10,
+                    cog_executive: Math.round(r.cognitive.executive / 15 * 100),
+                    cog_language: r.cognitive.language * 10,
                     // 행동 패턴
-                    beh_avgReaction: this.reportData.behavior.avgReaction,
-                    beh_missedTaps: this.reportData.behavior.missedTaps,
-                    beh_multiTaps: this.reportData.behavior.multiTaps,
-                    beh_focusLoss: this.reportData.behavior.focusLoss,
+                    beh_avgReaction: r.behavior.avgReaction,
+                    beh_missedTaps: r.behavior.missedTaps,
+                    beh_multiTaps: r.behavior.multiTaps,
+                    beh_focusLoss: r.behavior.focusLoss,
                     // 신호등 문제: [건너기]를 누른 전체 횟수 / 필요 없이 누른 횟수 / 빨간불에 누른 횟수
-                    beh_signalPresses: this.reportData.behavior.signalPresses,
-                    beh_signalExtra: this.reportData.behavior.signalExtraPresses,
-                    beh_signalRed: this.reportData.behavior.signalRedPresses
+                    beh_signalPresses: r.behavior.signalPresses,
+                    beh_signalExtra: r.behavior.signalExtraPresses,
+                    beh_signalRed: r.behavior.signalRedPresses
                 };
+            },
 
-                // 2. Google Apps Script Web App URL
-                // [필수] 아래 주소는 반드시 본인이 배포한 Apps Script URL로 교체해야 작동합니다.
+            // Google Apps Script 로 전송. 응답 내용은 읽지 않고 보내기만 함 (no-cors)
+            sendToSheet(data) {
+                return fetch(this.googleScriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(data)
+                });
+            },
+
+            // 상담 신청: 자동 저장된 줄에 전화번호를 덧붙여 다시 전송
+            submitUserData() {
+                const phone = document.getElementById('user-phone').value;
+                if(phone.length < 10) { this.showToast('휴대폰 번호를 올바르게 입력해주세요.'); return; }
+
                 if (!this.googleScriptURL) {
                     alert("데이터 저장을 위해 구글 스크립트 URL 설정이 필요합니다.\n(HTML 파일 내 googleScriptURL 변수를 확인하세요)");
                     this.closeConsentModal();
@@ -2025,18 +2157,7 @@
                 }
 
                 this.showToast('데이터 전송 중...');
-
-                // 3. fetch 전송 (no-cors 모드 사용)
-                // Google Apps Script는 CORS 제약으로 인해 응답 내용을 직접 읽기 어려울 수 있어 no-cors를 사용하거나
-                // redirect: 'follow' 옵션을 사용합니다. 여기서는 간단히 전송 시도만 합니다.
-                fetch(this.googleScriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors', // 중요: 응답을 기다리지 않고 전송만 함 (CORS 에러 회피)
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8',
-                    },
-                    body: JSON.stringify(sendData)
-                })
+                this.sendToSheet(this.buildSendData(phone))
                 .then(() => {
                     this.closeConsentModal();
                     this.showToast('✅ 데이터가 안전하게 전송되었습니다. (상담원이 곧 연락드립니다)');
