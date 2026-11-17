@@ -195,27 +195,27 @@
         button.sign-item.selected { border-color: #ffaa00; background: #fff3e0; }
         button.sign-item.selected::after { content: '✔'; position: absolute; top: -12px; right: -12px; width: 38px; height: 38px; border-radius: 50%; background: #e67e22; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
 
-        #clock-canvas { width: min(400px, 78vw, 46vh); aspect-ratio: 1; touch-action: none; cursor: crosshair; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.12); }
+        #clock-canvas { width: min(400px, 78vw, 46vh); aspect-ratio: 1; touch-action: none; cursor: crosshair; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.12); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
-        .signal-stage { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; max-width: 640px; }
-        .signal-light { background: #222; border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 10px; flex: none; }
-        .lamp { width: clamp(64px, 11vw, 90px); aspect-ratio: 1; border-radius: 50%; background: #444; color: #333; display: flex; align-items: center; justify-content: center; font-size: clamp(34px, 6vw, 48px); }
+        .signal-stage { display: flex; align-items: stretch; justify-content: center; gap: 20px; width: 100%; max-width: 960px; }
+        .signal-light { background: #222; border-radius: 22px; padding: 14px; display: flex; flex-direction: column; justify-content: center; gap: 14px; flex: none; }
+        .lamp { width: clamp(92px, 15vw, 150px); aspect-ratio: 1; border-radius: 50%; background: #444; color: #333; display: flex; align-items: center; justify-content: center; font-size: clamp(50px, 8vw, 84px); }
         .lamp.red.on { background: #e74c3c; color: #fff; box-shadow: 0 0 25px #e74c3c; }
         .lamp.green.on { background: #2ecc71; color: #fff; box-shadow: 0 0 25px #2ecc71; }
-        .signal-scene { flex: 1; height: clamp(150px, 26vw, 200px); border-radius: 18px; overflow: hidden; position: relative; background: #666; border: 3px solid #ccc; }
-        .signal-scene .zebra { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; background: repeating-linear-gradient(90deg, #fff 0 26px, #666 26px 52px); }
-        .walkers { position: absolute; bottom: 12%; left: 100%; font-size: clamp(48px, 9vw, 70px); white-space: nowrap; line-height: 1; }
+        .signal-scene { flex: 1; min-height: clamp(230px, 36vh, 340px); border-radius: 18px; overflow: hidden; position: relative; background: #666; border: 3px solid #ccc; }
+        .signal-scene .zebra { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; background: repeating-linear-gradient(90deg, #fff 0 40px, #666 40px 80px); }
+        .walkers { position: absolute; bottom: 10%; left: 100%; font-size: clamp(76px, 13vw, 130px); white-space: nowrap; line-height: 1; }
         .walkers.go { animation: walkAcross 2.2s linear forwards; }
-        @keyframes walkAcross { from { left: 100%; } to { left: -70%; } }
-        .signal-msg { position: absolute; top: 8px; left: 0; right: 0; text-align: center; font-family: 'Jua', sans-serif; font-size: clamp(18px, 2.6vw, 26px); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        @keyframes walkAcross { from { left: 100%; } to { left: -110%; } }
+        .signal-msg { position: absolute; top: 8px; left: 0; right: 0; text-align: center; font-family: 'Jua', sans-serif; font-size: clamp(20px, 3vw, 32px); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
         .signal-msg.bad { color: #ffd0cc; }
         .btn-cross { font-family: 'Jua', sans-serif; font-size: clamp(28px, 4vw, 40px); padding: 18px 70px; border-radius: 50px; border: none; background: #ffaa00; color: #fff; box-shadow: 0 6px 0 #d48806; cursor: pointer; touch-action: manipulation; }
         .btn-cross:active { transform: translateY(6px); box-shadow: none; }
 
-        .match-area { position: relative; display: flex; justify-content: space-between; width: 100%; max-width: 520px; }
-        .match-col { display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2; }
-        .match-item { width: clamp(110px, 22vw, 150px); height: clamp(64px, 11vh, 84px); border: 4px solid #ddd; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Jua', sans-serif; font-size: clamp(22px, 3vw, 28px); color: #333; display: flex; align-items: center; justify-content: center; }
-        .match-item.pic { font-size: clamp(40px, 7vw, 54px); }
+        .match-area { position: relative; display: flex; flex-direction: column; gap: clamp(70px, 13vh, 130px); width: 100%; max-width: 900px; }
+        .match-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 2vw, 24px); position: relative; z-index: 2; }
+        .match-item { width: 100%; height: clamp(70px, 13vh, 110px); padding: 0 2px; border: 4px solid #ddd; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Jua', sans-serif; font-size: clamp(19px, 4.6vw, 44px); color: #333; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
+        .match-item.pic { height: clamp(90px, 18vh, 160px); font-size: clamp(50px, 10vw, 100px); }
         .match-item.linked { border-color: #3498db; }
         .match-item.selected { border-color: #ffaa00; background: #fff3e0; }
         #match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
@@ -442,6 +442,7 @@
 
         /* 토스트 메시지 스타일 */
         #toast-msg {
+            pointer-events: none;
             visibility: hidden;
             opacity: 0;
             position: fixed;
@@ -783,7 +784,7 @@
         <button class="btn-prev" onclick="app.prev('q15')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
         <div class="task-box">
             <h2>Q15. 그림과 이름을 선으로 이어주세요</h2>
-            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 그림을 누른 다음, 맞는 이름을 누르세요</p>
+            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 위의 그림을 누른 다음, 아래에서 맞는 이름을 누르세요</p>
             <div class="match-area" id="match-area">
                 <svg id="match-lines"></svg>
                 <div class="match-col" id="match-pics"></div>
@@ -1223,31 +1224,60 @@
                 const canvas = document.getElementById('clock-canvas');
                 if (!this.bound) {
                     this.bound = true;
-                    const pos = (e) => {
+                    const pos = (pt) => {
                         const r = canvas.getBoundingClientRect();
+                        if (!r.width || !r.height) return null;
                         // 시계 중심이 (0,0), 테두리가 반지름 1 인 좌표
-                        return { x: ((e.clientX - r.left) / r.width) * 2 - 1, y: ((e.clientY - r.top) / r.height) * 2 - 1 };
+                        return { x: ((pt.clientX - r.left) / r.width) * 2 - 1, y: ((pt.clientY - r.top) / r.height) * 2 - 1 };
                     };
-                    canvas.addEventListener('pointerdown', (e) => {
-                        e.preventDefault();
-                        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
-                        this.current = [pos(e)];
+                    const begin = (pt) => {
+                        const q = pos(pt); if (!q) return;
+                        this.current = [q];
                         this.strokes.push(this.current);
                         this.draw();
-                    });
-                    canvas.addEventListener('pointermove', (e) => {
+                    };
+                    const move = (pt) => {
                         if (!this.current) return;
-                        this.current.push(pos(e));
+                        const q = pos(pt); if (!q) return;
+                        this.current.push(q);
                         this.draw();
-                    });
+                    };
                     const end = () => { this.current = null; };
-                    canvas.addEventListener('pointerup', end);
-                    canvas.addEventListener('pointercancel', end);
+
+                    // 터치: 화면이 대신 스크롤되거나 확대되지 않도록 기본 동작을 막고 직접 처리
+                    let touchId = null;
+                    const findTouch = (list) => { for (let i = 0; i < list.length; i++) if (list[i].identifier === touchId) return list[i]; return null; };
+                    canvas.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        if (touchId !== null) return; // 두 번째 손가락·손바닥은 무시
+                        const t = e.changedTouches[0];
+                        touchId = t.identifier;
+                        begin(t);
+                    }, { passive: false });
+                    canvas.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        const t = findTouch(e.changedTouches);
+                        if (t) move(t);
+                    }, { passive: false });
+                    const touchEnd = (e) => {
+                        if (touchId === null) return;
+                        if (findTouch(e.changedTouches) || e.touches.length === 0) { touchId = null; end(); }
+                    };
+                    canvas.addEventListener('touchend', touchEnd);
+                    canvas.addEventListener('touchcancel', touchEnd);
+                    this.resetInput = () => { touchId = null; this.current = null; };
+
+                    // 마우스 (PC)
+                    let mouseDown = false;
+                    canvas.addEventListener('mousedown', (e) => { if (e.button !== 0) return; e.preventDefault(); mouseDown = true; begin(e); });
+                    window.addEventListener('mousemove', (e) => { if (mouseDown) move(e); });
+                    window.addEventListener('mouseup', () => { if (mouseDown) { mouseDown = false; end(); } });
                 }
+                if (this.resetInput) this.resetInput();
                 this.strokes = []; this.current = null; this.warned = false;
                 this.draw();
             },
-            clear() { this.strokes = []; this.current = null; this.draw(); },
+            clear() { this.strokes = []; if (this.resetInput) this.resetInput(); this.draw(); },
             draw() {
                 const canvas = document.getElementById('clock-canvas');
                 const ctx = canvas.getContext('2d');
@@ -1364,7 +1394,7 @@
                 const base = [];
                 for (let i = 0; i < this.TOTAL; i++) base.push(i < this.GREENS ? 'green' : 'red');
                 this.seq = shuffled(base);
-                this.stats = { correct: 0, commission: 0, omission: 0 };
+                this.stats = { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 };
                 this.running = true;
                 this.el('signal-start').style.display = 'none';
                 this.el('signal-press').style.display = '';
@@ -1381,7 +1411,10 @@
                 this.later(() => this.endTrial(), this.LIGHT_MS);
             },
             press() {
-                if (!this.running || !this.lightOn || this.pressed) return;
+                if (!this.running) return;
+                // 누른 횟수는 모두 기록. 같은 신호에 두 번 이상 누르거나 불이 꺼졌을 때 누르면 '불필요한 누름'
+                this.stats.presses++;
+                if (!this.lightOn || this.pressed) { this.stats.extraPresses++; return; }
                 this.pressed = true;
                 if (this.seq[this.trial] === 'green') {
                     this.stats.correct++;
@@ -1458,7 +1491,7 @@
                 const find = (side, key) => area.querySelector(`.match-item[data-side="${side}"][data-key="${key}"]`).getBoundingClientRect();
                 document.getElementById('match-lines').innerHTML = Object.keys(this.links).map(p => {
                     const a = find('pic', p), b = find('word', this.links[p]);
-                    return `<line x1="${a.right - box.left}" y1="${a.top + a.height / 2 - box.top}" x2="${b.left - box.left}" y2="${b.top + b.height / 2 - box.top}" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>`;
+                    return `<line x1="${a.left + a.width / 2 - box.left}" y1="${a.bottom - box.top}" x2="${b.left + b.width / 2 - box.left}" y2="${b.top - box.top}" stroke="#3498db" stroke-width="7" stroke-linecap="round"/>`;
                 }).join('');
                 document.getElementById('match-done').disabled = Object.keys(this.links).length !== this.ITEMS.length;
             },
@@ -1484,7 +1517,7 @@
             orientation: { monthScore: 0, dayScore: 0, seasonScore: 0 },
             // 인지 과제 결과 (memory·signal·match 는 0~1 비율, clock 은 0~10점)
             taskScores: { memory: 0, clock: 0, signal: 0, match: 0 },
-            signalStats: { correct: 0, commission: 0, omission: 0 },
+            signalStats: { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 },
             // [NEW] 결과 데이터 저장용
             reportData: null,
             // [NEW] 구글 Apps Script Web App URL (여기에 복사한 URL을 넣으세요!)
@@ -1532,7 +1565,7 @@
                 this.selectedSeason = "";
                 this.orientation = { monthScore: 0, dayScore: 0, seasonScore: 0 };
                 this.taskScores = { memory: 0, clock: 0, signal: 0, match: 0 };
-                this.signalStats = { correct: 0, commission: 0, omission: 0 };
+                this.signalStats = { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 };
                 this.reportData = null; // 초기화
                 
                 ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
@@ -1787,7 +1820,10 @@
                         missedTaps: bd.missedTaps,
                         multiTaps: bd.multiTaps,
                         longPresses: bd.longPresses,
-                        focusLoss: focusLoss
+                        focusLoss: focusLoss,
+                        signalPresses: this.signalStats.presses,
+                        signalExtraPresses: this.signalStats.extraPresses,
+                        signalRedPresses: this.signalStats.commission
                     }
                 };
 
@@ -1908,6 +1944,7 @@
                     bHtml += this.createBehaviorCard('fa-compress', '#9b59b6', '화면 이탈', `검사 중 화면을 ${focusLoss}회 벗어나거나 축소하셨습니다.<br><strong>[주의]</strong> 길을 건널 때는 한 가지에만 집중하세요.`, 'high');
                 }
                 if (this.signalStats.commission > 0) bHtml += this.createBehaviorCard('fa-traffic-light', '#e74c3c', '빨간불에 누름', `신호등 문제에서 빨간불에 ${this.signalStats.commission}회 누르셨습니다.<br><strong>[주의]</strong> 서두르지 말고 초록불을 확인한 뒤 건너세요.`, 'high');
+                if (this.signalStats.extraPresses >= 3) bHtml += this.createBehaviorCard('fa-hand-point-up', '#e67e22', '건너기 버튼을 계속 누름', `신호등 문제에서 [건너기]를 모두 ${this.signalStats.presses}회 누르셨고, 그중 ${this.signalStats.extraPresses}회는 필요 없는 누름이었습니다.<br><strong>[주의]</strong> 마음이 급할수록 한 번 누르고 기다리는 습관이 안전합니다.`, 'high');
                 if (this.signalStats.omission >= 2) bHtml += this.createBehaviorCard('fa-hourglass-half', '#f39c12', '초록불을 놓침', `신호등 문제에서 초록불을 ${this.signalStats.omission}회 놓치셨습니다.<br><strong>[주의]</strong> 초록불이 켜지자마자 건너기 시작해야 시간이 넉넉합니다.`, 'high');
                 if (bd.multiTaps >= 4) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '서두르는 습관 (연타)', `버튼을 연달아 ${bd.multiTaps}회 누르셨습니다.<br><strong>[주의]</strong> 신호가 바뀌기 전에 서둘러 건너려는 행동으로 이어질 수 있습니다.`, 'high');
                 if (avgReaction > SLOW_MS) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '답하는 데 걸린 시간', `문제당 평균 ${(avgReaction/1000).toFixed(0)}초가 걸렸습니다.<br><strong>[주의]</strong> 길을 건널 때는 신호가 넉넉히 남았을 때 출발하세요.`, 'high');
@@ -1972,7 +2009,11 @@
                     beh_avgReaction: this.reportData.behavior.avgReaction,
                     beh_missedTaps: this.reportData.behavior.missedTaps,
                     beh_multiTaps: this.reportData.behavior.multiTaps,
-                    beh_focusLoss: this.reportData.behavior.focusLoss
+                    beh_focusLoss: this.reportData.behavior.focusLoss,
+                    // 신호등 문제: [건너기]를 누른 전체 횟수 / 필요 없이 누른 횟수 / 빨간불에 누른 횟수
+                    beh_signalPresses: this.reportData.behavior.signalPresses,
+                    beh_signalExtra: this.reportData.behavior.signalExtraPresses,
+                    beh_signalRed: this.reportData.behavior.signalRedPresses
                 };
 
                 // 2. Google Apps Script Web App URL
