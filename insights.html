@@ -58,12 +58,41 @@
         /* 가장 많이 틀린 / 맞힌 문제 */
         .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
         .rank-box { border-radius: 18px; padding: 16px; border: 2px solid var(--line); }
-        .rank-box h3 { margin: 0 0 10px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .rank-box h3 { margin: 0 0 10px; font-size: 19px; display: flex; align-items: center; gap: 8px; }
         .rank-box.bad h3 i { color: var(--bad); }
         .rank-box.good h3 i { color: var(--good); }
-        .rank-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 17px; }
-        .rank-item:first-of-type { border-top: none; }
-        .rank-item b { font-weight: 900; white-space: nowrap; }
+        .qcard { border-top: 1px solid var(--line); padding: 14px 0 6px; break-inside: avoid; }
+        .qcard:first-of-type { border-top: none; padding-top: 4px; }
+        .qtitle { font-size: 17px; font-weight: 700; line-height: 1.45; display: flex; gap: 10px; justify-content: space-between; align-items: flex-start; }
+        .qtitle .rate { white-space: nowrap; font-weight: 900; font-size: 16px; }
+        .opt { display: grid; grid-template-columns: 1fr minmax(70px, 34%) 46px; gap: 10px; align-items: center; padding: 6px 0; font-size: 15px; }
+        .opt .otext { line-height: 1.35; }
+        .opt .tag { display: inline-block; font-size: 12px; font-weight: 800; padding: 1px 7px; border-radius: 6px; margin-left: 4px; white-space: nowrap; vertical-align: 1px; }
+        .tag.good { background: #e6f4ea; color: var(--good); } .tag.warn { background: #fff4e0; color: var(--warn); } .tag.bad { background: #fde8e7; color: var(--bad); }
+        .opt .otrack { height: 14px; background: var(--track); border-radius: 0 4px 4px 0; }
+        .opt .ofill { height: 100%; border-radius: 0 4px 4px 0; min-width: 2px; }
+        .ofill.good { background: var(--good); } .ofill.warn { background: #e8a33d; } .ofill.bad { background: #d9534f; }
+        .opt .opct { text-align: right; font-weight: 900; font-variant-numeric: tabular-nums; }
+        .qsum { font-size: 15px; margin: 6px 0 0; padding: 8px 10px; border-radius: 10px; background: #f6f7f9; line-height: 1.45; }
+        .qnote { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+        /* 인지 건강 육각형 그래프 */
+        .cog-grid { display: grid; grid-template-columns: minmax(280px, 1.15fr) 1fr; gap: 22px; align-items: start; margin-top: 10px; }
+        .radar-box svg { width: 100%; max-width: 470px; display: block; margin: 0 auto; overflow: visible; }
+        .legend { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 6px; font-size: 15px; color: var(--text-secondary); }
+        .legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .legend i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+        .radar-table { width: 100%; font-size: 15px; margin-top: 4px; }
+        .radar-table th, .radar-table td { padding: 7px 8px; }
+        .factor-box { border: 2px solid #f3c6c3; background: #fffafa; border-radius: 18px; padding: 16px; }
+        .factor-box h3 { margin: 0 0 10px; font-size: 18px; color: var(--bad); display: flex; gap: 8px; align-items: center; }
+        .factor { padding: 12px 0; border-top: 1px solid #f3dcda; }
+        .factor:first-of-type { border-top: none; padding-top: 2px; }
+        .factor .flabel { font-size: 16px; font-weight: 700; }
+        .factor .fval { font-size: 34px; font-weight: 900; line-height: 1.2; }
+        .factor .fval small { font-size: 16px; font-weight: 700; color: var(--text-muted); }
+        .factor .fnote { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        @media (max-width: 760px) { .cog-grid { grid-template-columns: 1fr; } }
 
         /* 가로 막대 */
         .bars { margin-top: 12px; }
@@ -178,7 +207,7 @@
 
             <div class="card">
                 <h2><i class="fa-solid fa-clipboard-question" style="color:#e67e22;"></i> 교통 문제별 정답률</h2>
-                <p class="sub">정답률이 낮은 문제부터 보여줍니다. 막대에 손가락이나 마우스를 올리면 정답·부분 정답·오답 인원이 나옵니다.</p>
+                <p class="sub">문제와 보기를 함께 보여주고, 어르신들이 어떤 보기를 많이 골랐는지 표시합니다. 아래 막대는 전체 문제의 정답률입니다.</p>
                 <div id="q-empty" class="empty hidden">문항별 기록이 있는 검사가 아직 없습니다.</div>
                 <div id="q-body">
                     <div class="rank-grid" id="ranks"></div>
@@ -188,15 +217,20 @@
             </div>
 
             <div class="card">
-                <h2><i class="fa-solid fa-brain" style="color:#8e44ad;"></i> 인지 과제 결과</h2>
-                <p class="sub">각 과제에서 만점 대비 평균 몇 %를 얻었는지 보여줍니다.</p>
-                <div class="bars" id="c-bars"></div>
-                <div class="axis"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div><div></div></div>
-            </div>
-
-            <div class="card">
-                <h2><i class="fa-solid fa-person-walking" style="color:#c0392b;"></i> 생활 습관과 행동</h2>
-                <div class="tiles" id="b-tiles"></div>
+                <h2><i class="fa-solid fa-brain" style="color:#8e44ad;"></i> 인지 건강 결과</h2>
+                <p class="sub">6개 영역의 평균 점수입니다 (각 100점 만점). 바깥쪽으로 넓을수록 좋습니다.</p>
+                <div id="cog-empty" class="empty hidden">인지 과제 기록이 있는 검사가 아직 없습니다.</div>
+                <div class="cog-grid" id="cog-body">
+                    <div class="radar-box">
+                        <svg id="radar" viewBox="0 0 460 400" role="img" aria-labelledby="radar-title"><title id="radar-title">인지 건강 6개 영역 평균 점수</title></svg>
+                        <div class="legend" id="radar-legend"></div>
+                        <table class="radar-table" id="radar-table"></table>
+                    </div>
+                    <div class="factor-box">
+                        <h3><i class="fa-solid fa-arrow-trend-down"></i> 결과에 좋지 않게 작용한 요소</h3>
+                        <div id="factors"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="card" id="inst-card">
@@ -221,28 +255,30 @@
     // 검사 화면(index.html)과 같은 Apps Script 주소
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZH5-1D0jagii1xk-PXb5LqirXRmgmtdHYvMY9nSpe2xVQZ3jzKmQ4Z3NfHtsyuV5rhw/exec";
 
+    // [키, 번호, 짧은 제목, 문제, 보기([내용, 점수]) — 보기 순서는 검사 화면의 ①②③ 순서]
     const QUESTIONS = [
-        ['q1', 'Q1', '초록불이 깜빡일 때'],
-        ['q3', 'Q3', '밤에 안전한 옷'],
-        ['q4', 'Q4', '버스에서 내릴 때'],
-        ['q5', 'Q5', '무단횡단'],
-        ['q6', 'Q6', '골목길 보행 방향'],
-        ['q8', 'Q8', '신호가 5초 남았을 때'],
-        ['q9', 'Q9', '횡단보도 표지판'],
-        ['q10', 'Q10', '교차로 황색 신호'],
-        ['q11', 'Q11', '비보호 좌회전'],
-        ['q12', 'Q12', '스쿨존 제한 속도']
+        ['q1', 'Q1', '초록불이 깜빡일 때', '초록불이 깜빡일 때 올바른 행동은 무엇인가요?', [['얼른 뛰어서 건넌다', 0], ['멈추고 다음 신호를 기다린다', 10], ['천천히 걸어서 건넌다', 3]]],
+        ['q3', 'Q3', '밤에 안전한 옷', '밤에 외출할 때 가장 안전한 옷차림은?', [['때가 안 타는 검은색 옷', 0], ['무난한 회색 옷', 5], ['눈에 잘 띄는 밝은/야광 옷', 10]]],
+        ['q4', 'Q4', '버스에서 내릴 때', '버스 하차 시 가장 안전한 행동은 무엇인가요?', [['차가 멈춘 뒤 일어난다', 10], ['미리 문 앞으로 걸어 나간다', 0], ['손잡이를 꼭 잡고 기다린다', 5]]],
+        ['q5', 'Q5', '무단횡단', '횡단보도가 없는 곳이라면 어떻게 건너야 할까요?', [['차가 없으면 빨리 건넌다', 0], ['손을 들고 조심히 건넌다', 5], ['멀더라도 횡단보도를 찾는다', 10]]],
+        ['q6', 'Q6', '골목길 보행 방향', '인도가 없는 골목길, 어디로 걸어야 안전할까요?', [['길 한가운데로 걷는다', 0], ['차와 마주 보고 가장자리로', 10], ['차를 등지고 가장자리로', 5]]],
+        ['q8', 'Q8', '신호가 5초 남았을 때', '신호가 5초 남았을 때 안전한 행동은?', [['뛰어서 건넌다', 0], ['다음 신호를 기다린다', 10], ['차가 안 오면 그냥 건넌다', 5]]],
+        ['q9', 'Q9', '횡단보도 표지판', '다음 표지판(파란 횡단보도 표지판)은 무엇을 의미하나요?', [['그림과 같이 신호등이 없는 횡단보도가 있음', 10], ['자전거 전용 도로', 0], ['도로 공사중', 0], ['미끄러운 도로', 0]]],
+        ['q10', 'Q10', '교차로 황색 신호', '교차로 진입 직전(정지선 앞)에 황색 신호가 켜졌습니다. 어떻게 해야 할까요?', [['속도를 높여 빠르게 통과한다', 0], ['천천히 서행하며 통과한다', 5], ['정지선 앞에 멈춘다', 10]]],
+        ['q11', 'Q11', '비보호 좌회전', "'비보호 좌회전' 표지판이 있는 곳입니다. 언제 좌회전하나요?", [['빨간불일 때 눈치껏 한다', 0], ['녹색불(직진)일 때 반대편 차가 없으면', 10], ['녹색 화살표 신호가 들어오면', 5]]],
+        ['q12', 'Q12', '스쿨존 제한 속도', '어린이 보호구역(스쿨존)의 일반적인 제한 속도는?', [['시속 30km 이하', 10], ['시속 50km 이하', 0], ['시속 60km 이하', 0]]]
     ];
-    // [항목 키, 이름, 만점, 설명]
-    const COG_TASKS = [
-        ['q7_month', '오늘이 몇 월인지', 1, 'Q7 날짜'],
-        ['q7_day', '오늘이 며칠인지', 1, 'Q7 날짜'],
-        ['q7_season', '지금 계절', 1, 'Q7 계절'],
-        ['q16_memory', '표지판 기억', 3, 'Q16 기억력'],
-        ['q13_clock', '시계 그리기', 10, 'Q13 시공간'],
-        ['q14_signal', '초록불에만 건너기', 10, 'Q14 집행기능'],
-        ['q15_match', '그림과 이름 잇기', 4, 'Q15 언어']
+    const CIRCLED = ['①', '②', '③', '④', '⑤'];
+    // 육각형 그래프 6개 영역 [이름, 시트 항목(100점 환산)]
+    const DOMAINS = [
+        ['지남력', 'cog_orientation'],
+        ['기억력', 'cog_memory'],
+        ['집행기능', 'cog_executive'],
+        ['시공간', 'cog_visuospatial'],
+        ['언어', 'cog_language'],
+        ['집중 유지', 'cog_attention']
     ];
+    const SERIES = ['#2a78d6', '#eb6834']; // 우리 기관(또는 전체), 전체 평균
     const DEFAULT_RADIUS = 300; // m
 
     const $ = (id) => document.getElementById(id);
@@ -285,6 +321,8 @@
         const rows = (raw.rows || []).filter(r => num(r.safetyScore) !== null).map(r => {
             const row = Object.assign({}, r);
             row._time = parseTime(r);
+            const chosen = String(r.institution || '').trim();
+            if (chosen) { row._inst = chosen; return row; } // 검사 화면에서 고른 기관 이름이 가장 우선
             const pos = parseLocation(r.location);
             if (!pos) { row._inst = '위치 없음'; return row; }
             let best = null, bestD = Infinity;
@@ -301,11 +339,82 @@
 
     // ---------- 통계 ----------
     function questionStats(rows) {
-        return QUESTIONS.map(([key, no, title]) => {
+        return QUESTIONS.map(([key, no, title, text, options]) => {
             const vals = rows.map(r => num(r[key])).filter(v => v !== null);
             const right = vals.filter(v => v >= 10).length, part = vals.filter(v => v > 0 && v < 10).length;
-            return { key, no, title, n: vals.length, right, part, wrong: vals.length - right - part, rate: pct(right, vals.length) };
+            const picks = rows.map(r => num(r[key + '_choice'])).filter(v => v !== null && v >= 1 && v <= options.length);
+            const counts = options.map((o, i) => picks.filter(v => v === i + 1).length);
+            return { key, no, title, text, options, n: vals.length, right, part, wrong: vals.length - right - part, rate: pct(right, vals.length), picks: picks.length, counts };
         }).filter(q => q.n > 0);
+    }
+
+    // 문제 + 보기별 선택 비율 카드
+    function questionCard(q, mode) {
+        const kind = (score) => score >= 10 ? ['good', '정답'] : (score > 0 ? ['warn', '부분 정답'] : ['bad', '오답']);
+        const opts = q.options.map(([label, score], i) => {
+            const [cls, tag] = kind(score);
+            const share = q.picks ? pct(q.counts[i], q.picks) : null;
+            return `<div class="opt">
+                <div class="otext">${CIRCLED[i]} ${esc(label)}<span class="tag ${cls}">${tag}</span></div>
+                <div class="otrack">${share === null ? '' : `<div class="ofill ${cls}" style="width:${share}%"></div>`}</div>
+                <div class="opct">${share === null ? '-' : share + '%'}</div>
+            </div>`;
+        }).join('');
+        let sum = '';
+        if (q.picks) {
+            const order = q.options.map((o, i) => ({ i, label: o[0], score: o[1], c: q.counts[i] }));
+            if (mode === 'bad') {
+                const wrongs = order.filter(o => o.score < 10).sort((a, b) => b.c - a.c);
+                const w = wrongs[0];
+                sum = w && w.c > 0 ? `<div class="qsum">가장 많이 고른 틀린 답: <b>${CIRCLED[w.i]} ${esc(w.label)}</b> (${pct(w.c, q.picks)}%)</div>` : '';
+            } else {
+                const c = order.find(o => o.score >= 10);
+                sum = c ? `<div class="qsum">정답 <b>${CIRCLED[c.i]} ${esc(c.label)}</b>을 고른 분: ${pct(c.c, q.picks)}%</div>` : '';
+            }
+        }
+        const note = q.picks ? `보기를 고른 기록 ${q.picks}명 기준` : '보기별 선택 기록이 없는 예전 검사만 있어 보기 비율을 표시할 수 없습니다.';
+        return `<div class="qcard">
+            <div class="qtitle"><span>${esc(q.no)}. ${esc(q.text)}</span><span class="rate">정답률 ${q.rate}%</span></div>
+            ${opts}${sum}<div class="qnote">${note}</div>
+        </div>`;
+    }
+
+    // 인지 건강 6개 영역 평균 (새 방식으로 채점된 검사만 사용)
+    function domainAverages(rows) {
+        const ok = rows.filter(r => num(r.cognitiveScore) !== null && num(r.cog_memory) !== null);
+        return { n: ok.length, values: DOMAINS.map(([, key]) => { const v = avg(ok.map(r => num(r[key])).filter(x => x !== null)); return v === null ? 0 : Math.max(0, Math.min(100, v)); }) };
+    }
+
+    function drawRadar(series) {
+        const W = 460, H = 400, cx = W / 2, cy = H / 2 + 6, R = 138, N = DOMAINS.length;
+        const pt = (i, r) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; };
+        let g = '<title id="radar-title">인지 건강 6개 영역 평균 점수</title>';
+        [20, 40, 60, 80, 100].forEach(level => {
+            const pts = DOMAINS.map((d, i) => pt(i, R * level / 100).join(',')).join(' ');
+            g += `<polygon points="${pts}" fill="none" stroke="#e3e6ea" stroke-width="1"/>`;
+        });
+        DOMAINS.forEach((d, i) => { const [x, y] = pt(i, R); g += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#e3e6ea" stroke-width="1"/>`; });
+        g += `<text x="${cx + 4}" y="${cy - R * 0.5 - 3}" font-size="11" fill="#9aa0a6">50</text><text x="${cx + 4}" y="${cy - R - 3}" font-size="11" fill="#9aa0a6">100</text>`;
+        series.forEach((s, k) => {
+            const pts = s.values.map((v, i) => pt(i, R * v / 100).join(',')).join(' ');
+            g += `<polygon points="${pts}" fill="${SERIES[k]}" fill-opacity="0.12" stroke="${SERIES[k]}" stroke-width="2" stroke-linejoin="round"/>`;
+        });
+        series.forEach((s, k) => {
+            s.values.forEach((v, i) => {
+                const [x, y] = pt(i, R * v / 100);
+                g += `<circle cx="${x}" cy="${y}" r="5" fill="${SERIES[k]}" stroke="#fff" stroke-width="2"><title>${esc(s.name)} · ${DOMAINS[i][0]} ${Math.round(v)}점</title></circle>`;
+            });
+        });
+        DOMAINS.forEach((d, i) => {
+            const [x, y] = pt(i, R + 30);
+            const anchor = Math.abs(x - cx) < 5 ? 'middle' : (x > cx ? 'start' : 'end');
+            const main = Math.round(series[0].values[i]);
+            g += `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="middle" font-size="16" font-weight="700" fill="#2b2b2b">${d[0]}<tspan font-weight="900" fill="#5c5c5c" dx="6">${main}</tspan></text>`;
+        });
+        $('radar').innerHTML = g;
+        $('radar-legend').innerHTML = series.length > 1 ? series.map((s, k) => `<span><i style="background:${SERIES[k]}"></i>${esc(s.name)} (${s.n}명)</span>`).join('') : '';
+        $('radar-table').innerHTML = '<tr><th>영역</th>' + series.map(s => `<th class="n">${esc(s.name)}</th>`).join('') + '</tr>' +
+            DOMAINS.map((d, i) => `<tr><td>${d[0]}</td>${series.map(s => `<td class="n">${Math.round(s.values[i])}점</td>`).join('')}</tr>`).join('');
     }
 
     function barRow(name, small, value, tip) {
@@ -367,32 +476,38 @@
         $('q-empty').classList.toggle('hidden', qs.length > 0);
         $('q-body').classList.toggle('hidden', qs.length === 0);
         if (qs.length) {
-            const item = (q) => `<div class="rank-item"><span>${esc(q.no)}. ${esc(q.title)}</span><b>정답률 ${q.rate}%</b></div>`;
             const top = Math.min(3, Math.floor(qs.length / 2) || 1);
             $('ranks').innerHTML =
-                `<div class="rank-box bad"><h3><i class="fa-solid fa-circle-xmark"></i> 가장 많이 틀린 문제</h3>${qs.slice(0, top).map(item).join('')}</div>` +
-                `<div class="rank-box good"><h3><i class="fa-solid fa-circle-check"></i> 가장 잘 맞힌 문제</h3>${qs.slice(-top).reverse().map(item).join('')}</div>`;
+                `<div class="rank-box bad"><h3><i class="fa-solid fa-circle-xmark"></i> 가장 많이 틀린 문제</h3>${qs.slice(0, top).map(q => questionCard(q, 'bad')).join('')}</div>` +
+                `<div class="rank-box good"><h3><i class="fa-solid fa-circle-check"></i> 가장 잘 맞힌 문제</h3>${qs.slice(-top).reverse().map(q => questionCard(q, 'good')).join('')}</div>`;
             $('q-bars').innerHTML = qs.map(q => barRow(`${q.no}. ${q.title}`, `응답 ${q.n}명`, q.rate, `정답 ${q.right}명 · 부분 정답 ${q.part}명 · 오답 ${q.wrong}명`)).join('');
         }
 
-        // 인지 과제
-        $('c-bars').innerHTML = COG_TASKS.map(([key, name, max, desc]) => {
-            const vals = rows.map(r => num(r[key])).filter(v => v !== null);
-            if (!vals.length) return '';
-            const mean = avg(vals);
-            const tip = max === 1 ? `맞힌 사람 ${vals.filter(v => v >= 1).length}명 / 응답 ${vals.length}명` : `평균 ${fmt1(mean)} / ${max} · 응답 ${vals.length}명`;
-            return barRow(name, desc, Math.round(mean / max * 100), tip);
-        }).join('') || '<div class="empty">인지 과제 기록이 있는 검사가 아직 없습니다.</div>';
-
-        // 생활 습관과 행동
-        const share = (key, test) => { const v = rows.map(r => num(r[key])).filter(x => x !== null); return v.length ? [pct(v.filter(test).length, v.length), v.length] : null; };
-        const bt = [];
-        const add = (label, s, note) => { if (s) bt.push(tile(label, s[0], '%', `${note} · 응답 ${s[1]}명`)); };
-        add('흡연하는 분', share('q2_smoking', v => v > 0), '하루 한 개비 이상');
-        add('빨간불에 누른 분', share('beh_signalRed', v => v > 0), '신호등 문제에서 1회 이상');
-        add('건너기를 계속 누른 분', share('beh_signalExtra', v => v >= 3), '불필요한 누름 3회 이상');
-        add('검사 중 화면을 벗어난 분', share('beh_focusLoss', v => v > 0), '1회 이상 이탈');
-        $('b-tiles').innerHTML = bt.join('') || '<div class="empty">행동 기록이 있는 검사가 아직 없습니다.</div>';
+        // 인지 건강 육각형 그래프 + 좋지 않게 작용한 요소
+        let periodRows = all;
+        if (days !== 'all') { const from = new Date(); from.setHours(0, 0, 0, 0); from.setDate(from.getDate() - (Number(days) - 1)); periodRows = periodRows.filter(r => r._time && r._time >= from); }
+        const mineD = domainAverages(rows);
+        $('cog-empty').classList.toggle('hidden', mineD.n > 0);
+        $('cog-body').classList.toggle('hidden', mineD.n === 0);
+        if (mineD.n > 0) {
+            const series = [{ name: instSel.value ? instSel.value : '전체', n: mineD.n, values: mineD.values }];
+            if (instSel.value) {
+                const allD = domainAverages(periodRows);
+                if (allD.n > 0) series.push({ name: '전체 평균', n: allD.n, values: allD.values });
+            }
+            drawRadar(series);
+        }
+        const smokeVals = rows.map(r => num(r.q2_smoking)).filter(v => v !== null);
+        const smokers = smokeVals.filter(v => v > 0).length;
+        const behRows = rows.filter(r => num(r.beh_focusLoss) !== null || num(r.beh_signalExtra) !== null);
+        const left = behRows.filter(r => (num(r.beh_focusLoss) || 0) > 0).length;
+        const mashed = behRows.filter(r => (num(r.beh_signalExtra) || 0) >= 3).length;
+        const either = behRows.filter(r => (num(r.beh_focusLoss) || 0) > 0 || (num(r.beh_signalExtra) || 0) >= 3).length;
+        $('factors').innerHTML =
+            `<div class="factor"><div class="flabel">흡연 비율</div>` +
+            (smokeVals.length ? `<div class="fval">${pct(smokers, smokeVals.length)}<small>%</small></div><div class="fnote">응답 ${smokeVals.length}명 중 ${smokers}명이 하루 한 개비 이상 피웁니다.</div>` : `<div class="fnote">기록이 없습니다.</div>`) + `</div>` +
+            `<div class="factor"><div class="flabel">공격적 성향이 있는 어르신</div>` +
+            (behRows.length ? `<div class="fval">${either}<small>명 (${pct(either, behRows.length)}%)</small></div><div class="fnote">검사 중 화면을 벗어난 분 ${left}명 · 건너기를 계속 누른 분 ${mashed}명<br>(두 가지에 모두 해당하는 분은 한 번만 셉니다)</div>` : `<div class="fnote">기록이 없습니다.</div>`) + `</div>`;
 
         // 기관별 비교 (선택한 기간 안에서, 기관 필터와 무관하게 전체 기관을 보여줌)
         let scope = all;

@@ -394,6 +394,19 @@
         /* 모달 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-overlay.open { display: flex; animation: fadeIn 0.3s; }
+
+        /* [NEW] 검사 장소(기관) 선택 */
+        .inst-bar { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 2.5vh; padding: 10px 18px; border-radius: 50px; background: #f5f7fa; border: 2px solid #e3e7ec; font-size: clamp(16px, 2vw, 20px); color: #555; }
+        .inst-bar b { color: #2c3e50; }
+        .inst-change { font-family: 'Jua', sans-serif; font-size: clamp(16px, 2vw, 20px); padding: 6px 16px; border-radius: 50px; border: 2px solid #ffaa00; background: #fff; color: #d35400; cursor: pointer; }
+        .inst-item { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 18px; margin-bottom: 10px; border: 3px solid #eee; border-radius: 16px; background: #fff; font-size: 21px; font-family: 'Jua', sans-serif; color: #333; cursor: pointer; text-align: left; }
+        .inst-item small { font-family: 'Noto Sans KR', sans-serif; font-size: 15px; color: #888; white-space: nowrap; }
+        .inst-item.current { border-color: #ffaa00; background: #fff3e0; }
+        .inst-custom { display: flex; gap: 8px; margin-top: 6px; }
+        .inst-custom input { flex: 1; min-width: 0; font-size: 20px; padding: 12px 14px; border: 3px solid #eee; border-radius: 14px; font-family: inherit; }
+        .inst-custom input:focus { outline: none; border-color: #ffaa00; }
+        .inst-custom button { font-family: 'Jua', sans-serif; font-size: 20px; padding: 0 20px; border: none; border-radius: 14px; background: #ffaa00; color: #fff; cursor: pointer; }
+        #inst-status { font-size: 17px; color: #666; margin: 0 0 14px; line-height: 1.5; }
         /* 모달 박스 - 키보드 대응 */
         .modal-box { 
             background: white; 
@@ -508,6 +521,20 @@
         </div>
     </div>
 
+    <!-- [NEW] 검사 장소(기관) 선택 -->
+    <div id="inst-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="btn-close-modal" onclick="InstPicker.close()" aria-label="닫기"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-title"><i class="fa-solid fa-location-dot"></i> 검사 장소 선택</div>
+            <p id="inst-status">가까운 기관을 찾고 있습니다...</p>
+            <div id="inst-list"></div>
+            <div class="inst-custom">
+                <input type="text" id="inst-input" maxlength="40" placeholder="목록에 없으면 기관 이름 직접 입력" onkeydown="if(event.key==='Enter') InstPicker.useTyped()">
+                <button onclick="InstPicker.useTyped()">사용</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. 시작 -->
     <div class="slide-container active" id="page-start">
         <div class="center-box">
@@ -515,6 +542,7 @@
             <h1>어르신 교통안전 <span class="highlight">및 인지능력 진단</span></h1>
             <p>문제를 풀면 <strong>6대 인지 영역 분석</strong>과<br><strong>무의식적 행동 패턴</strong>을 분석해드립니다.</p>
             <button class="btn-start btn-action" onclick="app.start()">시작하기</button>
+            <div class="inst-bar"><i class="fa-solid fa-location-dot" style="color:#e67e22;"></i> 검사 장소: <b id="inst-name">선택 안 됨</b> <button class="inst-change" onclick="InstPicker.open()">변경</button></div>
             <p style="font-size: clamp(14px, 1.8vw, 17px); color: #888; margin-top: 2.5vh; font-weight: normal;">※ 검사 결과와 검사 장소(위치)는 이름 없이 저장되어 교육 개선에 활용됩니다.</p>
         </div>
     </div>
@@ -1590,6 +1618,92 @@
             if (page && page.classList.contains('active')) MatchTask.refresh();
         });
 
+        // ===== [NEW] 검사 장소(기관) 선택 =====
+        // 시트 '기관' 탭에 등록된 기관 중 이 기기에서 가장 가까운 3곳을 보여주고 고르게 함.
+        // 고른 이름은 이 기기에 기억되어 다음 검사에도 그대로 쓰이며, '변경'으로 바꿀 수 있음.
+        const InstPicker = {
+            KEY: 'silver-inst',
+            name: '',
+            pos: null,
+            places: null,
+            init() {
+                try { this.name = localStorage.getItem(this.KEY) || ''; } catch (e) { this.name = ''; }
+                this.show();
+                this.locate().then(() => this.loadPlaces()).then(() => {
+                    if (!this.name) this.open(); // 아직 고른 적이 없으면 처음 한 번 선택 창을 띄움
+                    else if (document.getElementById('inst-modal').classList.contains('open')) this.render();
+                });
+            },
+            show() {
+                document.getElementById('inst-name').innerText = this.name || '선택 안 됨';
+            },
+            locate() {
+                return new Promise(resolve => {
+                    if (!navigator.geolocation) return resolve();
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => { this.pos = { lat: p.coords.latitude, lng: p.coords.longitude }; resolve(); },
+                        () => resolve(),
+                        { enableHighAccuracy: true, timeout: 15000, maximumAge: 600000 }
+                    );
+                });
+            },
+            loadPlaces() {
+                if (!app.googleScriptURL) { this.places = []; return Promise.resolve(); }
+                return fetch(app.googleScriptURL + '?action=places&t=' + Date.now())
+                    .then(r => r.json())
+                    .then(d => { this.places = (d && d.ok && Array.isArray(d.places)) ? d.places : []; })
+                    .catch(() => { this.places = []; });
+            },
+            distance(a, b) {
+                const R = 6371000, rad = Math.PI / 180;
+                const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+                const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+                return 2 * R * Math.asin(Math.sqrt(h));
+            },
+            nearest() {
+                if (!this.pos || !this.places) return [];
+                return this.places
+                    .filter(p => p && p.name && isFinite(Number(p.lat)) && isFinite(Number(p.lng)) && String(p.lat) !== '' && String(p.lng) !== '')
+                    .map(p => ({ name: String(p.name), d: this.distance(this.pos, { lat: Number(p.lat), lng: Number(p.lng) }) }))
+                    .sort((a, b) => a.d - b.d)
+                    .slice(0, 3);
+            },
+            render() {
+                const status = document.getElementById('inst-status');
+                const list = document.getElementById('inst-list');
+                const esc = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+                const near = this.nearest();
+                const fmtD = (d) => d < 1000 ? Math.round(d) + 'm' : (d / 1000).toFixed(1) + 'km';
+                if (this.places === null) status.innerText = '가까운 기관을 찾고 있습니다...';
+                else if (!this.pos) status.innerText = '위치를 확인할 수 없어 가까운 기관을 찾지 못했습니다. 아래에 기관 이름을 직접 입력해 주세요.';
+                else if (near.length === 0) status.innerText = '등록된 기관이 아직 없습니다. 기관 이름을 입력하면 다음부터 목록에 나옵니다.';
+                else status.innerText = '이 기기에서 가까운 기관입니다. 검사하는 곳을 골라주세요.';
+                list.innerHTML = near.map(p =>
+                    `<button type="button" class="inst-item${p.name === this.name ? ' current' : ''}" data-name="${esc(p.name)}">${esc(p.name)} <small>약 ${fmtD(p.d)}</small></button>`).join('');
+                list.querySelectorAll('.inst-item').forEach(b => b.addEventListener('click', () => this.choose(b.dataset.name)));
+                const input = document.getElementById('inst-input');
+                if (this.name && !near.some(p => p.name === this.name)) input.value = this.name;
+            },
+            open() {
+                document.getElementById('inst-modal').classList.add('open');
+                this.render();
+                if (this.places === null) this.loadPlaces().then(() => this.render());
+            },
+            close() { document.getElementById('inst-modal').classList.remove('open'); },
+            choose(name) {
+                this.name = String(name || '').trim().slice(0, 40);
+                try { localStorage.setItem(this.KEY, this.name); } catch (e) {}
+                this.show();
+                this.close();
+                if (this.name) app.showToast('검사 장소: ' + this.name);
+            },
+            useTyped() {
+                const v = document.getElementById('inst-input').value.trim();
+                if (!v) { app.showToast('기관 이름을 입력해 주세요.'); return; }
+                this.choose(v);
+            }
+        };
+
         const app = {
             answers: { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 },
             totalSlides: 16,
@@ -1598,6 +1712,9 @@
             selectedSeason: "",
             // 날짜·계절 문제(Q7) 채점 결과
             orientation: { monthScore: 0, dayScore: 0, seasonScore: 0 },
+            // 문제마다 고른 보기 번호 (원래 순서 기준 1, 2, 3 ...)
+            choices: {},
+            lastOpt: '',
             // 인지 과제 결과 (memory·signal·match 는 0~1 비율, clock 은 0~10점)
             taskScores: { memory: 0, clock: 0, signal: 0, match: 0 },
             signalStats: { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 },
@@ -1611,6 +1728,15 @@
             googleScriptURL: "https://script.google.com/macros/s/AKfycbyZH5-1D0jagii1xk-PXb5LqirXRmgmtdHYvMY9nSpe2xVQZ3jzKmQ4Z3NfHtsyuV5rhw/exec", 
 
             init() {
+                // 보기마다 원래 번호(①=1, ②=2 ...)를 붙여 둠. 보기 순서를 섞어도 어떤 보기를 골랐는지 알 수 있음
+                document.querySelectorAll('.slide-container').forEach(page => {
+                    page.querySelectorAll('.btn-option').forEach((b, i) => { b.dataset.opt = i + 1; });
+                });
+                document.addEventListener('click', (e) => {
+                    const b = e.target.closest ? e.target.closest('.btn-option') : null;
+                    if (b) this.lastOpt = Number(b.dataset.opt) || '';
+                }, true);
+                InstPicker.init();
                 BehaviorTracker.init();
                 VideoSound.init();
                 this.showToast("앱이 준비되었습니다.");
@@ -1676,6 +1802,8 @@
                 this.inputStep = 'month';
                 this.selectedSeason = "";
                 this.orientation = { monthScore: 0, dayScore: 0, seasonScore: 0 };
+                this.choices = {};
+                this.lastOpt = '';
                 this.taskScores = { memory: 0, clock: 0, signal: 0, match: 0 };
                 this.signalStats = { correct: 0, commission: 0, omission: 0, presses: 0, extraPresses: 0 };
                 this.reportData = null; // 초기화
@@ -1863,6 +1991,8 @@
                 // 반응 시간은 영상이 없는 문제(Q9~Q12)에서만 측정 (영상 시청 시간이 섞이지 않도록)
                 if (qNum >= 9 && qNum <= 12) BehaviorTracker.recordReaction();
                 this.answers['q' + qNum] = score;
+                this.choices['q' + qNum] = this.lastOpt || '';
+                this.lastOpt = '';
                 if (qNum < this.totalSlides) this.goToSlide('q' + (qNum + 1));
                 else {
                     this.goToSlide('loading');
@@ -2105,6 +2235,7 @@
                 return {
                     recordId: this.recordId,   // 같은 검사의 재전송은 시트에서 같은 줄을 고쳐 씀
                     location: this.location,   // 검사 장소 (위도, 경도)
+                    institution: InstPicker.name || '',   // 검사 장소로 고른 기관 이름
                     timestamp: new Date().toLocaleString(),
                     isoTime: new Date().toISOString(),   // 기간별 통계용 (형식이 기기마다 달라지지 않는 시각)
                     phone: phone,
@@ -2144,7 +2275,12 @@
                     q13_clock: this.taskScores.clock,                          // 시계 그리기 0~10
                     q14_signal: this.signalStats.correct,                      // 신호등 맞게 반응한 횟수 0~10
                     q15_match: Math.round(this.taskScores.match * 4),          // 선 잇기 맞힌 개수 0~4
-                    q16_memory: Math.round(this.taskScores.memory * 3)         // 기억한 표지판 개수 0~3
+                    q16_memory: Math.round(this.taskScores.memory * 3),        // 기억한 표지판 개수 0~3
+                    // 교통 문제에서 고른 보기 번호 (①=1, ②=2 ...)
+                    q1_choice: this.choices.q1 || '', q3_choice: this.choices.q3 || '', q4_choice: this.choices.q4 || '',
+                    q5_choice: this.choices.q5 || '', q6_choice: this.choices.q6 || '', q8_choice: this.choices.q8 || '',
+                    q9_choice: this.choices.q9 || '', q10_choice: this.choices.q10 || '', q11_choice: this.choices.q11 || '',
+                    q12_choice: this.choices.q12 || ''
                 };
             },
 
