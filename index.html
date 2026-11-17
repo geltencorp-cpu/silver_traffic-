@@ -2106,6 +2106,7 @@
                     recordId: this.recordId,   // 같은 검사의 재전송은 시트에서 같은 줄을 고쳐 씀
                     location: this.location,   // 검사 장소 (위도, 경도)
                     timestamp: new Date().toLocaleString(),
+                    isoTime: new Date().toISOString(),   // 기간별 통계용 (형식이 기기마다 달라지지 않는 시각)
                     phone: phone,
                     // 안전 점수
                     safetyScore: r.safetyScore,
@@ -2131,7 +2132,19 @@
                     // 신호등 문제: [건너기]를 누른 전체 횟수 / 필요 없이 누른 횟수 / 빨간불에 누른 횟수
                     beh_signalPresses: r.behavior.signalPresses,
                     beh_signalExtra: r.behavior.signalExtraPresses,
-                    beh_signalRed: r.behavior.signalRedPresses
+                    beh_signalRed: r.behavior.signalRedPresses,
+                    // 문항별 결과 (인사이트 분석용)
+                    // 교통 문제: 10 = 정답, 5 = 부분 정답, 0 = 오답
+                    q1: this.answers.q1, q3: this.answers.q3, q4: this.answers.q4, q5: this.answers.q5, q6: this.answers.q6,
+                    q8: this.answers.q8, q9: this.answers.q9, q10: this.answers.q10, q11: this.answers.q11, q12: this.answers.q12,
+                    q2_smoking: this.answers.q2,                              // 흡연 단계 0(비흡연)~4(한 갑 이상)
+                    q7_month: this.orientation.monthScore === 8 ? 1 : 0,       // 월 맞힘 1 / 틀림 0
+                    q7_day: this.orientation.dayScore === 7 ? 1 : (this.orientation.dayScore > 0 ? 0.5 : 0), // 일 맞힘 1 / 하루 차이 0.5 / 틀림 0
+                    q7_season: this.orientation.seasonScore === 10 ? 1 : 0,    // 계절 맞힘 1 / 틀림 0
+                    q13_clock: this.taskScores.clock,                          // 시계 그리기 0~10
+                    q14_signal: this.signalStats.correct,                      // 신호등 맞게 반응한 횟수 0~10
+                    q15_match: Math.round(this.taskScores.match * 4),          // 선 잇기 맞힌 개수 0~4
+                    q16_memory: Math.round(this.taskScores.memory * 3)         // 기억한 표지판 개수 0~3
                 };
             },
 

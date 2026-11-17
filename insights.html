@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>어르신 교통안전 인사이트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --surface: #ffffff;
+            --page: #f0f2f5;
+            --text-primary: #2b2b2b;
+            --text-secondary: #5c5c5c;
+            --text-muted: #8a8a8a;
+            --line: #e6e6e6;
+            --track: #eef1f4;
+            --accent: #ffaa00;
+            --series: #2a78d6;       /* 막대 한 가지 색 (값의 크기만 표현) */
+            --good: #1e8e3e;
+            --warn: #b26a00;
+            --bad: #c5221f;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--page); font-family: 'Noto Sans KR', sans-serif; color: var(--text-primary); word-break: keep-all; }
+        .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+        h1 { font-family: 'Jua', sans-serif; font-size: clamp(28px, 4.5vw, 44px); margin: 0 0 6px; }
+        h2 { font-family: 'Jua', sans-serif; font-size: clamp(21px, 3vw, 28px); margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+        .sub { color: var(--text-secondary); font-size: 16px; margin: 0 0 16px; line-height: 1.5; }
+        .card { background: var(--surface); border-radius: 22px; padding: 22px; margin-top: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+        .head-card { border: 4px solid var(--accent); }
+
+        /* 잠금 화면 */
+        #gate { max-width: 460px; margin: 12vh auto 0; text-align: center; }
+        #gate input { width: 100%; font-size: 22px; padding: 14px 16px; border: 3px solid var(--line); border-radius: 14px; margin: 14px 0; text-align: center; font-family: inherit; }
+        #gate input:focus { outline: none; border-color: var(--accent); }
+        .btn { font-family: 'Jua', sans-serif; font-size: 22px; padding: 13px 34px; border: none; border-radius: 50px; background: var(--accent); color: #fff; cursor: pointer; box-shadow: 0 5px 0 #d48806; }
+        .btn:active { transform: translateY(5px); box-shadow: none; }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+        #gate-msg { min-height: 24px; color: var(--bad); font-weight: 700; margin-top: 14px; }
+
+        /* 필터 */
+        .filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; margin-top: 14px; }
+        .filters label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--text-secondary); font-weight: 700; }
+        .filters select { font-family: inherit; font-size: 17px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; background: #fff; min-width: 190px; }
+        .link-btn { background: none; border: 2px solid var(--line); border-radius: 12px; padding: 10px 14px; font-family: inherit; font-size: 15px; color: var(--text-secondary); cursor: pointer; }
+
+        /* 숫자 타일 */
+        .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-top: 14px; }
+        .tile { border: 2px solid var(--line); border-radius: 18px; padding: 16px; }
+        .tile .label { font-size: 15px; color: var(--text-secondary); font-weight: 700; }
+        .tile .value { font-size: 38px; font-weight: 900; line-height: 1.2; margin-top: 4px; }
+        .tile .value small { font-size: 17px; font-weight: 700; color: var(--text-muted); }
+        .tile .note { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+        .tile.hero .value { font-size: 54px; }
+
+        /* 가장 많이 틀린 / 맞힌 문제 */
+        .rank-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px; }
+        .rank-box { border-radius: 18px; padding: 16px; border: 2px solid var(--line); }
+        .rank-box h3 { margin: 0 0 10px; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .rank-box.bad h3 i { color: var(--bad); }
+        .rank-box.good h3 i { color: var(--good); }
+        .rank-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 17px; }
+        .rank-item:first-of-type { border-top: none; }
+        .rank-item b { font-weight: 900; white-space: nowrap; }
+
+        /* 가로 막대 */
+        .bars { margin-top: 12px; }
+        .bar-row { display: grid; grid-template-columns: minmax(130px, 230px) 1fr 64px; align-items: center; gap: 12px; padding: 9px 6px; border-radius: 10px; position: relative; }
+        .bar-row:hover, .bar-row:focus { background: #f7f9fb; outline: none; }
+        .bar-row .name { font-size: 16px; font-weight: 700; }
+        .bar-row .name small { display: block; font-weight: 400; color: var(--text-muted); font-size: 13px; }
+        .bar-track { height: 18px; background: var(--track); border-radius: 0 4px 4px 0; }
+        .bar-fill { height: 100%; background: var(--series); border-radius: 0 4px 4px 0; min-width: 2px; }
+        .bar-row .val { font-size: 17px; font-weight: 900; text-align: right; font-variant-numeric: tabular-nums; }
+        .bar-row .tip { display: none; position: absolute; left: 50%; bottom: calc(100% - 4px); transform: translateX(-50%); background: #222; color: #fff; font-size: 14px; padding: 8px 12px; border-radius: 10px; white-space: nowrap; z-index: 5; pointer-events: none; }
+        .bar-row:hover .tip, .bar-row:focus .tip { display: block; }
+        .axis { display: grid; grid-template-columns: minmax(130px, 230px) 1fr 64px; gap: 12px; padding: 0 6px; color: var(--text-muted); font-size: 12px; }
+        .axis div:nth-child(2) { display: flex; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 4px; }
+
+        /* 등급 분포 */
+        .dist { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 14px; }
+        .dist-box { border: 2px solid var(--line); border-radius: 18px; padding: 16px; }
+        .dist-box h3 { margin: 0 0 8px; font-size: 17px; }
+        .dist-line { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 17px; }
+        .dist-line:first-of-type { border-top: none; }
+        .dist-line .who { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+        .dist-line .who i.good { color: var(--good); } .dist-line .who i.warn { color: var(--warn); } .dist-line .who i.bad { color: var(--bad); }
+        .dist-line .num { font-weight: 900; font-variant-numeric: tabular-nums; }
+        .dist-line .num small { font-weight: 500; color: var(--text-muted); }
+
+        /* 표 */
+        .table-wrap { overflow-x: auto; margin-top: 12px; }
+        table { border-collapse: collapse; width: 100%; font-size: 16px; }
+        th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+        th { color: var(--text-secondary); font-size: 14px; white-space: nowrap; }
+        td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        td a { color: var(--series); }
+
+        .notice { background: #fff8e1; border-left: 6px solid var(--accent); border-radius: 10px; padding: 12px 14px; font-size: 15px; color: #6b5200; margin-top: 14px; line-height: 1.5; }
+        .empty { text-align: center; color: var(--text-muted); padding: 30px 0; font-size: 17px; }
+        .hidden { display: none !important; }
+        .print-only { display: none; }
+        @media print {
+            @page { size: A4; margin: 12mm; }
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: #fff; }
+            .wrap { max-width: none; padding: 0; }
+            .card { box-shadow: none; border: 1px solid var(--line); padding: 14px; margin-top: 10px; break-inside: avoid; }
+            .head-card { border: 2px solid var(--accent); }
+            .no-print, .filters, #unreg-card, #gate, .bar-row .tip { display: none !important; }
+            .print-only { display: block; }
+            table.print-only { display: table; }
+            h1 { font-size: 26px; } h2 { font-size: 19px; }
+            .tile .value { font-size: 28px; } .tile.hero .value { font-size: 36px; }
+            .bar-row { padding: 5px 6px; }
+            .tiles { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .tile { padding: 10px; }
+            #inst-print { font-size: 13px; }
+            #inst-print td:first-child { white-space: nowrap; }
+        }
+        @media (max-width: 560px) {
+            .bar-row, .axis { grid-template-columns: 1fr 56px; }
+            .bar-row .name { grid-column: 1 / -1; }
+            .axis div:first-child { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- 잠금 화면 -->
+    <div id="gate" class="card head-card">
+        <div style="font-size: 60px; color: var(--accent);"><i class="fa-solid fa-chart-column"></i></div>
+        <h1>인사이트</h1>
+        <p class="sub">어르신 교통안전 검사 결과를 모아 보는 관리자용 화면입니다.</p>
+        <form id="gate-form">
+            <input type="password" id="pw" placeholder="비밀번호" autocomplete="current-password" aria-label="비밀번호">
+            <button class="btn" id="gate-btn" type="submit">열기</button>
+        </form>
+        <div id="gate-msg" role="alert"></div>
+    </div>
+
+    <!-- 본문 -->
+    <div id="app" class="hidden">
+        <div class="card head-card">
+            <h1><i class="fa-solid fa-chart-column" style="color: var(--accent);"></i> 교통안전 인사이트</h1>
+            <p class="sub" id="updated"></p>
+            <div class="filters">
+                <label>기관 (검사 장소)
+                    <select id="f-inst"></select>
+                </label>
+                <label>기간
+                    <select id="f-period">
+                        <option value="all">전체</option>
+                        <option value="1">오늘</option>
+                        <option value="7">최근 7일</option>
+                        <option value="30">최근 30일</option>
+                    </select>
+                </label>
+                <button class="link-btn" id="reload"><i class="fa-solid fa-rotate-right"></i> 새로 불러오기</button>
+                <button class="link-btn" id="print"><i class="fa-solid fa-file-pdf"></i> PDF로 저장</button>
+                <button class="link-btn" id="logout"><i class="fa-solid fa-lock"></i> 잠그기</button>
+            </div>
+            <p class="sub print-only" id="print-scope" style="margin: 10px 0 0;"></p>
+            <div id="small-n" class="notice hidden"></div>
+        </div>
+
+        <div id="empty" class="card empty hidden">선택한 조건에 해당하는 검사 기록이 없습니다.</div>
+
+        <div id="content">
+            <div class="card">
+                <h2><i class="fa-solid fa-users" style="color:#2a78d6;"></i> 한눈에 보기</h2>
+                <div class="tiles" id="tiles"></div>
+                <div class="dist" id="dist"></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-clipboard-question" style="color:#e67e22;"></i> 교통 문제별 정답률</h2>
+                <p class="sub">정답률이 낮은 문제부터 보여줍니다. 막대에 손가락이나 마우스를 올리면 정답·부분 정답·오답 인원이 나옵니다.</p>
+                <div id="q-empty" class="empty hidden">문항별 기록이 있는 검사가 아직 없습니다.</div>
+                <div id="q-body">
+                    <div class="rank-grid" id="ranks"></div>
+                    <div class="bars" id="q-bars"></div>
+                    <div class="axis"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div><div></div></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-brain" style="color:#8e44ad;"></i> 인지 과제 결과</h2>
+                <p class="sub">각 과제에서 만점 대비 평균 몇 %를 얻었는지 보여줍니다.</p>
+                <div class="bars" id="c-bars"></div>
+                <div class="axis"><div></div><div><span>0%</span><span>50%</span><span>100%</span></div><div></div></div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fa-solid fa-person-walking" style="color:#c0392b;"></i> 생활 습관과 행동</h2>
+                <div class="tiles" id="b-tiles"></div>
+            </div>
+
+            <div class="card" id="inst-card">
+                <h2><i class="fa-solid fa-building" style="color:#16a085;"></i> 기관별 비교</h2>
+                <p class="sub no-print">위치가 같은 검사를 한 기관으로 묶었습니다.</p>
+                <div class="table-wrap no-print"><table id="inst-table"></table></div>
+                <!-- PDF(인쇄)용: 전국 평균 · 가장 우수한 기관(이름 가림) · 우리 기관 -->
+                <table id="inst-print" class="print-only"></table>
+                <p class="sub print-only" id="inst-print-note" style="margin: 8px 0 0; font-size: 13px;"></p>
+            </div>
+
+            <div class="card hidden" id="unreg-card">
+                <h2><i class="fa-solid fa-location-dot" style="color:#b26a00;"></i> 이름이 없는 검사 장소</h2>
+                <p class="sub">아래 좌표를 시트의 <b>'기관'</b> 탭에 기관명과 함께 적으면, 다음부터 그 이름으로 묶여 나옵니다. (반경은 비워 두면 300m)</p>
+                <div class="table-wrap"><table id="unreg-table"></table></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 검사 화면(index.html)과 같은 Apps Script 주소
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZH5-1D0jagii1xk-PXb5LqirXRmgmtdHYvMY9nSpe2xVQZ3jzKmQ4Z3NfHtsyuV5rhw/exec";
+
+    const QUESTIONS = [
+        ['q1', 'Q1', '초록불이 깜빡일 때'],
+        ['q3', 'Q3', '밤에 안전한 옷'],
+        ['q4', 'Q4', '버스에서 내릴 때'],
+        ['q5', 'Q5', '무단횡단'],
+        ['q6', 'Q6', '골목길 보행 방향'],
+        ['q8', 'Q8', '신호가 5초 남았을 때'],
+        ['q9', 'Q9', '횡단보도 표지판'],
+        ['q10', 'Q10', '교차로 황색 신호'],
+        ['q11', 'Q11', '비보호 좌회전'],
+        ['q12', 'Q12', '스쿨존 제한 속도']
+    ];
+    // [항목 키, 이름, 만점, 설명]
+    const COG_TASKS = [
+        ['q7_month', '오늘이 몇 월인지', 1, 'Q7 날짜'],
+        ['q7_day', '오늘이 며칠인지', 1, 'Q7 날짜'],
+        ['q7_season', '지금 계절', 1, 'Q7 계절'],
+        ['q16_memory', '표지판 기억', 3, 'Q16 기억력'],
+        ['q13_clock', '시계 그리기', 10, 'Q13 시공간'],
+        ['q14_signal', '초록불에만 건너기', 10, 'Q14 집행기능'],
+        ['q15_match', '그림과 이름 잇기', 4, 'Q15 언어']
+    ];
+    const DEFAULT_RADIUS = 300; // m
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const num = (v) => (v === '' || v === null || v === undefined || isNaN(Number(v))) ? null : Number(v);
+    const avg = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+    const pct = (part, whole) => whole ? Math.round(part / whole * 100) : 0;
+    const fmt1 = (v) => v === null ? '-' : (Math.round(v * 10) / 10).toString();
+
+    let DATA = { rows: [], institutions: [] };
+
+    // ---------- 위치 → 기관 ----------
+    function parseLocation(text) {
+        const m = /(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/.exec(String(text || ''));
+        return m ? { lat: Number(m[1]), lng: Number(m[2]) } : null;
+    }
+    function distance(a, b) { // 두 좌표 사이 거리 (m)
+        const R = 6371000, rad = Math.PI / 180;
+        const dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+        const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) ** 2;
+        return 2 * R * Math.asin(Math.sqrt(h));
+    }
+    function parseTime(row) {
+        if (row.isoTime) { const d = new Date(row.isoTime); if (!isNaN(d)) return d; }
+        const t = String(row.timestamp || '');
+        const k = /(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.?\s*(오전|오후)?\s*(\d{1,2})?:?(\d{2})?/.exec(t);
+        if (k) {
+            let h = Number(k[5] || 0);
+            if (k[4] === '오후' && h < 12) h += 12;
+            if (k[4] === '오전' && h === 12) h = 0;
+            return new Date(Number(k[1]), Number(k[2]) - 1, Number(k[3]), h, Number(k[6] || 0));
+        }
+        const d = new Date(t);
+        return isNaN(d) ? null : d;
+    }
+    function prepare(raw) {
+        const insts = (raw.institutions || []).map(i => ({ name: String(i.name || '').trim(), lat: num(i.lat), lng: num(i.lng), radius: num(i.radius) || DEFAULT_RADIUS }))
+            .filter(i => i.name && i.lat !== null && i.lng !== null);
+        const clusters = []; // 이름이 없는 장소 묶음
+        const rows = (raw.rows || []).filter(r => num(r.safetyScore) !== null).map(r => {
+            const row = Object.assign({}, r);
+            row._time = parseTime(r);
+            const pos = parseLocation(r.location);
+            if (!pos) { row._inst = '위치 없음'; return row; }
+            let best = null, bestD = Infinity;
+            insts.forEach(i => { const d = distance(pos, i); if (d <= i.radius && d < bestD) { best = i; bestD = d; } });
+            if (best) { row._inst = best.name; return row; }
+            let c = clusters.find(c => distance(pos, c) <= DEFAULT_RADIUS);
+            if (!c) { c = { lat: pos.lat, lng: pos.lng, count: 0, name: '이름 없는 장소 ' + (clusters.length + 1) }; clusters.push(c); }
+            c.count++;
+            row._inst = c.name;
+            return row;
+        });
+        return { rows, clusters };
+    }
+
+    // ---------- 통계 ----------
+    function questionStats(rows) {
+        return QUESTIONS.map(([key, no, title]) => {
+            const vals = rows.map(r => num(r[key])).filter(v => v !== null);
+            const right = vals.filter(v => v >= 10).length, part = vals.filter(v => v > 0 && v < 10).length;
+            return { key, no, title, n: vals.length, right, part, wrong: vals.length - right - part, rate: pct(right, vals.length) };
+        }).filter(q => q.n > 0);
+    }
+
+    function barRow(name, small, value, tip) {
+        return `<div class="bar-row" tabindex="0" role="img" aria-label="${esc(name)} ${value}%. ${esc(tip)}">
+            <div class="name">${esc(name)}${small ? `<small>${esc(small)}</small>` : ''}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${value}%"></div></div>
+            <div class="val">${value}%</div>
+            <div class="tip">${esc(tip)}</div>
+        </div>`;
+    }
+    function tile(label, value, unit, note, hero) {
+        return `<div class="tile${hero ? ' hero' : ''}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}<small>${esc(unit || '')}</small></div>${note ? `<div class="note">${esc(note)}</div>` : ''}</div>`;
+    }
+
+    function render() {
+        const { rows: all, clusters } = prepare(DATA);
+        const instSel = $('f-inst');
+        const keep = instSel.value;
+        const names = Array.from(new Set(all.map(r => r._inst))).sort((a, b) => a.localeCompare(b, 'ko'));
+        instSel.innerHTML = '<option value="">전체 기관</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+        if (names.includes(keep)) instSel.value = keep;
+
+        const days = $('f-period').value;
+        let rows = all;
+        if (instSel.value) rows = rows.filter(r => r._inst === instSel.value);
+        if (days !== 'all') {
+            const from = new Date(); from.setHours(0, 0, 0, 0); from.setDate(from.getDate() - (Number(days) - 1));
+            rows = rows.filter(r => r._time && r._time >= from);
+        }
+
+        const n = rows.length;
+        $('empty').classList.toggle('hidden', n > 0);
+        $('content').classList.toggle('hidden', n === 0);
+        const small = $('small-n');
+        small.classList.toggle('hidden', !(n > 0 && n < 10));
+        small.innerText = `참여자가 ${n}명뿐이라 한두 명의 결과에 따라 숫자가 크게 달라질 수 있습니다.`;
+        if (n === 0) return;
+
+        // 한눈에 보기
+        const safety = rows.map(r => num(r.safetyScore)).filter(v => v !== null);
+        const cog = rows.map(r => num(r.cognitiveScore)).filter(v => v !== null);
+        $('tiles').innerHTML =
+            tile('검사 참여자', n.toLocaleString(), '명', '', true) +
+            tile('평균 교통안전 점수', fmt1(avg(safety)), ' / 100점') +
+            tile('평균 인지 건강 점수', fmt1(avg(cog)), ' / 100점', cog.length < n ? `점수가 있는 ${cog.length}명 기준` : '') +
+            tile('상담 신청', rows.filter(r => r.hasPhone).length.toLocaleString(), '명', `참여자의 ${pct(rows.filter(r => r.hasPhone).length, n)}%`);
+
+        const band = (vals, cuts, labels) => {
+            const counts = [vals.filter(v => v >= cuts[0]).length, vals.filter(v => v >= cuts[1] && v < cuts[0]).length, vals.filter(v => v < cuts[1]).length];
+            const icons = [['fa-circle-check', 'good'], ['fa-triangle-exclamation', 'warn'], ['fa-circle-exclamation', 'bad']];
+            return labels.map((l, i) => `<div class="dist-line"><span class="who"><i class="fa-solid ${icons[i][0]} ${icons[i][1]}"></i>${esc(l)}</span><span class="num">${counts[i]}명 <small>(${pct(counts[i], vals.length)}%)</small></span></div>`).join('');
+        };
+        $('dist').innerHTML =
+            `<div class="dist-box"><h3>교통안전 등급</h3>${band(safety, [90, 70], ['매우 안전 (90점 이상)', '보통 (70~89점)', '위험 (70점 미만)'])}</div>` +
+            (cog.length ? `<div class="dist-box"><h3>인지 건강 등급</h3>${band(cog, [80, 60], ['양호 (80점 이상)', '주의 (60~79점)', '점검 권장 (60점 미만)'])}</div>` : '');
+
+        // 교통 문제별 정답률
+        const qs = questionStats(rows).sort((a, b) => a.rate - b.rate);
+        $('q-empty').classList.toggle('hidden', qs.length > 0);
+        $('q-body').classList.toggle('hidden', qs.length === 0);
+        if (qs.length) {
+            const item = (q) => `<div class="rank-item"><span>${esc(q.no)}. ${esc(q.title)}</span><b>정답률 ${q.rate}%</b></div>`;
+            const top = Math.min(3, Math.floor(qs.length / 2) || 1);
+            $('ranks').innerHTML =
+                `<div class="rank-box bad"><h3><i class="fa-solid fa-circle-xmark"></i> 가장 많이 틀린 문제</h3>${qs.slice(0, top).map(item).join('')}</div>` +
+                `<div class="rank-box good"><h3><i class="fa-solid fa-circle-check"></i> 가장 잘 맞힌 문제</h3>${qs.slice(-top).reverse().map(item).join('')}</div>`;
+            $('q-bars').innerHTML = qs.map(q => barRow(`${q.no}. ${q.title}`, `응답 ${q.n}명`, q.rate, `정답 ${q.right}명 · 부분 정답 ${q.part}명 · 오답 ${q.wrong}명`)).join('');
+        }
+
+        // 인지 과제
+        $('c-bars').innerHTML = COG_TASKS.map(([key, name, max, desc]) => {
+            const vals = rows.map(r => num(r[key])).filter(v => v !== null);
+            if (!vals.length) return '';
+            const mean = avg(vals);
+            const tip = max === 1 ? `맞힌 사람 ${vals.filter(v => v >= 1).length}명 / 응답 ${vals.length}명` : `평균 ${fmt1(mean)} / ${max} · 응답 ${vals.length}명`;
+            return barRow(name, desc, Math.round(mean / max * 100), tip);
+        }).join('') || '<div class="empty">인지 과제 기록이 있는 검사가 아직 없습니다.</div>';
+
+        // 생활 습관과 행동
+        const share = (key, test) => { const v = rows.map(r => num(r[key])).filter(x => x !== null); return v.length ? [pct(v.filter(test).length, v.length), v.length] : null; };
+        const bt = [];
+        const add = (label, s, note) => { if (s) bt.push(tile(label, s[0], '%', `${note} · 응답 ${s[1]}명`)); };
+        add('흡연하는 분', share('q2_smoking', v => v > 0), '하루 한 개비 이상');
+        add('빨간불에 누른 분', share('beh_signalRed', v => v > 0), '신호등 문제에서 1회 이상');
+        add('건너기를 계속 누른 분', share('beh_signalExtra', v => v >= 3), '불필요한 누름 3회 이상');
+        add('검사 중 화면을 벗어난 분', share('beh_focusLoss', v => v > 0), '1회 이상 이탈');
+        $('b-tiles').innerHTML = bt.join('') || '<div class="empty">행동 기록이 있는 검사가 아직 없습니다.</div>';
+
+        // 기관별 비교 (선택한 기간 안에서, 기관 필터와 무관하게 전체 기관을 보여줌)
+        let scope = all;
+        if (days !== 'all') { const from = new Date(); from.setHours(0, 0, 0, 0); from.setDate(from.getDate() - (Number(days) - 1)); scope = scope.filter(r => r._time && r._time >= from); }
+        const groups = {};
+        scope.forEach(r => (groups[r._inst] = groups[r._inst] || []).push(r));
+        const instRows = Object.keys(groups).map(name => {
+            const g = groups[name], q = questionStats(g).sort((a, b) => a.rate - b.rate);
+            return { name, n: g.length, safety: avg(g.map(r => num(r.safetyScore)).filter(v => v !== null)), cog: avg(g.map(r => num(r.cognitiveScore)).filter(v => v !== null)),
+                worst: q.length ? `${q[0].no}. ${q[0].title} (${q[0].rate}%)` : '-', best: q.length ? `${q[q.length - 1].no}. ${q[q.length - 1].title} (${q[q.length - 1].rate}%)` : '-' };
+        }).sort((a, b) => b.n - a.n);
+        $('inst-table').innerHTML = '<tr><th>기관</th><th class="n">참여자</th><th class="n">평균 안전 점수</th><th class="n">평균 인지 점수</th><th>가장 많이 틀린 문제 (정답률)</th><th>가장 잘 맞힌 문제 (정답률)</th></tr>' +
+            instRows.map(i => `<tr><td><b>${esc(i.name)}</b></td><td class="n">${i.n}명</td><td class="n">${fmt1(i.safety)}</td><td class="n">${fmt1(i.cog)}</td><td>${esc(i.worst)}</td><td>${esc(i.best)}</td></tr>`).join('');
+
+        // PDF(인쇄)용 비교표: 다른 기관 이름은 별표로 가리고, 고른 기관(우리 기관)만 이름을 보여줌
+        const MIN_N = 5; // 참여자가 너무 적은 기관은 '가장 우수한 기관' 후보에서 제외
+        const summary = (g) => {
+            const q = questionStats(g).sort((a, b) => a.rate - b.rate);
+            return { n: g.length, safety: avg(g.map(r => num(r.safetyScore)).filter(v => v !== null)), cog: avg(g.map(r => num(r.cognitiveScore)).filter(v => v !== null)),
+                worst: q.length ? `${q[0].no}. ${q[0].title} (${q[0].rate}%)` : '-', best: q.length ? `${q[q.length - 1].no}. ${q[q.length - 1].title} (${q[q.length - 1].rate}%)` : '-' };
+        };
+        const real = instRows.filter(i => i.name !== '위치 없음');
+        const pool = real.filter(i => i.n >= MIN_N).length ? real.filter(i => i.n >= MIN_N) : real;
+        const top = pool.slice().sort((a, b) => (b.safety || 0) - (a.safety || 0))[0];
+        const mine = instSel.value ? instRows.find(i => i.name === instSel.value) : null;
+        const line = (label, d) => `<tr><td><b>${esc(label)}</b></td><td class="n">${d.n}명</td><td class="n">${fmt1(d.safety)}</td><td class="n">${fmt1(d.cog)}</td><td>${esc(d.worst)}</td><td>${esc(d.best)}</td></tr>`;
+        let printRows = line('전국 평균', summary(scope));
+        if (top) printRows += line(mine && top.name === mine.name ? '가장 우수한 기관 (우리 기관)' : '가장 우수한 기관 (***)', top);
+        if (mine) printRows += line('우리 기관: ' + mine.name, mine);
+        $('inst-print').innerHTML = '<tr><th>구분</th><th class="n">참여자</th><th class="n">평균 안전 점수</th><th class="n">평균 인지 점수</th><th>가장 많이 틀린 문제 (정답률)</th><th>가장 잘 맞힌 문제 (정답률)</th></tr>' + printRows;
+        $('inst-print-note').innerText = '가장 우수한 기관은 평균 교통안전 점수가 가장 높은 기관입니다' + (pool.length !== real.length || real.some(i => i.n < MIN_N) ? ` (참여자 ${MIN_N}명 이상인 기관 중).` : '.') + ' 다른 기관의 이름은 표시하지 않습니다.';
+        const periodText = $('f-period').options[$('f-period').selectedIndex].text;
+        $('print-scope').innerText = `대상: ${instSel.value || '전체 기관'} · 기간: ${periodText} · 참여자 ${n}명`;
+
+        // 이름 없는 장소
+        $('unreg-card').classList.toggle('hidden', clusters.length === 0);
+        $('unreg-table').innerHTML = '<tr><th>표시 이름</th><th class="n">검사 수</th><th>위도</th><th>경도</th><th>지도</th></tr>' +
+            clusters.map(c => `<tr><td>${esc(c.name)}</td><td class="n">${c.count}건</td><td>${c.lat.toFixed(5)}</td><td>${c.lng.toFixed(5)}</td><td><a href="https://www.google.com/maps?q=${c.lat},${c.lng}" target="_blank" rel="noopener">지도에서 보기</a></td></tr>`).join('');
+    }
+
+    // ---------- 불러오기 ----------
+    async function load(pw) {
+        const res = await fetch(SCRIPT_URL + '?pw=' + encodeURIComponent(pw) + '&t=' + Date.now());
+        const data = await res.json();
+        if (!data || !data.ok) throw new Error((data && data.error) || '불러오지 못했습니다.');
+        return data;
+    }
+    async function open(pw, silent) {
+        $('gate-btn').disabled = true;
+        if (!silent) $('gate-msg').innerText = '';
+        try {
+            DATA = await load(pw);
+            sessionStorage.setItem('insight-pw', pw);
+            $('gate').classList.add('hidden');
+            $('app').classList.remove('hidden');
+            $('updated').innerText = `${new Date().toLocaleString('ko-KR')} 기준 · 전체 기록 ${DATA.rows.length.toLocaleString()}건`;
+            render();
+        } catch (err) {
+            sessionStorage.removeItem('insight-pw');
+            $('app').classList.add('hidden');
+            $('gate').classList.remove('hidden');
+            $('gate-msg').innerText = err.message === 'Failed to fetch' ? '서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.' : err.message;
+        } finally {
+            $('gate-btn').disabled = false;
+        }
+    }
+
+    $('gate-form').addEventListener('submit', (e) => { e.preventDefault(); const pw = $('pw').value; if (pw) open(pw); });
+    $('f-inst').addEventListener('change', render);
+    $('f-period').addEventListener('change', render);
+    $('reload').addEventListener('click', () => { const pw = sessionStorage.getItem('insight-pw'); if (pw) open(pw, true); });
+    $('print').addEventListener('click', () => window.print());
+    $('logout').addEventListener('click', () => { sessionStorage.removeItem('insight-pw'); DATA = { rows: [], institutions: [] }; $('pw').value = ''; $('app').classList.add('hidden'); $('gate').classList.remove('hidden'); });
+
+    const saved = sessionStorage.getItem('insight-pw');
+    if (saved) open(saved, true);
+</script>
+</body>
+</html>
