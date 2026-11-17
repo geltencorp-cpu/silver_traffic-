@@ -178,6 +178,47 @@
             box-shadow: 0 6px 0 #c0392b; transition: transform 0.1s; margin-top: 4vh; 
         }
         .btn-start:active { transform: translateY(6px); box-shadow: none; }
+
+        /* [NEW] 인지 과제 (표지판 기억 · 시계 그리기 · 신호등 · 선 잇기) */
+        .task-box { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; margin: auto 0; text-align: center; gap: 14px; padding-top: 40px; }
+        .task-box h2 { text-align: center; margin: 0; }
+        .task-guide { font-size: clamp(18px, 2.4vw, 24px); color: #2980b9; font-weight: bold; margin: 0; line-height: 1.5; }
+        .task-btn { font-size: clamp(22px, 3vw, 30px); padding: 14px 44px; margin-top: 4px; }
+        .task-btn:disabled { opacity: 0.35; cursor: default; }
+        .task-btn-sub { font-family: 'Jua', sans-serif; font-size: clamp(18px, 2.4vw, 24px); padding: 12px 26px; border-radius: 50px; border: 3px solid #bbb; background: #fff; color: #555; cursor: pointer; }
+        .task-btn-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; align-items: center; }
+
+        .sign-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 560px; }
+        .sign-item { background: #fff; border: 4px solid #eee; border-radius: 20px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Jua', sans-serif; font-size: clamp(18px, 2.4vw, 24px); color: #333; }
+        .sign-item svg { width: 100%; max-width: 130px; aspect-ratio: 1; display: block; }
+        button.sign-item { cursor: pointer; }
+        button.sign-item.selected { border-color: #ffaa00; background: #fff3e0; }
+        button.sign-item.selected::after { content: '✔'; position: absolute; top: -12px; right: -12px; width: 38px; height: 38px; border-radius: 50%; background: #e67e22; color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
+
+        #clock-canvas { width: min(400px, 78vw, 46vh); aspect-ratio: 1; touch-action: none; cursor: crosshair; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.12); }
+
+        .signal-stage { display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; max-width: 640px; }
+        .signal-light { background: #222; border-radius: 18px; padding: 10px; display: flex; flex-direction: column; gap: 10px; flex: none; }
+        .lamp { width: clamp(64px, 11vw, 90px); aspect-ratio: 1; border-radius: 50%; background: #444; color: #333; display: flex; align-items: center; justify-content: center; font-size: clamp(34px, 6vw, 48px); }
+        .lamp.red.on { background: #e74c3c; color: #fff; box-shadow: 0 0 25px #e74c3c; }
+        .lamp.green.on { background: #2ecc71; color: #fff; box-shadow: 0 0 25px #2ecc71; }
+        .signal-scene { flex: 1; height: clamp(150px, 26vw, 200px); border-radius: 18px; overflow: hidden; position: relative; background: #666; border: 3px solid #ccc; }
+        .signal-scene .zebra { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; background: repeating-linear-gradient(90deg, #fff 0 26px, #666 26px 52px); }
+        .walkers { position: absolute; bottom: 12%; left: 100%; font-size: clamp(48px, 9vw, 70px); white-space: nowrap; line-height: 1; }
+        .walkers.go { animation: walkAcross 2.2s linear forwards; }
+        @keyframes walkAcross { from { left: 100%; } to { left: -70%; } }
+        .signal-msg { position: absolute; top: 8px; left: 0; right: 0; text-align: center; font-family: 'Jua', sans-serif; font-size: clamp(18px, 2.6vw, 26px); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+        .signal-msg.bad { color: #ffd0cc; }
+        .btn-cross { font-family: 'Jua', sans-serif; font-size: clamp(28px, 4vw, 40px); padding: 18px 70px; border-radius: 50px; border: none; background: #ffaa00; color: #fff; box-shadow: 0 6px 0 #d48806; cursor: pointer; touch-action: manipulation; }
+        .btn-cross:active { transform: translateY(6px); box-shadow: none; }
+
+        .match-area { position: relative; display: flex; justify-content: space-between; width: 100%; max-width: 520px; }
+        .match-col { display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 2; }
+        .match-item { width: clamp(110px, 22vw, 150px); height: clamp(64px, 11vh, 84px); border: 4px solid #ddd; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Jua', sans-serif; font-size: clamp(22px, 3vw, 28px); color: #333; display: flex; align-items: center; justify-content: center; }
+        .match-item.pic { font-size: clamp(40px, 7vw, 54px); }
+        .match-item.linked { border-color: #3498db; }
+        .match-item.selected { border-color: #ffaa00; background: #fff3e0; }
+        #match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         
         .btn-option { 
             background: white; border: 3px solid #eee; 
@@ -476,6 +517,17 @@
         </div>
     </div>
 
+    <!-- [NEW] 기억 과제: 표지판 3개 외우기 (마지막 Q16에서 다시 물어봄) -->
+    <div class="slide-container" id="page-memo">
+        <button class="btn-prev" onclick="app.goToSlide('start')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="task-box">
+            <h2>먼저, 표지판 <span style="color:#e74c3c;">3개</span>를 기억하세요</h2>
+            <p class="task-guide"><i class="fa-solid fa-lightbulb"></i> 마지막에 다시 물어봅니다. 잘 봐두세요!</p>
+            <div class="sign-grid" id="memo-grid"></div>
+            <button class="btn-start btn-action task-btn" onclick="app.goToSlide('q1')">기억했어요</button>
+        </div>
+    </div>
+
     <!-- Q1 -->
     <div class="slide-container" id="page-q1">
         <button class="btn-prev" onclick="app.prev('q1')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
@@ -689,6 +741,68 @@
         </div>
     </div>
 
+    <!-- [NEW] Q13 시공간: 시계 그리기 -->
+    <div class="slide-container" id="page-q13">
+        <button class="btn-prev" onclick="app.prev('q13')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="task-box">
+            <h2>Q13. 시계에 <span style="color:#e74c3c;">10시 10분</span>을 그려주세요</h2>
+            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 손가락으로 짧은 바늘과 긴 바늘을 그리세요</p>
+            <canvas id="clock-canvas" width="600" height="600"></canvas>
+            <div class="task-btn-row">
+                <button class="task-btn-sub" onclick="ClockTask.clear()"><i class="fa-solid fa-eraser"></i> 다시 그리기</button>
+                <button class="btn-start btn-action task-btn" onclick="ClockTask.submit()">다 그렸어요</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- [NEW] Q14 집행기능: 초록불일 때만 누르기 -->
+    <div class="slide-container" id="page-q14">
+        <button class="btn-prev" onclick="app.prev('q14')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="task-box">
+            <h2>Q14. <span style="color:#27ae60;">초록불</span>일 때만 건너요!</h2>
+            <p class="task-guide">초록불이 켜지면 <span style="color:#d35400;">[건너기]</span>를 누르고,<br>빨간불이면 누르지 말고 기다리세요.</p>
+            <div class="signal-stage">
+                <div class="signal-light">
+                    <span id="lamp-red" class="lamp red"><i class="fa-solid fa-person"></i></span>
+                    <span id="lamp-green" class="lamp green"><i class="fa-solid fa-person-walking"></i></span>
+                </div>
+                <div class="signal-scene">
+                    <div class="zebra"></div>
+                    <div class="walkers" id="signal-walkers">🚶‍♀️🚶‍♂️🚶‍♀️</div>
+                    <div class="signal-msg" id="signal-msg"></div>
+                </div>
+            </div>
+            <div class="task-guide" id="signal-count" style="color:#555;"></div>
+            <button id="signal-start" class="btn-start btn-action task-btn" onclick="SignalTask.begin()">시작</button>
+            <button id="signal-press" class="btn-cross" style="display:none;" onpointerdown="SignalTask.press()">건너기</button>
+        </div>
+    </div>
+
+    <!-- [NEW] Q15 언어: 그림과 낱말 선으로 잇기 -->
+    <div class="slide-container" id="page-q15">
+        <button class="btn-prev" onclick="app.prev('q15')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="task-box">
+            <h2>Q15. 그림과 이름을 선으로 이어주세요</h2>
+            <p class="task-guide"><i class="fa-solid fa-hand-pointer"></i> 그림을 누른 다음, 맞는 이름을 누르세요</p>
+            <div class="match-area" id="match-area">
+                <svg id="match-lines"></svg>
+                <div class="match-col" id="match-pics"></div>
+                <div class="match-col" id="match-words"></div>
+            </div>
+            <button id="match-done" class="btn-start btn-action task-btn" onclick="MatchTask.submit()" disabled>다 이었어요</button>
+        </div>
+    </div>
+
+    <!-- [NEW] Q16 기억력: 처음에 본 표지판 고르기 -->
+    <div class="slide-container" id="page-q16">
+        <button class="btn-prev" onclick="app.prev('q16')"><i class="fa-solid fa-arrow-left"></i> 이전</button>
+        <div class="task-box">
+            <h2>Q16. 처음에 본 표지판 <span style="color:#e74c3c;">3개</span>를 골라주세요</h2>
+            <div class="sign-grid" id="recall-grid"></div>
+            <button id="recall-done" class="btn-start btn-action task-btn" onclick="RecallTask.submit()" disabled>다 골랐어요</button>
+        </div>
+    </div>
+
     <!-- Loading -->
     <div class="slide-container" id="page-loading">
         <div class="center-box">
@@ -764,7 +878,7 @@
                     <i class="fa-solid fa-brain"></i> 인지 건강 점검
                 </div>
                 <p style="font-size: 18px; color: #555; text-align: center; margin-bottom: 25px; line-height: 1.6;">
-                    날짜·계절 감각, 흡연 습관, 집중 유지를 살펴본 결과입니다.<br>
+                    날짜·계절, 기억력, 판단력, 흡연 습관 등 7가지를 살펴본 결과입니다.<br>
                     <span style="font-size: 16px; color: #888;">※ 참고용 생활 점검이며 의학적 진단이 아닙니다.</span>
                 </p>
 
@@ -812,8 +926,9 @@
             
             init() {
                 // 롱프레스 감지
-                const startPress = () => {
+                const startPress = (e) => {
                     if (this.isPressing) return;
+                    if (e && e.target.closest && e.target.closest('canvas')) return; // 시계 그리기는 제외
                     this.isPressing = true;
                     this.pressTimer = setTimeout(() => {
                         this.data.longPresses++;
@@ -826,7 +941,7 @@
                 };
 
                 // 빈 곳 터치 감지: 버튼·입력칸·영상 터치와 스크롤(손가락 이동)은 제외
-                const INTERACTIVE = 'button, input, label, a, .media-wrapper, #consent-modal';
+                const INTERACTIVE = 'button, input, label, a, canvas, .media-wrapper, #consent-modal';
                 let touch = null;
                 document.body.addEventListener('touchstart', (e) => {
                     const t = e.touches[0];
@@ -1042,14 +1157,334 @@
             }
         };
 
+        // ===== [NEW] 인지 과제 =====
+        const SIGNS = {
+            stop: { name: '정지', svg: '<svg viewBox="0 0 100 100"><polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill="#d62d20"/><polygon points="32,9 68,9 91,32 91,68 68,91 32,91 9,68 9,32" fill="none" stroke="#fff" stroke-width="2.5"/><text x="50" y="62" text-anchor="middle" font-size="32" font-weight="900" fill="#fff" font-family="sans-serif">정지</text></svg>' },
+            noentry: { name: '진입금지', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#d62d20"/><rect x="18" y="41" width="64" height="18" fill="#fff"/></svg>' },
+            straight: { name: '직진', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#1a4fb4"/><polygon points="50,14 74,44 59,44 59,84 41,84 41,44 26,44" fill="#fff"/></svg>' },
+            noparking: { name: '주차금지', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="41" fill="#1a4fb4" stroke="#d62d20" stroke-width="10"/><line x1="21" y1="21" x2="79" y2="79" stroke="#d62d20" stroke-width="10"/></svg>' },
+            slow: { name: '천천히', svg: '<svg viewBox="0 0 100 100"><polygon points="8,12 92,12 50,90" fill="#fff" stroke="#d62d20" stroke-width="9" stroke-linejoin="round"/><text x="50" y="40" text-anchor="middle" font-size="14" font-weight="900" fill="#111" font-family="sans-serif">천천히</text></svg>' },
+            speed50: { name: '최고속도 50', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="41" fill="#fff" stroke="#d62d20" stroke-width="10"/><text x="50" y="65" text-anchor="middle" font-size="42" font-weight="900" fill="#111" font-family="sans-serif">50</text></svg>' }
+        };
+        const MEMO_TARGETS = ['stop', 'noentry', 'straight'];
+
+        const shuffled = (arr) => {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        };
+
+        // 기억 과제 1단계: 표지판 3개 보여주기
+        const MemoTask = {
+            enter() {
+                document.getElementById('memo-grid').innerHTML = MEMO_TARGETS.map(k =>
+                    `<div class="sign-item">${SIGNS[k].svg}<span>${SIGNS[k].name}</span></div>`).join('');
+            }
+        };
+
+        // 기억 과제 2단계 (Q16): 6개 중 처음에 본 3개 고르기
+        const RecallTask = {
+            picked: [],
+            enter() {
+                this.picked = [];
+                const grid = document.getElementById('recall-grid');
+                grid.innerHTML = shuffled(Object.keys(SIGNS)).map(k =>
+                    `<button type="button" class="sign-item" data-key="${k}">${SIGNS[k].svg}</button>`).join('');
+                grid.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => this.toggle(btn)));
+                document.getElementById('recall-done').disabled = true;
+            },
+            toggle(btn) {
+                const key = btn.dataset.key;
+                if (this.picked.includes(key)) {
+                    this.picked = this.picked.filter(k => k !== key);
+                    btn.classList.remove('selected');
+                } else {
+                    if (this.picked.length >= 3) { app.showToast('3개만 고를 수 있어요. 바꾸려면 고른 것을 다시 누르세요.'); return; }
+                    this.picked.push(key);
+                    btn.classList.add('selected');
+                }
+                document.getElementById('recall-done').disabled = this.picked.length !== 3;
+            },
+            submit() {
+                if (this.picked.length !== 3) return;
+                const hits = this.picked.filter(k => MEMO_TARGETS.includes(k)).length;
+                app.taskScores.memory = hits / 3;
+                app.finishTask(16);
+            }
+        };
+
+        // 시공간 과제 (Q13): 시계에 10시 10분 그리기
+        const ClockTask = {
+            strokes: [], current: null, bound: false,
+            enter() {
+                const canvas = document.getElementById('clock-canvas');
+                if (!this.bound) {
+                    this.bound = true;
+                    const pos = (e) => {
+                        const r = canvas.getBoundingClientRect();
+                        // 시계 중심이 (0,0), 테두리가 반지름 1 인 좌표
+                        return { x: ((e.clientX - r.left) / r.width) * 2 - 1, y: ((e.clientY - r.top) / r.height) * 2 - 1 };
+                    };
+                    canvas.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+                        this.current = [pos(e)];
+                        this.strokes.push(this.current);
+                        this.draw();
+                    });
+                    canvas.addEventListener('pointermove', (e) => {
+                        if (!this.current) return;
+                        this.current.push(pos(e));
+                        this.draw();
+                    });
+                    const end = () => { this.current = null; };
+                    canvas.addEventListener('pointerup', end);
+                    canvas.addEventListener('pointercancel', end);
+                }
+                this.strokes = []; this.current = null; this.warned = false;
+                this.draw();
+            },
+            clear() { this.strokes = []; this.current = null; this.draw(); },
+            draw() {
+                const canvas = document.getElementById('clock-canvas');
+                const ctx = canvas.getContext('2d');
+                const W = canvas.width, C = W / 2, R = C - 8;
+                ctx.clearRect(0, 0, W, W);
+                ctx.beginPath(); ctx.arc(C, C, R, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff'; ctx.fill();
+                ctx.lineWidth = 10; ctx.strokeStyle = '#333'; ctx.stroke();
+                ctx.fillStyle = '#333'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.font = 'bold 54px "Noto Sans KR", sans-serif';
+                for (let n = 1; n <= 12; n++) {
+                    const a = (n * 30 - 90) * Math.PI / 180;
+                    ctx.fillText(String(n), C + R * 0.8 * Math.cos(a), C + R * 0.8 * Math.sin(a) + 3);
+                }
+                ctx.beginPath(); ctx.arc(C, C, 10, 0, Math.PI * 2); ctx.fill();
+
+                ctx.strokeStyle = '#1a4fb4'; ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                this.strokes.forEach(st => {
+                    ctx.beginPath();
+                    st.forEach((p, i) => {
+                        const x = C + p.x * C, y = C + p.y * C;
+                        if (i === 0) { ctx.moveTo(x, y); ctx.lineTo(x + 0.01, y); } else ctx.lineTo(x, y);
+                    });
+                    ctx.stroke();
+                });
+            },
+            // 그린 선에서 바늘(중심에서 뻗어 나간 방향과 길이)을 찾아냄
+            findHands() {
+                const maxR = new Array(36).fill(0), angAt = new Array(36).fill(0);
+                const mark = (x, y) => {
+                    const r = Math.hypot(x, y);
+                    if (r < 0.22) return;
+                    const ang = (Math.atan2(x, -y) * 180 / Math.PI + 360) % 360; // 12시 방향이 0도, 시계 방향
+                    const b = Math.floor(ang / 10) % 36;
+                    if (r > maxR[b]) { maxR[b] = r; angAt[b] = ang; }
+                };
+                this.strokes.forEach(st => {
+                    for (let i = 0; i < st.length; i++) {
+                        const a = st[i], b = st[Math.min(i + 1, st.length - 1)];
+                        const steps = Math.max(1, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / 0.02));
+                        for (let k = 0; k <= steps; k++) mark(a.x + (b.x - a.x) * k / steps, a.y + (b.y - a.y) * k / steps);
+                    }
+                });
+                const startBin = maxR.indexOf(0);
+                if (startBin === -1) return [{ ang: 0, len: 1, messy: true }]; // 온 방향에 다 그림
+                const hands = [];
+                let cur = null;
+                for (let k = 1; k <= 36; k++) {
+                    const b = (startBin + k) % 36;
+                    if (maxR[b] > 0) {
+                        if (!cur) { cur = { ang: angAt[b], len: maxR[b] }; hands.push(cur); }
+                        else if (maxR[b] > cur.len) { cur.ang = angAt[b]; cur.len = maxR[b]; }
+                    } else cur = null;
+                }
+                return hands.filter(h => h.len >= 0.3);
+            },
+            // 채점 (10점): 긴 바늘이 2를 가리킴 4, 짧은 바늘이 10을 가리킴 4, 바늘이 정확히 2개 1, 긴 바늘이 더 김 1
+            score() {
+                const hands = this.findHands();
+                if (hands.length === 0 || hands[0].messy) return 0;
+                const diff = (a, b) => { const d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; };
+                const pts = (d) => d <= 20 ? 4 : (d <= 28 ? 2 : 0); // 20도 이내 만점, 28도 이내 절반
+                const nearest = (target, exclude) => hands.filter(h => h !== exclude).sort((a, b) => diff(a.ang, target) - diff(b.ang, target))[0];
+                const minute = nearest(60, null);            // 10분 = 숫자 2 방향
+                const hour = nearest(305, minute) || null;   // 10시 10분의 짧은 바늘 = 숫자 10 조금 지남
+                const mPts = pts(diff(minute.ang, 60));
+                const hPts = hour ? pts(diff(hour.ang, 305)) : 0;
+                let total = mPts + hPts;
+                // 바늘 하나가 10 쪽에만 있는 경우: 짧은 바늘 점수로 인정
+                if (!hour && mPts === 0) total = pts(diff(minute.ang, 305));
+                if (hands.length === 2) total += 1;
+                if (hour && mPts > 0 && hPts > 0 && minute.len > hour.len * 1.05) total += 1;
+                return Math.min(10, total);
+            },
+            submit() {
+                if (this.strokes.length === 0 && !this.warned) {
+                    this.warned = true;
+                    app.showToast('시계 위에 손가락으로 바늘을 그려주세요.');
+                    return;
+                }
+                app.taskScores.clock = this.score();
+                app.finishTask(13);
+            }
+        };
+
+        // 집행기능 과제 (Q14): 초록불에만 누르기
+        const SignalTask = {
+            TOTAL: 10, GREENS: 6, LIGHT_MS: 2200, GAP_MS: 1000,
+            timers: [], running: false, seq: [], trial: -1, lightOn: false, pressed: false, stats: null,
+            el(id) { return document.getElementById(id); },
+            later(fn, ms) { this.timers.push(setTimeout(fn, ms)); },
+            stop() {
+                this.timers.forEach(clearTimeout);
+                this.timers = []; this.running = false; this.lightOn = false;
+            },
+            setLamp(color) {
+                this.el('lamp-red').classList.toggle('on', color === 'red');
+                this.el('lamp-green').classList.toggle('on', color === 'green');
+            },
+            say(text, bad) {
+                const m = this.el('signal-msg');
+                m.innerText = text; m.classList.toggle('bad', !!bad);
+            },
+            enter() {
+                this.stop();
+                this.setLamp(null); this.say('');
+                this.el('signal-walkers').classList.remove('go');
+                this.el('signal-count').innerText = '';
+                this.el('signal-start').style.display = '';
+                this.el('signal-press').style.display = 'none';
+            },
+            begin() {
+                this.stop();
+                const base = [];
+                for (let i = 0; i < this.TOTAL; i++) base.push(i < this.GREENS ? 'green' : 'red');
+                this.seq = shuffled(base);
+                this.stats = { correct: 0, commission: 0, omission: 0 };
+                this.running = true;
+                this.el('signal-start').style.display = 'none';
+                this.el('signal-press').style.display = '';
+                this.say('준비하세요');
+                this.later(() => this.next(0), 1200);
+            },
+            next(i) {
+                if (i >= this.TOTAL) return this.finish();
+                this.trial = i; this.pressed = false; this.lightOn = true;
+                this.el('signal-walkers').classList.remove('go');
+                this.say('');
+                this.setLamp(this.seq[i]);
+                this.el('signal-count').innerText = `${i + 1} / ${this.TOTAL}`;
+                this.later(() => this.endTrial(), this.LIGHT_MS);
+            },
+            press() {
+                if (!this.running || !this.lightOn || this.pressed) return;
+                this.pressed = true;
+                if (this.seq[this.trial] === 'green') {
+                    this.stats.correct++;
+                    this.el('signal-walkers').classList.add('go');
+                    this.say('잘하셨어요! 안전하게 건넙니다');
+                } else {
+                    this.stats.commission++;
+                    this.say('빨간불이에요! 기다려야 해요', true);
+                }
+            },
+            endTrial() {
+                this.lightOn = false;
+                this.setLamp(null);
+                if (!this.pressed) {
+                    if (this.seq[this.trial] === 'green') { this.stats.omission++; this.say('초록불을 놓쳤어요', true); }
+                    else { this.stats.correct++; this.say('잘 기다리셨어요'); }
+                }
+                this.later(() => this.next(this.trial + 1), this.GAP_MS);
+            },
+            finish() {
+                this.running = false;
+                this.el('signal-press').style.display = 'none';
+                this.say('끝났습니다. 수고하셨어요!');
+                app.taskScores.signal = this.stats.correct / this.TOTAL;
+                app.signalStats = this.stats;
+                this.later(() => app.finishTask(14), 1200);
+            }
+        };
+
+        // 언어 과제 (Q15): 그림과 이름을 선으로 잇기
+        const MatchTask = {
+            ITEMS: [
+                { key: 'bicycle', pic: '🚲', word: '자전거' },
+                { key: 'car', pic: '🚗', word: '자동차' },
+                { key: 'motorcycle', pic: '🏍️', word: '오토바이' },
+                { key: 'kickboard', pic: '🛴', word: '킥보드' }
+            ],
+            links: {}, selected: null,
+            enter() {
+                this.links = {}; this.selected = null;
+                const make = (side, list) => list.map(it =>
+                    `<button type="button" class="match-item ${side}" data-side="${side}" data-key="${it.key}">${side === 'pic' ? it.pic : it.word}</button>`).join('');
+                document.getElementById('match-pics').innerHTML = make('pic', shuffled(this.ITEMS));
+                document.getElementById('match-words').innerHTML = make('word', shuffled(this.ITEMS));
+                document.querySelectorAll('#match-area .match-item').forEach(btn => btn.addEventListener('click', () => this.tap(btn)));
+                this.refresh();
+            },
+            tap(btn) {
+                const side = btn.dataset.side, key = btn.dataset.key;
+                if (this.selected && this.selected.side !== side) {
+                    const picKey = side === 'pic' ? key : this.selected.key;
+                    const wordKey = side === 'word' ? key : this.selected.key;
+                    // 이미 다른 그림과 이어진 이름이면 그 선은 지움
+                    Object.keys(this.links).forEach(p => { if (this.links[p] === wordKey) delete this.links[p]; });
+                    this.links[picKey] = wordKey;
+                    this.selected = null;
+                } else if (this.selected && this.selected.key === key) {
+                    this.selected = null;
+                } else {
+                    this.selected = { side, key };
+                }
+                this.refresh();
+            },
+            refresh() {
+                const area = document.getElementById('match-area');
+                if (!area) return;
+                const linkedWords = Object.values(this.links);
+                area.querySelectorAll('.match-item').forEach(btn => {
+                    const side = btn.dataset.side, key = btn.dataset.key;
+                    btn.classList.toggle('selected', !!this.selected && this.selected.side === side && this.selected.key === key);
+                    btn.classList.toggle('linked', side === 'pic' ? key in this.links : linkedWords.includes(key));
+                });
+                const box = area.getBoundingClientRect();
+                const find = (side, key) => area.querySelector(`.match-item[data-side="${side}"][data-key="${key}"]`).getBoundingClientRect();
+                document.getElementById('match-lines').innerHTML = Object.keys(this.links).map(p => {
+                    const a = find('pic', p), b = find('word', this.links[p]);
+                    return `<line x1="${a.right - box.left}" y1="${a.top + a.height / 2 - box.top}" x2="${b.left - box.left}" y2="${b.top + b.height / 2 - box.top}" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>`;
+                }).join('');
+                document.getElementById('match-done').disabled = Object.keys(this.links).length !== this.ITEMS.length;
+            },
+            submit() {
+                if (Object.keys(this.links).length !== this.ITEMS.length) return;
+                const correct = Object.keys(this.links).filter(p => this.links[p] === p).length;
+                app.taskScores.match = correct / this.ITEMS.length;
+                app.finishTask(15);
+            }
+        };
+        window.addEventListener('resize', () => {
+            const page = document.getElementById('page-q15');
+            if (page && page.classList.contains('active')) MatchTask.refresh();
+        });
+
         const app = {
             answers: { q1:0, q2:0, q3:0, q4:0, q5:0, q6:0, q7:0, q8:0, q9:0, q10:0, q11:0, q12:0 },
-            totalSlides: 12,
+            totalSlides: 16,
             dateInput: { month: "", day: "" },
             inputStep: 'month',
             selectedSeason: "",
             // 날짜·계절 문제(Q7) 채점 결과
             orientation: { monthScore: 0, dayScore: 0, seasonScore: 0 },
+            // 인지 과제 결과 (memory·signal·match 는 0~1 비율, clock 은 0~10점)
+            taskScores: { memory: 0, clock: 0, signal: 0, match: 0 },
+            signalStats: { correct: 0, commission: 0, omission: 0 },
             // [NEW] 결과 데이터 저장용
             reportData: null,
             // [NEW] 구글 Apps Script Web App URL (여기에 복사한 URL을 넣으세요!)
@@ -1087,7 +1522,7 @@
                 
                 this.resetVariables();
                 this.shuffleOptions();
-                this.goToSlide('q1');
+                this.goToSlide('memo'); // 표지판 3개를 먼저 보여준 뒤 Q1 시작
             },
 
             resetVariables() {
@@ -1096,6 +1531,8 @@
                 this.inputStep = 'month';
                 this.selectedSeason = "";
                 this.orientation = { monthScore: 0, dayScore: 0, seasonScore: 0 };
+                this.taskScores = { memory: 0, clock: 0, signal: 0, match: 0 };
+                this.signalStats = { correct: 0, commission: 0, omission: 0 };
                 this.reportData = null; // 초기화
                 
                 ['spring', 'summer', 'autumn', 'winter'].forEach(s => {
@@ -1187,27 +1624,27 @@
                 const inputM = parseInt(this.dateInput.month || 0);
                 const inputD = parseInt(this.dateInput.day || 0);
 
-                // 날짜 (40점): 월 20점 + 일 20점
-                let monthScore = (inputM === curM) ? 20 : 0;
-                let dayScore = (inputD === curD) ? 20 : 0;
+                // 날짜 (15점): 월 8점 + 일 7점
+                let monthScore = (inputM === curM) ? 8 : 0;
+                let dayScore = (inputD === curD) ? 7 : 0;
 
-                // 하루 차이는 월 20점 + 일 10점 (월말·월초, 연말·연초 포함)
+                // 하루 차이는 월 8점 + 일 4점 (월말·월초, 연말·연초 포함)
                 if (inputM >= 1 && inputM <= 12 && inputD >= 1 && !(inputM === curM && inputD === curD)) {
                     const typed = new Date(today.getFullYear(), inputM - 1, inputD);
                     if (typed.getMonth() === inputM - 1) {
                         const base = new Date(today.getFullYear(), today.getMonth(), curD);
                         let diff = Math.round(Math.abs(typed - base) / 86400000);
                         if (diff > 300) diff = Math.abs(diff - 365); // 12월 31일 ↔ 1월 1일
-                        if (diff <= 1) { monthScore = 20; dayScore = 10; }
+                        if (diff <= 1) { monthScore = 8; dayScore = 4; }
                     }
                 }
 
-                // 계절 (20점): 계절이 바뀌는 앞뒤 열흘은 양쪽 계절 모두 정답
+                // 계절 (10점): 계절이 바뀌는 앞뒤 열흘은 양쪽 계절 모두 정답
                 const seasonOf = (m) => (m >= 3 && m <= 5) ? "spring" : (m >= 6 && m <= 8) ? "summer" : (m >= 9 && m <= 11) ? "autumn" : "winter";
                 const okSeasons = [seasonOf(curM)];
                 if (curD <= 10) okSeasons.push(seasonOf(curM === 1 ? 12 : curM - 1));
                 if (curD >= 21) okSeasons.push(seasonOf(curM === 12 ? 1 : curM + 1));
-                const seasonScore = okSeasons.includes(this.selectedSeason) ? 20 : 0;
+                const seasonScore = okSeasons.includes(this.selectedSeason) ? 10 : 0;
 
                 this.orientation = { monthScore, dayScore, seasonScore };
                 this.answers['q7'] = monthScore + dayScore + seasonScore;
@@ -1234,6 +1671,7 @@
 
             goToSlide(id) {
                 VideoSound.detach();
+                SignalTask.stop();
                 document.querySelectorAll('.slide-container').forEach(el => {
                     el.classList.remove('active');
                     const iframe = el.querySelector('iframe');
@@ -1243,6 +1681,8 @@
                 if (target) {
                     target.classList.add('active');
                     BehaviorTracker.startTimer();
+                    const tasks = { memo: MemoTask, q13: ClockTask, q14: SignalTask, q15: MatchTask, q16: RecallTask };
+                    if (tasks[id]) tasks[id].enter();
                     const iframe = target.querySelector('iframe');
                     if (iframe && iframe.dataset.src) {
                         VideoSound.attach(iframe);
@@ -1258,16 +1698,25 @@
             },
 
             prev(currentId) {
-                if(currentId === 'q1') this.goToSlide('start');
+                if(currentId === 'q1') this.goToSlide('memo');
                 else {
                     const prevNum = parseInt(currentId.substring(1)) - 1;
                     this.goToSlide('q' + prevNum);
                 }
             },
 
+            // 인지 과제(Q13~Q16)를 마쳤을 때 다음으로 이동
+            finishTask(qNum) {
+                if (qNum < this.totalSlides) this.goToSlide('q' + (qNum + 1));
+                else {
+                    this.goToSlide('loading');
+                    setTimeout(() => this.calcResult(), 2000);
+                }
+            },
+
             answer(qNum, score) {
                 // 반응 시간은 영상이 없는 문제(Q9~Q12)에서만 측정 (영상 시청 시간이 섞이지 않도록)
-                if (qNum >= 9) BehaviorTracker.recordReaction();
+                if (qNum >= 9 && qNum <= 12) BehaviorTracker.recordReaction();
                 this.answers['q' + qNum] = score;
                 if (qNum < this.totalSlides) this.goToSlide('q' + (qNum + 1));
                 else {
@@ -1309,24 +1758,30 @@
                 const SLOW_MS = 20000; // 글 문제를 읽고 답하는 데 평균 20초 초과
                 const FAST_MS = 800;
 
-                // ===== 3. 인지 건강 점수: 날짜 40 + 계절 20 + 흡연 20 + 집중 유지 20 = 100점 =====
+                // ===== 3. 인지 건강 점수 (100점) =====
+                // 날짜·계절 25 + 기억력 20 + 집행기능 15 + 시공간 10 + 언어 10 + 흡연 10 + 집중 유지 10
                 const smokeLevel = this.answers.q2;
                 const o = this.orientation;
+                const t = this.taskScores;
                 const cognitive = {
-                    date: o.monthScore + o.dayScore,
-                    season: o.seasonScore,
-                    smoking: Math.max(0, 20 - smokeLevel * 5),
-                    focus: Math.max(0, 20 - focusLoss * 5 - (bd.multiTaps >= 4 ? 5 : 0))
+                    orientation: o.monthScore + o.dayScore + o.seasonScore,
+                    memory: Math.round(t.memory * 20),
+                    executive: Math.round(t.signal * 15),
+                    visuospatial: t.clock,
+                    language: Math.round(t.match * 10),
+                    smoking: Math.round(10 - smokeLevel * 2.5),
+                    focus: Math.max(0, 10 - focusLoss * 3 - (bd.multiTaps >= 4 ? 3 : 0))
                 };
-                const cognitiveScore = cognitive.date + cognitive.season + cognitive.smoking + cognitive.focus;
-                const monthWrong = o.monthScore < 20;
-                const seasonWrong = o.seasonScore < 20;
+                const cognitiveScore = Object.values(cognitive).reduce((a, b) => a + b, 0);
+                const monthWrong = o.monthScore < 8;
+                const seasonWrong = o.seasonScore < 10;
 
                 // [NEW] 데이터 저장용 객체 생성
                 this.reportData = {
                     safetyScore: finalSafetyScore,
                     cognitiveScore: cognitiveScore,
                     cognitive: cognitive,
+                    orientationParts: { date: o.monthScore + o.dayScore, season: o.seasonScore },
                     behavior: {
                         avgReaction: Math.round(avgReaction),
                         missedTaps: bd.missedTaps,
@@ -1353,11 +1808,17 @@
                 if (monthWrong || seasonWrong) {
                     riskAnalysis.push("• <strong>[날짜·계절 감각]</strong> 날짜나 계절이 헷갈리면 <u style='color:#c62828;'>해가 지는 시간이나 길이 어는 때를 놓치기 쉽습니다.</u> 외출 전에 달력과 날씨를 확인하세요.");
                 }
-                if (cognitive.focus < 15) {
+                if (cognitive.focus < 8) {
                     let reasons = [];
                     if (focusLoss > 0) reasons.push(`검사 중 화면 이탈 ${focusLoss}회`);
                     if (bd.multiTaps >= 4) reasons.push(`버튼 연타 ${bd.multiTaps}회`);
                     riskAnalysis.push(`• <strong>[집중 유지]</strong> <span style='color:#d35400; font-size:0.9em;'>(${reasons.join(', ')})</span><br>주변 상황을 놓치기 쉽습니다. <u style='color:#c62828;'>길을 건널 때는 멈춰 서서 좌우를 끝까지 살핀 뒤</u> 건너세요.`);
+                }
+                if (this.signalStats.commission >= 2) {
+                    riskAnalysis.push(`• <strong>[신호 지키기]</strong> <span style='color:#d35400; font-size:0.9em;'>(빨간불에 ${this.signalStats.commission}회 누름)</span><br>마음이 급하면 신호를 놓치기 쉽습니다. <u style='color:#c62828;'>초록불을 눈으로 확인한 뒤에</u> 건너세요.`);
+                }
+                if (cognitive.visuospatial < 6) {
+                    riskAnalysis.push("• <strong>[거리·방향 감각]</strong> 다가오는 차가 실제보다 멀게 느껴질 수 있습니다. <u style='color:#c62828;'>차가 완전히 멈춘 것을 확인하고</u> 건너세요.");
                 }
                 if (smokeLevel > 0) {
                     riskAnalysis.push("• <strong>[흡연 습관]</strong> 흡연은 뇌혈관 건강에 부담을 주어 인지 건강에 좋지 않습니다. <u style='color:#c62828;'>걸으면서 담배를 피우면 주변을 살피기 어려우니</u> 길에서는 삼가세요.");
@@ -1379,7 +1840,7 @@
                     riskBox.style.borderLeftColor = "#2e7d32";
                     riskTitle.innerHTML = "<i class='fa-solid fa-shield-heart'></i> 인지 건강과 보행 안전";
                     riskTitle.style.color = "#2e7d32";
-                    riskText.innerHTML = "<strong>✅ 날짜·계절 감각과 집중 상태가 양호합니다.</strong><br>지금처럼 주변을 잘 살피며 안전하게 다니세요.";
+                    riskText.innerHTML = "<strong>✅ 인지 건강 점검 결과가 양호합니다.</strong><br>지금처럼 주변을 잘 살피며 안전하게 다니세요.";
                 }
                 
                 // 3) 오답 풀이
@@ -1417,7 +1878,7 @@
                 else gradeHtml = "<span style='color:#c0392b; font-weight:bold;'>🔔 점검 권장</span><br>아래 항목을 확인하고 생활 습관을 점검해 보세요.";
                 document.getElementById('cognitive-grade').innerHTML = gradeHtml;
 
-                const order = ['date', 'season', 'smoking', 'focus'];
+                const order = ['orientation', 'memory', 'executive', 'visuospatial', 'language', 'smoking', 'focus'];
                 let cHtmlBody = `<div class="cognitive-grid">`;
                 order.forEach(key => cHtmlBody += this.createCognitiveCard(key, cognitive[key]));
                 cHtmlBody += `</div>`;
@@ -1429,8 +1890,12 @@
                 if(smokeLevel > 0) {
                     cSolHtml += this.createCard('habit', 'fa-ban-smoking', '#c0392b', '금연 실천', '담배 연기는 뇌혈관을<br>좁게 만듭니다.', '금연은 인지 건강을 지키는 좋은 습관입니다.');
                 }
-                if(cognitive.date < 40 || seasonWrong) cSolHtml += this.createCard('activity', 'fa-calendar-check', '#e67e22', '달력 보기', '매일 아침 달력을 보며<br>날짜와 계절을 확인하세요.', '');
-                if(cognitive.focus < 15) cSolHtml += this.createCard('activity', 'fa-eye', '#3498db', '집중력 기르기', '한 번에 하나씩 하는<br>습관을 가져보세요.', '');
+                if(cognitive.orientation < 25) cSolHtml += this.createCard('activity', 'fa-calendar-check', '#e67e22', '달력 보기', '매일 아침 달력을 보며<br>날짜와 계절을 확인하세요.', '');
+                if(cognitive.memory < 20) cSolHtml += this.createCard('activity', 'fa-note-sticky', '#f1c40f', '메모 습관', '중요한 것은 적어두고<br>자주 확인하세요.', '');
+                if(cognitive.executive < 12) cSolHtml += this.createCard('activity', 'fa-hand-paper', '#e74c3c', '3초 멈춤', '행동하기 전에<br>3초만 더 생각하세요.', '');
+                if(cognitive.visuospatial < 8) cSolHtml += this.createCard('activity', 'fa-map-location-dot', '#9b59b6', '길 익히기', '익숙한 길로 다니고<br>주변 건물을 눈여겨보세요.', '');
+                if(cognitive.language < 8) cSolHtml += this.createCard('activity', 'fa-comments', '#1abc9c', '대화하기', '가족, 친구들과 자주<br>이야기를 나누세요.', '');
+                if(cognitive.focus < 8) cSolHtml += this.createCard('activity', 'fa-eye', '#3498db', '집중력 기르기', '한 번에 하나씩 하는<br>습관을 가져보세요.', '');
 
                 if(cSolHtml === "") cSolHtml = this.createCard('activity', 'fa-brain', '#27ae60', '뇌 건강', '지금처럼 규칙적인<br>생활을 이어가세요!', '');
                 cGrid.innerHTML = cSolHtml;
@@ -1442,6 +1907,8 @@
                 if (focusLoss > 0) {
                     bHtml += this.createBehaviorCard('fa-compress', '#9b59b6', '화면 이탈', `검사 중 화면을 ${focusLoss}회 벗어나거나 축소하셨습니다.<br><strong>[주의]</strong> 길을 건널 때는 한 가지에만 집중하세요.`, 'high');
                 }
+                if (this.signalStats.commission > 0) bHtml += this.createBehaviorCard('fa-traffic-light', '#e74c3c', '빨간불에 누름', `신호등 문제에서 빨간불에 ${this.signalStats.commission}회 누르셨습니다.<br><strong>[주의]</strong> 서두르지 말고 초록불을 확인한 뒤 건너세요.`, 'high');
+                if (this.signalStats.omission >= 2) bHtml += this.createBehaviorCard('fa-hourglass-half', '#f39c12', '초록불을 놓침', `신호등 문제에서 초록불을 ${this.signalStats.omission}회 놓치셨습니다.<br><strong>[주의]</strong> 초록불이 켜지자마자 건너기 시작해야 시간이 넉넉합니다.`, 'high');
                 if (bd.multiTaps >= 4) bHtml += this.createBehaviorCard('fa-bolt', '#e74c3c', '서두르는 습관 (연타)', `버튼을 연달아 ${bd.multiTaps}회 누르셨습니다.<br><strong>[주의]</strong> 신호가 바뀌기 전에 서둘러 건너려는 행동으로 이어질 수 있습니다.`, 'high');
                 if (avgReaction > SLOW_MS) bHtml += this.createBehaviorCard('fa-hourglass-end', '#f39c12', '답하는 데 걸린 시간', `문제당 평균 ${(avgReaction/1000).toFixed(0)}초가 걸렸습니다.<br><strong>[주의]</strong> 길을 건널 때는 신호가 넉넉히 남았을 때 출발하세요.`, 'high');
                 else if (avgReaction > 0 && avgReaction < FAST_MS) bHtml += this.createBehaviorCard('fa-person-running', '#e67e22', '성급한 판단', `문제를 매우 빠르게(${(avgReaction/1000).toFixed(1)}초) 답하셨습니다.<br><strong>[주의]</strong> 좌우를 살피지 않고 길을 건널 위험이 있습니다.`, 'high');
@@ -1487,19 +1954,20 @@
                     phone: phone,
                     // 안전 점수
                     safetyScore: this.reportData.safetyScore,
-                    // 인지 건강 점수 (합계 100: 날짜 40 + 계절 20 + 흡연 20 + 집중 20)
+                    // 인지 건강 점수 (합계 100)
                     cognitiveScore: this.reportData.cognitiveScore,
-                    cog_date: this.reportData.cognitive.date,
-                    cog_season: this.reportData.cognitive.season,
-                    cog_smoking: this.reportData.cognitive.smoking,
-                    cog_focus: this.reportData.cognitive.focus,
-                    // 기존 시트 열과의 호환용 (100점 환산). 더 이상 계산하지 않는 영역은 빈 값
-                    cog_orientation: Math.round((this.reportData.cognitive.date + this.reportData.cognitive.season) / 60 * 100),
-                    cog_attention: this.reportData.cognitive.focus * 5,
-                    cog_memory: "",
-                    cog_visuospatial: "",
-                    cog_executive: "",
-                    cog_language: "",
+                    // 시트의 기존 열 제목(날짜 40·계절 20·흡연 20·집중 20)에 맞춰 환산해서 전송
+                    cog_date: Math.round(this.reportData.orientationParts.date / 15 * 40),
+                    cog_season: this.reportData.orientationParts.season * 2,
+                    cog_smoking: this.reportData.cognitive.smoking * 2,
+                    cog_focus: this.reportData.cognitive.focus * 2,
+                    // 6개 영역은 100점 환산
+                    cog_orientation: this.reportData.cognitive.orientation * 4,
+                    cog_memory: this.reportData.cognitive.memory * 5,
+                    cog_attention: this.reportData.cognitive.focus * 10,
+                    cog_visuospatial: this.reportData.cognitive.visuospatial * 10,
+                    cog_executive: Math.round(this.reportData.cognitive.executive / 15 * 100),
+                    cog_language: this.reportData.cognitive.language * 10,
                     // 행동 패턴
                     beh_avgReaction: this.reportData.behavior.avgReaction,
                     beh_missedTaps: this.reportData.behavior.missedTaps,
@@ -1540,13 +2008,19 @@
 
             createCognitiveCard(key, score) {
                 const info = {
-                    date: { name: '날짜 알기', icon: 'fa-calendar-day', max: 40, meaning: '오늘이 몇 월 며칠인지 아는 능력',
-                        good: "오늘 날짜를 정확히 알고 계십니다.", mid: "날짜가 조금 헷갈리셨네요. 달력을 자주 보는 습관이 도움이 됩니다.", bad: "날짜 감각이 흐릿합니다. 매일 아침 달력을 확인하세요." },
-                    season: { name: '계절 알기', icon: 'fa-leaf', max: 20, meaning: '지금이 어느 계절인지 아는 능력',
-                        good: "계절을 정확히 알고 계십니다.", mid: "", bad: "계절이 헷갈리셨네요. 창밖 풍경과 달력을 함께 확인해 보세요." },
-                    smoking: { name: '흡연 습관', icon: 'fa-smoking', max: 20, meaning: '흡연은 인지 저하의 위험 요인입니다',
+                    orientation: { name: '날짜·계절 (지남력)', icon: 'fa-calendar-day', max: 25, meaning: '오늘 날짜와 계절을 아는 능력',
+                        good: "날짜와 계절을 정확히 알고 계십니다.", mid: "날짜가 조금 헷갈리셨네요. 달력을 자주 보는 습관이 도움이 됩니다.", bad: "날짜나 계절 감각이 흐릿합니다. 매일 아침 달력을 확인하세요." },
+                    memory: { name: '기억력', icon: 'fa-brain', max: 20, meaning: '처음에 본 표지판을 기억하는 능력',
+                        good: "처음에 본 표지판을 모두 기억하셨습니다.", mid: "표지판 하나를 놓치셨네요. 중요한 것은 적어두면 좋습니다.", bad: "방금 본 것을 떠올리기 어려우셨네요. 메모하는 습관을 들여보세요." },
+                    executive: { name: '집행기능', icon: 'fa-traffic-light', max: 15, meaning: '신호에 맞게 누르고 참는 능력',
+                        good: "신호에 맞춰 정확하게 판단하셨습니다.", mid: "가끔 신호와 다르게 반응하셨습니다. 한 박자 쉬고 움직이세요.", bad: "신호에 맞춰 반응하기 어려우셨네요. 건너기 전에 신호를 꼭 다시 확인하세요." },
+                    visuospatial: { name: '시공간', icon: 'fa-clock', max: 10, meaning: '방향과 위치를 파악하는 능력 (시계 그리기)',
+                        good: "시곗바늘을 정확하게 그리셨습니다.", mid: "시곗바늘 위치가 조금 어긋났습니다.", bad: "시곗바늘을 그리기 어려우셨네요. 익숙한 길로 다니시는 것이 좋습니다." },
+                    language: { name: '언어기능', icon: 'fa-comments', max: 10, meaning: '그림을 보고 이름을 아는 능력',
+                        good: "그림과 이름을 모두 바르게 이으셨습니다.", mid: "이름 하나가 헷갈리셨네요.", bad: "이름이 잘 떠오르지 않으셨네요. 가족, 친구와 자주 대화하세요." },
+                    smoking: { name: '흡연 습관', icon: 'fa-smoking', max: 10, meaning: '흡연은 인지 저하의 위험 요인입니다',
                         good: "비흡연은 뇌 건강을 지키는 좋은 습관입니다.", mid: "조금만 더 줄여 금연에 도전해 보세요.", bad: "흡연량이 많습니다. 하루 한 개비씩 줄여 보세요." },
-                    focus: { name: '집중 유지', icon: 'fa-eye', max: 20, meaning: '한 가지 일에 끝까지 집중하는 능력',
+                    focus: { name: '집중 유지', icon: 'fa-eye', max: 10, meaning: '한 가지 일에 끝까지 집중하는 능력',
                         good: "끝까지 집중해서 잘 마치셨습니다.", mid: "가끔 주의가 흐트러졌습니다. 한 번에 하나씩 해 보세요.", bad: "집중을 이어가기 어려우셨네요. 길에서는 걷는 데만 집중하세요." }
                 };
                 const d = info[key];
