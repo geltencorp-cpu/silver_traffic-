@@ -254,7 +254,7 @@
             .kpi .value { font-size: 30px; }
             .sec-head h2 { font-size: 20px; }
             .qtext { font-size: 14px; } .opt { font-size: 12px; }
-            .factors, .factor, .kpis, .grades, .cmp-table, .summary li { break-inside: avoid; }
+            .factor-wrap, .factors, .factor, .kpis, .grades, .cmp-table, .summary li { break-inside: avoid; }
             .factors { break-before: auto; }
         }
     </style>
@@ -355,8 +355,10 @@
                         </div>
                         <div class="dgrid" id="dgrid"></div>
                     </div>
-                    <div class="sub-head"><i class="fa-solid fa-arrow-trend-down" style="color: var(--bad);"></i> 결과에 좋지 않게 작용한 요소</div>
-                    <div class="factors" id="factors"></div>
+                    <div class="factor-wrap">
+                        <div class="sub-head"><i class="fa-solid fa-arrow-trend-down" style="color: var(--bad);"></i> 결과에 좋지 않게 작용한 요소</div>
+                        <div class="factors" id="factors"></div>
+                    </div>
                 </div>
             </section>
 
